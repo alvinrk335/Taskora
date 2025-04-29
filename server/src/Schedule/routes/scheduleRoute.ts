@@ -10,7 +10,7 @@ const repo = new scheduleRepository();
 
 scheduleRouter.post("/schedule/optimize", async (req, res)=> {
   try {
-    const listOfTask = req.body;
+    const listOfTask = req.body.listOfTask; // Pastikan parameter dikirim dengan key 'listOfTask'
 
     if (!listOfTask) {
       return res.status(300).json({error: "list of task is required"});
@@ -63,5 +63,58 @@ scheduleRouter.post("/schedule/add", async (req, res) => {
     return res.status(500).json({error: "error adding schedule to database"});
   }
 });
+
+
+scheduleRouter.get("/schedule/get", async (req, res) => {
+  try {
+    const scheduleId = req.query.scheduleId as string;
+
+    const schedule = await repo.getSchedule(scheduleId);
+
+    return res.status(200).json(schedule);
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({error: "error getting schedule from database"});
+  }
+})
+
+scheduleRouter.post("/schedule/add", async (req, res) => {
+  try {
+    const scheduleJson = req.body.schedule
+    const schedule = Schedule.fromJSON(scheduleJson)
+    const uid = req.body.uid
+
+    await repo.addSchedule(schedule, uid)
+    return res.status(200).json({ message: "Successfully added schedule" });
+
+  } catch (error) { 
+    console.error(error)
+    return res.status(500).json({error: "error adding schedule to database"})
+  }
+})
+
+
+scheduleRouter.put("/schedule/addTask", async (req, res) => {
+  try {
+    const {scheduleId, taskId, uid} = req.body
+    await repo.addTaskToSchedule(scheduleId, taskId, uid)
+    return res.status(200).json({message: `success adding task ${taskId} to schedule ${scheduleId}`})
+
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({error: "error editing schedule to database"})
+  }
+})
+
+scheduleRouter.delete("/schedule/deleteTask", async (req, res) => {
+  try {
+    const {scheduleId, taskId} = req.body
+    await repo.deleteTaskInSchedule(scheduleId, taskId)
+    return res.status(200).json({message: `success deleting task ${taskId} to schedule ${scheduleId}`})
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({error: "error editing schedule to database"})
+  }
+})
 
 export default scheduleRouter;

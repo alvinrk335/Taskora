@@ -31,8 +31,8 @@ export default class scheduleRepository {
       const taskIds = snapshot.docs.map((doc) => doc.data().taskId);
 
       return {
-        scheduleId,
-        taskIds,
+        scheduleId: scheduleId,
+        taskIds: taskIds,
       };
     } catch (error) {
       console.error(error);
@@ -40,14 +40,28 @@ export default class scheduleRepository {
     }
   }
 
-  async setSchedule(entryId: string, data:any): Promise<void> {
+  async deleteTaskInSchedule(scheduleId: string, taskId:any): Promise<void> {
     try {
-      await this.scheduleCollection.doc(entryId).set(data);
+      const docId = `${scheduleId}_${taskId}`;
+      await this.scheduleCollection.doc(docId).delete();
+      console.log(`Deleted schedule entry ${docId}`);
     } catch (error) {
       console.error(error);
     }
   }
 
+  async addTaskToSchedule(scheduleId: string, taskId: string, uid: string): Promise<void>{
+    try {
+      const docId = `${scheduleId}_${taskId}`;
+      await this.scheduleCollection.doc(docId).set({
+        scheduleId,
+        taskId,
+        uid,
+      });
+    } catch (error) {
+      console.error(error)
+    }
+  }
   async deleteWholeSchedule(scheduleId: string): Promise<void> {
     try {
       const snapshot = await this.scheduleCollection

@@ -6,7 +6,7 @@ import Task from "../entity/Task";
 const repo = new taskRepository();
 const taskRouter = Router();
 
-taskRouter.get("/task/get", async (req, res) =>{
+taskRouter.get("/task/getById", async (req, res) =>{
   try {
     const taskId = req.body.taskId;
     if (!taskId) {
@@ -39,7 +39,7 @@ taskRouter.post("/task/add", async (req, res) => {
 
 taskRouter.put("/task/edit", async (req, res) => {
   try {
-    const data = req.body;
+    const data = req.body.task;
 
     if (!data.taskId) {
       return res.status(400).json({error: "taskId is required"});

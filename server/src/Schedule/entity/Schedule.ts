@@ -1,22 +1,23 @@
-import {Timestamp} from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 import Task from "../../Task/entity/Task";
 
 class Schedule {
   private scheduleId: string;
   private tasks: Task[];
-  private scheduleStart: Timestamp;
-  private scheduleEnd: Timestamp;
+  private scheduleStart?: Timestamp;
+  private scheduleEnd?: Timestamp;
+
   constructor({
     scheduleId,
     tasks,
-    scheduleStart,
-    scheduleEnd,
+    scheduleStart = Timestamp.now(), // Default ke timestamp sekarang jika tidak ada
+    scheduleEnd = Timestamp.now(), // Default ke timestamp sekarang jika tidak ada
   }: {
-        scheduleId: string;
-        tasks: Task[];
-        scheduleStart: Timestamp;
-        scheduleEnd: Timestamp;
-    }) {
+    scheduleId: string;
+    tasks: Task[];
+    scheduleStart?: Timestamp;
+    scheduleEnd?: Timestamp;
+  }) {
     this.scheduleId = scheduleId;
     this.tasks = tasks;
     this.scheduleStart = scheduleStart;
@@ -42,7 +43,7 @@ class Schedule {
   }
 
   // Getter dan Setter untuk scheduleStart
-  public getScheduleStart(): Timestamp {
+  public getScheduleStart(): Timestamp | undefined {
     return this.scheduleStart;
   }
 
@@ -51,7 +52,7 @@ class Schedule {
   }
 
   // Getter dan Setter untuk scheduleEnd
-  public getScheduleEnd(): Timestamp {
+  public getScheduleEnd(): Timestamp | undefined {
     return this.scheduleEnd;
   }
 
@@ -64,19 +65,24 @@ class Schedule {
     return {
       scheduleId: this.scheduleId,
       tasks: this.tasks.map((task) => task.toJSON()), // Mengubah task menjadi JSON
-      scheduleStart: this.scheduleStart.toDate().toISOString(), // Mengubah Timestamp menjadi ISO string
-      scheduleEnd: this.scheduleEnd.toDate().toISOString(), // Mengubah Timestamp menjadi ISO string
+      scheduleStart: this.scheduleStart?.toDate().toISOString(), // Optional chaining untuk handle undefined
+      scheduleEnd: this.scheduleEnd?.toDate().toISOString(), // Optional chaining untuk handle undefined
     };
   }
 
   // Static method untuk membuat objek Schedule dari JSON
   public static fromJSON(data: any): Schedule {
     const scheduleId = data.scheduleId;
-    const tasks = data.tasks.map((taskData: any) => Task.fromJSON(taskData)); // Mengonversi setiap task ke objek Task
-    const scheduleStart = Timestamp.fromDate(new Date(data.scheduleStart)); // Mengubah ISO string menjadi Timestamp
-    const scheduleEnd = Timestamp.fromDate(new Date(data.scheduleEnd)); // Mengubah ISO string menjadi Timestamp
+    const tasks = data.tasks ? data.tasks.map((taskData: any) => Task.fromJSON(taskData)) : [];
+    const scheduleStart = data.scheduleStart ? Timestamp.fromDate(new Date(data.scheduleStart)) : Timestamp.now();
+    const scheduleEnd = data.scheduleEnd ? Timestamp.fromDate(new Date(data.scheduleEnd)) : Timestamp.now();
 
-    return new Schedule({scheduleId: scheduleId, tasks: tasks, scheduleStart: scheduleStart, scheduleEnd: scheduleEnd});
+    return new Schedule({
+      scheduleId,
+      tasks,
+      scheduleStart,
+      scheduleEnd,
+    });
   }
 }
 

@@ -3,32 +3,30 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/model/task.dart';
 
 class TaskRepository {
-  final String baseUrl = 'http://localhost:3000'; // Ganti dengan URL backend Anda
+  final String baseUrl = 'http://localhost:3000';
 
-  // Method untuk mendapatkan task berdasarkan taskId
   Future<Task?> getTask(String taskId) async {
-    final url = Uri.parse('$baseUrl/task/get');
-    final response = await http.get(url, headers: {
-      'Content-Type': 'application/json',
-    });
+    final url = Uri.parse('$baseUrl/task/getById?taskId=$taskId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
 
     if (response.statusCode == 200) {
       final taskData = jsonDecode(response.body);
-      return Task.fromJson(taskData);  // Parsing response JSON ke model Task
+      return Task.fromJson(taskData); // Parsing response JSON ke model Task
     } else {
       throw Exception('Failed to load task');
     }
   }
 
-  // Method untuk menambahkan task baru
+
   Future<void> addTask(Task task) async {
     final url = Uri.parse('$baseUrl/task/add');
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(task.toJson()),  // Mengirim task dalam format JSON
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(task.toJson()),
     );
 
     if (response.statusCode != 201) {
@@ -36,15 +34,14 @@ class TaskRepository {
     }
   }
 
-  // Method untuk memperbarui task
-  Future<void> updateTask(Task task) async {
+  Future<void> updateTask(Task data) async {
     final url = Uri.parse('$baseUrl/task/edit');
     final response = await http.put(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(task.toJson()),  // Mengirim data task yang sudah diupdate
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "task": data.toJson(),
+      }), 
     );
 
     if (response.statusCode != 200) {
@@ -52,14 +49,13 @@ class TaskRepository {
     }
   }
 
-  // Method untuk menerjemahkan task
-  Future<Map<String, dynamic>> translateTask(Map<String, dynamic> taskData) async {
+  Future<Map<String, dynamic>> translateTask(
+    Map<String, dynamic> taskData,
+  ) async {
     final url = Uri.parse('$baseUrl/task/translate');
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode(taskData),
     );
 

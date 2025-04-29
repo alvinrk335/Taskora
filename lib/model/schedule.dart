@@ -2,24 +2,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'task.dart'; // Pastikan file ini berisi class Task yang sudah kita buat sebelumnya
 
 class Schedule {
-  final String scheduleId;
+  String scheduleId;
   List<Task> tasks;
-  Timestamp scheduleStart;
-  Timestamp scheduleEnd;
+  Timestamp? scheduleStart;
+  Timestamp? scheduleEnd;
 
   Schedule({
     required this.scheduleId,
     required this.tasks,
-    required this.scheduleStart,
-    required this.scheduleEnd,
+    this.scheduleStart,
+    this.scheduleEnd,
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule(
       scheduleId: json['scheduleId'],
       tasks: (json['tasks'] as List).map((e) => Task.fromJson(e)).toList(),
-      scheduleStart: Timestamp.fromDate(DateTime.parse(json['scheduleStart'])),
-      scheduleEnd: Timestamp.fromDate(DateTime.parse(json['scheduleEnd'])),
+      scheduleStart: json['scheduleStart'] != null
+          ? Timestamp.fromDate(DateTime.parse(json['scheduleStart']))
+          : null,
+      scheduleEnd: json['scheduleEnd'] != null
+          ? Timestamp.fromDate(DateTime.parse(json['scheduleEnd']))
+          : null,
     );
   }
 
@@ -27,27 +31,32 @@ class Schedule {
     return {
       'scheduleId': scheduleId,
       'tasks': tasks.map((task) => task.toJson()).toList(),
-      'scheduleStart': scheduleStart.toDate().toIso8601String(),
-      'scheduleEnd': scheduleEnd.toDate().toIso8601String(),
+      'scheduleStart': scheduleStart?.toDate().toIso8601String() ?? '',
+      'scheduleEnd': scheduleEnd?.toDate().toIso8601String() ?? '',
     };
   }
 
-  // Getter-Setter jika perlu (opsional karena Dart mendukung akses langsung ke field)
-
+  // Getter and Setter for scheduleId
   String get getScheduleId => scheduleId;
+  set setScheduleId(String scheduleId) {
+    this.scheduleId = scheduleId;
+  }
+
+  // Getter and Setter for tasks
   List<Task> get getTasks => tasks;
-  Timestamp get getScheduleStart => scheduleStart;
-  Timestamp get getScheduleEnd => scheduleEnd;
-
-  void setTasksList(List<Task> updatedTasks) {
-    tasks = updatedTasks;
+  set setTasks(List<Task> tasks) {
+    this.tasks = tasks;
   }
 
-  void setScheduleStart(Timestamp start) {
-    scheduleStart = start;
+  // Getter and Setter for scheduleStart
+  Timestamp? get getScheduleStart => scheduleStart;
+  set setScheduleStart(Timestamp? scheduleStart) {
+    this.scheduleStart = scheduleStart;
   }
 
-  void setScheduleEnd(Timestamp end) {
-    scheduleEnd = end;
+  // Getter and Setter for scheduleEnd
+  Timestamp? get getScheduleEnd => scheduleEnd;
+  set setScheduleEnd(Timestamp? scheduleEnd) {
+    this.scheduleEnd = scheduleEnd;
   }
 }
