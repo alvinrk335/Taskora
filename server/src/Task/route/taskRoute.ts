@@ -6,9 +6,9 @@ import Task from "../entity/Task";
 const repo = new taskRepository();
 const taskRouter = Router();
 
-taskRouter.get("/task/getById", async (req, res) =>{
+taskRouter.get("/getById", async (req, res) =>{
   try {
-    const taskId = req.body.taskId;
+    const taskId = req.query.taskId as string;
     if (!taskId) {
       return res.status(400).json({error: "taskId is required"});
     }
@@ -18,14 +18,14 @@ taskRouter.get("/task/getById", async (req, res) =>{
       return res.status(404).json({error: "Task not found"});
     }
 
-    return res.json(task);
+    return res.json(task.toJSON());
   } catch (error) {
     console.error(error);
     return res.status(500).json({error: "error fetching task"});
   }
 });
 
-taskRouter.post("/task/add", async (req, res) => {
+taskRouter.post("/add", async (req, res) => {
   try {
     const task = req.body;
     const repoTask = Task.fromJSON(task);
@@ -37,7 +37,7 @@ taskRouter.post("/task/add", async (req, res) => {
   }
 });
 
-taskRouter.put("/task/edit", async (req, res) => {
+taskRouter.put("/edit", async (req, res) => {
   try {
     const data = req.body.task;
 
@@ -56,7 +56,7 @@ taskRouter.put("/task/edit", async (req, res) => {
   }
 });
 
-taskRouter.post("/task/translate", async (req, res) =>{
+taskRouter.post("/translate", async (req, res) =>{
   const {taskId, taskName, description, priority, type, preferredDays, deadline} = req.body;
   const prompt = `  I am making an optimized schedule using linear programming with some constraints.
                     Please translate this natural language input:
@@ -75,14 +75,14 @@ taskRouter.post("/task/translate", async (req, res) =>{
                     "estimatedDuration": <estimated duration as number in hours>,
                     "weight": <importance from 1 to 10, can be decimal>,
                     "deadline": same as input,
-                    "preferredDaysOff": same as input
+                    "preferredDays": same as input
                     }
                 `;
   try {
     const response = await axios.post("http://127.0.0.1:8000/ask-gemini", {
       prompt: prompt,
     });
-    res.json({optimizedSchedule: response.data.response});
+    res.json(response.data.response);
   } catch (error) {
     console.error(error);
     res.status(500).json({error: "Failed to get AI response"});

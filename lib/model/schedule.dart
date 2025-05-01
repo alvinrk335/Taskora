@@ -14,16 +14,30 @@ class Schedule {
     this.scheduleEnd,
   });
 
+  factory Schedule.empty() {
+    return Schedule(
+      scheduleId: '',
+      tasks: [],
+      scheduleStart: null,
+      scheduleEnd: null,
+    );
+  }
+  bool isEmpty() {
+    return scheduleId.isEmpty && tasks.isEmpty;
+  }
+
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule(
       scheduleId: json['scheduleId'],
       tasks: (json['tasks'] as List).map((e) => Task.fromJson(e)).toList(),
-      scheduleStart: json['scheduleStart'] != null
-          ? Timestamp.fromDate(DateTime.parse(json['scheduleStart']))
-          : null,
-      scheduleEnd: json['scheduleEnd'] != null
-          ? Timestamp.fromDate(DateTime.parse(json['scheduleEnd']))
-          : null,
+      scheduleStart:
+          json['scheduleStart'] != null
+              ? Timestamp.fromDate(DateTime.parse(json['scheduleStart']))
+              : null,
+      scheduleEnd:
+          json['scheduleEnd'] != null
+              ? Timestamp.fromDate(DateTime.parse(json['scheduleEnd']))
+              : null,
     );
   }
 
@@ -38,12 +52,14 @@ class Schedule {
 
   // Getter and Setter for scheduleId
   String get getScheduleId => scheduleId;
+
   set setScheduleId(String scheduleId) {
     this.scheduleId = scheduleId;
   }
 
   // Getter and Setter for tasks
   List<Task> get getTasks => tasks;
+
   set setTasks(List<Task> tasks) {
     this.tasks = tasks;
   }

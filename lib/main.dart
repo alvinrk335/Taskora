@@ -1,11 +1,29 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/home_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:taskora/bloc/auth/auth_bloc.dart';
+import 'package:taskora/bloc/navbar/navbar_bloc.dart';
+// import 'package:taskora/pages/calendar_page.dart';
+import 'package:taskora/pages/navigation.dart';
 
 void main() async {
+  // await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create:
+              (_) =>
+                  AuthBloc(), // Pastikan ini tidak null & sudah diinisialisasi dengan benar
+        ),
+        BlocProvider<NavbarBloc>(create: (_) => NavbarBloc()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,9 +31,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'taskora',
-      home: HomePage(),
-    );
+    return MaterialApp(title: 'Taskora', home: Navigation());
   }
 }

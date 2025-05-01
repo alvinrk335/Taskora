@@ -31,7 +31,7 @@ export default class Task {
     updatedAt,
     workload,
     estimatedDuration,
-  }: {
+  }: {//dd
         taskId: string;
         taskName: Name;
         description: Description;
@@ -84,9 +84,9 @@ export default class Task {
     });
   }
   toJSON() {
-    const workloadObject: { [date: string]: Duration } = {};
+    const workloadObject: { [date: string]: Number } = {};
     this.workload.forEach((value, key) => {
-      workloadObject[key.toISOString()] = value;
+      workloadObject[key.toISOString()] = value.toNumber();;
     });
 
     return {

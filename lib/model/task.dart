@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:frontend/model/description.dart';
-import 'package:frontend/model/duration.dart';
-import 'package:frontend/model/name.dart';
-import 'package:frontend/model/tasktype.dart';
+import 'package:taskora/model/description.dart';
+import 'package:taskora/model/duration.dart';
+import 'package:taskora/model/name.dart';
+import 'package:taskora/model/tasktype.dart';
+
 
 class Task {
   final String taskId;

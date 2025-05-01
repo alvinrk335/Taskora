@@ -3,7 +3,7 @@ import {googleLogin} from "../services/googleLogin";
 
 const router = Router();
 
-router.post("/auth/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const token = req.body.token;
     if (!token) {

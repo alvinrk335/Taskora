@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:frontend/model/task.dart';
+import 'package:taskora/model/task.dart';
+
 
 class TaskRepository {
   final String baseUrl = 'http://localhost:3000';

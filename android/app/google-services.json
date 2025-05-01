@@ -12,7 +12,20 @@
           "package_name": "com.example.taskora"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "845917411115-dh5q8fl5gcdl5od8kgmivq6frfh7uj7u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taskora",
+            "certificate_hash": "0ff6426443bd18f6ef7d4f996139a0da6bb57469"
+          }
+        },
+        {
+          "client_id": "845917411115-39d09votvecm2u2qn5fa67jmm444va8d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB6s72T5scNV-yYtninCF6dhU_AQ150Cs4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "845917411115-39d09votvecm2u2qn5fa67jmm444va8d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

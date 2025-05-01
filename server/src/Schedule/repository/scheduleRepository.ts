@@ -95,4 +95,22 @@ export default class scheduleRepository {
       return false;
     }
   }
+
+  async getScheduleByUid(uid: string): Promise<{ scheduleId: string; taskIds: string[] } |null>{
+    try {
+      const snapshot = await this.scheduleCollection.where("uid", "==", uid).get();
+      if (snapshot.empty) {
+        return null;
+      }
+      const taskIds = snapshot.docs.map((doc) => doc.data().taskId);
+      const scheduleId = snapshot.docs[0].data().scheduleId;
+      return {
+        scheduleId,
+        taskIds,
+      };
+    } catch (error) {
+      console.error(error)
+      throw new Error("error fetching schedule data");
+    }
+  }
 }
