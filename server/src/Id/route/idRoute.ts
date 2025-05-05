@@ -3,7 +3,7 @@ import express from "express"
 
 const idRoute = express();
 
-idRoute.get("/Id/Get",async (req, res) => {
+idRoute.get("/get",async (req, res) => {
     try {
         const { type } = req.query;
         if (!type || (type !== 'task' && type !== 'schedule')) {

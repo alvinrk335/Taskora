@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:taskora/model/schedule.dart';
 import 'package:taskora/model/task.dart';
 
-
 class ScheduleRepository {
   final String baseUrl = "http://10.0.2.2:3000";
   final Map<String, String> header = {'Content-Type': 'application/json'};
@@ -41,7 +40,7 @@ class ScheduleRepository {
       final url = Uri.parse('$baseUrl/schedule/getByUid?uid=$uid');
       log("url: $url");
       final response = await http.get(url, headers: header);
-      log("got response from $url");
+      log("got response from $url : ${response.body}");
 
       if (response.statusCode == 300) {
         return Schedule.empty();

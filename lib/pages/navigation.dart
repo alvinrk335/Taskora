@@ -19,17 +19,19 @@ class Navigation extends StatelessWidget {
           return Scaffold(
             body: pages[navigationState.currentIndex],
             bottomNavigationBar: BottomNavigationBar(
-              onTap: (index) => navigationContext.read<NavbarBloc>().add(MoveTo(index)),
+              onTap:
+                  (index) =>
+                      navigationContext.read<NavbarBloc>().add(MoveTo(index)),
               currentIndex: navigationState.currentIndex,
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: "home_page",
+                  label: "Home",
                   backgroundColor: Colors.white,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.calendar_month),
-                  label: "calendar_page",
+                  label: "Calendar",
                   backgroundColor: Colors.white,
                 ),
               ],

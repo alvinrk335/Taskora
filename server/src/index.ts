@@ -11,7 +11,7 @@ app.use(express.json());
 app.use("/auth", router);
 app.use("/task", taskRouter);
 app.use("/schedule", scheduleRouter);
-app.use("/Id", idRoute)
+app.use("/id", idRoute)
 
 const PORT = process.env.PORT || 3000;  // default ke 3000 jika environment variable PORT tidak ada
 

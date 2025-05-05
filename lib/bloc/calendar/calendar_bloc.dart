@@ -13,11 +13,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       try {
         emit(CalendarLoading());
         final schedule = await repo.getScheduleByUid(event.uid);
-        if (schedule.isEmpty()) {
-          emit(CalendarEmpty());
-        } else {
-          emit(CalendarLoaded(schedule));
-        }
+        emit(CalendarLoaded(schedule));
       } catch (e) {
         log(e.toString());
       }

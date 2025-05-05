@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:taskora/model/description.dart';
 import 'package:taskora/model/duration.dart';
 import 'package:taskora/model/name.dart';
 import 'package:taskora/model/tasktype.dart';
-
 
 class Task {
   final String taskId;
@@ -12,7 +12,7 @@ class Task {
   int priority;
   TaskType type;
   List<DateTime> preferredDays;
-  DateTime deadline;
+  DateTime? deadline;
   double weight;
   Timestamp createdAt;
   Timestamp updatedAt;
@@ -40,7 +40,9 @@ class Task {
 
     (rawWorkload as Map<String, dynamic>).forEach((key, value) {
       final date = DateTime.parse(key);
-      final duration = DurationValue.fromNumber(value is num ? value.toDouble() : (value['minutes'] as num).toDouble());
+      final duration = DurationValue.fromNumber(
+        value is num ? value.toDouble() : (value['minutes'] as num).toDouble(),
+      );
       workloadMap[date] = duration;
     });
 
@@ -50,13 +52,22 @@ class Task {
       description: Description.fromString(json['description']),
       priority: json['priority'],
       type: TaskType.fromString(json['type']),
-      preferredDays: (json['preferredDays'] as List).map((d) => DateTime.parse(d)).toList(),
+      preferredDays:
+          (json['preferredDays'] as List)
+              .map((d) => DateTime.parse(d))
+              .toList(),
       deadline: DateTime.parse(json['deadline']),
       weight: json['weight'].toDouble(),
-      createdAt: Timestamp.fromDate(DateTime.parse(json['createdAt'].toString())),
-      updatedAt: Timestamp.fromDate(DateTime.parse(json['updatedAt'].toString())),
+      createdAt: Timestamp.fromDate(
+        DateTime.parse(json['createdAt'].toString()),
+      ),
+      updatedAt: Timestamp.fromDate(
+        DateTime.parse(json['updatedAt'].toString()),
+      ),
       workload: workloadMap,
-      estimatedDuration: DurationValue.fromNumber((json['estimatedDuration'] ?? 0).toDouble()),
+      estimatedDuration: DurationValue.fromNumber(
+        (json['estimatedDuration'] ?? 0).toDouble(),
+      ),
     );
   }
 
@@ -73,7 +84,7 @@ class Task {
       'priority': priority,
       'type': type.toString(),
       'preferredDays': preferredDays.map((e) => e.toIso8601String()).toList(),
-      'deadline': deadline.toIso8601String(),
+      'deadline': deadline?.toIso8601String() ?? "No deadline" ,
       'estimatedDuration': estimatedDuration?.toNumber() ?? 0,
       'weight': weight,
       'createdAt': createdAt.toDate().toIso8601String(),
@@ -92,5 +103,28 @@ class Task {
 
   void addWorkload(DateTime date, DurationValue duration) {
     workload[date] = duration;
+  }
+
+  String toSummaryString() {
+    final deadlineStr =
+        deadline != null
+            ? DateFormat('yyyy-MM-dd').format(deadline!)
+            : 'No deadline';
+    final workloadStr = workload.entries
+        .map((e) {
+          final dateStr = DateFormat('yyyy-MM-dd').format(e.key);
+          return '$dateStr: ${e.value}';
+        })
+        .join(', ');
+
+    return '''
+Task ID: $taskId
+Name: ${taskName.name}
+Deadline: $deadlineStr
+Type: ${type.toString().split('.').last}
+Priority: $priority
+Workload: $workloadStr
+Description: ${description.value}
+''';
   }
 }

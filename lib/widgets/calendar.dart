@@ -20,62 +20,56 @@ class Calendar extends StatelessWidget {
               if (scheduleState is CalendarLoading) {
                 return Center(child: CircularProgressIndicator());
               } else if (scheduleState is CalendarLoaded) {
-                final events = scheduleState.loadEvent();
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Center(
-                    child: TableCalendar(
-                      focusedDay: DateTime.now(),
-                      firstDay: DateTime(
-                        DateTime.now().year,
-                        DateTime.now().month,
-                        1,
+                if (!scheduleState.schedule.isEmpty()) {
+                  final events = scheduleState.loadEvent();
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Center(
+                      child: TableCalendar(
+                        focusedDay: DateTime.now(),
+                        firstDay: DateTime(
+                          DateTime.now().year,
+                          DateTime.now().month,
+                          1,
+                        ),
+                        lastDay: DateTime(
+                          DateTime.now().year,
+                          DateTime.now().month + 1,
+                          0,
+                        ),
+                        eventLoader: (day) => events[day] ?? [],
                       ),
-                      lastDay: DateTime(
-                        DateTime.now().year,
-                        DateTime.now().month + 1,
-                        0,
-                      ),
-                      eventLoader: (day) => events[day] ?? [],
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TableCalendar(
+                            focusedDay: DateTime.now(),
+                            firstDay: DateTime(
+                              DateTime.now().year,
+                              DateTime.now().month,
+                              1,
+                            ),
+                            lastDay: DateTime(
+                              DateTime.now().year,
+                              DateTime.now().month + 1,
+                              0,
+                            ),
+                          ),
+                          
+                        ],
+                      ),
+                    ),
+                  );
+                }
               } else if (scheduleState is CalendarInitial) {
                 final uid = authState.user.uid;
                 scheduleContext.read<CalendarBloc>().add(LoadRequest(uid));
-              } else if (scheduleState is CalendarEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TableCalendar(
-                          focusedDay: DateTime.now(),
-                          firstDay: DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month,
-                            1,
-                          ),
-                          lastDay: DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month + 1,
-                            0,
-                          ),
-                        ),
-                        const Divider(color: Colors.transparent, height: 20),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(30),
-                            child: Text(
-                              "No schedule found, insert new schedule data by clicking the task button on the bottom right corner of the screen",
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
               }
               return const Center(child: Text("error fetching data"));
             },

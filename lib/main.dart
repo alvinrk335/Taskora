@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
+import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/navbar/navbar_bloc.dart';
 // import 'package:taskora/pages/calendar_page.dart';
 import 'package:taskora/pages/navigation.dart';
@@ -20,6 +21,8 @@ void main() async {
                   AuthBloc(), // Pastikan ini tidak null & sudah diinisialisasi dengan benar
         ),
         BlocProvider<NavbarBloc>(create: (_) => NavbarBloc()),
+
+        BlocProvider(create: (_) => CalendarBloc()),
       ],
       child: const MyApp(),
     ),

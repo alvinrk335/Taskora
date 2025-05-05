@@ -56,36 +56,48 @@ taskRouter.put("/edit", async (req, res) => {
   }
 });
 
-taskRouter.post("/translate", async (req, res) =>{
-  const {taskId, taskName, description, priority, type, preferredDays, deadline} = req.body;
-  const prompt = `  I am making an optimized schedule using linear programming with some constraints.
-                    Please translate this natural language input:
-                    - taskId: ${taskId}
-                    - taskName: ${taskName}
-                    - description: ${description}
-                    - priority: ${priority}
-                    - taskType: ${type}
-                    - preferred non-working days: ${preferredDays}
-                    - deadline: ${deadline}
+taskRouter.post("/translate", async (req, res) => {
+  const { listOfTask } = req.body;
 
-                    Into this JSON format:
-                    {
-                    "taskId": same as input,
-                    "taskName": same as input,
-                    "estimatedDuration": <estimated duration as number in hours>,
-                    "weight": <importance from 1 to 10, can be decimal>,
-                    "deadline": same as input,
-                    "preferredDays": same as input
-                    }
-                `;
+  if (!Array.isArray(listOfTask)) {
+    return res.status(400).json({ error: "listOfTask must be an array" });
+  }
+
   try {
-    const response = await axios.post("http://127.0.0.1:8000/ask-gemini", {
-      prompt: prompt,
-    });
-    res.json(response.data.response);
+    const translatedTasks = await Promise.all(
+      listOfTask.map(async (task) => {
+        const prompt = `
+            I am making an optimized schedule using linear programming with some constraints.
+            Please translate this natural language input:
+            - taskId: ${task.taskId}
+            - taskName: ${task.taskName}
+            - description: ${task.description}
+            - priority: ${task.priority}
+            - taskType: ${task.type}
+            - deadline: ${task.deadline}
+
+            Into this JSON format:
+            {
+              "taskId": same as input,
+              "taskName": same as input,
+              "estimatedDuration": <estimated duration as number in hours>,
+              "weight": <importance from 1 to 10, can be decimal>,
+              "deadline": same as input
+            }
+            `;
+
+        const response = await axios.post("http://127.0.0.1:8000/ask-gemini", {
+          prompt,
+        });
+
+        return response.data.response; // Harus JSON-parsable
+      })
+    );
+
+    return res.json({ translatedTasks });
   } catch (error) {
     console.error(error);
-    res.status(500).json({error: "Failed to get AI response"});
+    return res.status(500).json({ error: "Failed to translate tasks" });
   }
 });
 export default taskRouter;

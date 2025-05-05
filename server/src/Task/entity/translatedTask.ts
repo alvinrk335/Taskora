@@ -8,7 +8,7 @@ export default class TranslatedTask {
         private estimatedDuration: Duration,
         private weight: number,
         private deadline: Date,
-        private preferredDays?: Date[]
+        // private preferredDays?: Date[]
   ) {}
 
   toJSON() {
@@ -17,7 +17,7 @@ export default class TranslatedTask {
       estimatedDuration: this.estimatedDuration,
       weight: this.weight,
       deadline: this.deadline.toISOString(),
-      preferredDays: (this.preferredDays ?? []).map((date) => date.toISOString()),
+      // preferredDays: (this.preferredDays ?? []).map((date) => date.toISOString()),
     };
   }
   // Getter and Setter for taskId
@@ -57,13 +57,13 @@ export default class TranslatedTask {
   }
 
   // Getter and Setter for preferredDays
-  public getPreferredDays(): Date[] {
-    return this.preferredDays ?? [];
-  }
+  // public getPreferredDays(): Date[] {
+  //   return this.preferredDays ?? [];
+  // }
 
-  public setPreferredDays(preferredDays: Date[]): void {
-    this.preferredDays = preferredDays;
-  }
+  // public setPreferredDays(preferredDays: Date[]): void {
+  //   this.preferredDays = preferredDays;
+  // }
 
   public getName(): Name {
     return this.taskName;

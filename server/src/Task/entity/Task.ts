@@ -10,7 +10,7 @@ export default class Task {
   private description: Description;
   private priority: number;
   private type: taskType;
-  private preferredDays: Date[];
+  // private preferredDays: Date[];
   private deadline: Date;
   private weight: number;
   private createdAt: Timestamp;
@@ -24,7 +24,7 @@ export default class Task {
     description,
     priority,
     type,
-    preferredDays,
+    // preferredDays
     deadline,
     weight,
     createdAt,
@@ -37,7 +37,7 @@ export default class Task {
         description: Description;
         priority: number;
         type: taskType;
-        preferredDays: Date[];
+        // preferredDays: Date[];
         deadline: Date;
         weight: number;
         createdAt: Timestamp;
@@ -50,7 +50,7 @@ export default class Task {
     this.description = description;
     this.priority = priority;
     this.type = type;
-    this.preferredDays = preferredDays;
+    // this.preferredDays = preferredDays;
     this.deadline = deadline;
     this.weight = weight;
     this.createdAt = createdAt;
@@ -74,7 +74,7 @@ export default class Task {
       description: Description.fromString(json.description),
       priority: json.priority,
       type: taskType.fromString(json.type),
-      preferredDays: (json.preferredDays ?? []).map((d: string) => new Date(d)),
+      // preferredDays: (json.preferredDays ?? []).map((d: string) => new Date(d)),
       deadline: new Date(json.deadline),
       weight: json.weight,
       createdAt: Timestamp.fromDate(new Date(json.createdAt)),
@@ -95,7 +95,7 @@ export default class Task {
       description: this.description.toString(),
       priority: this.priority,
       type: this.type.toString(),
-      preferredDays: this.preferredDays.map((date) => date.toISOString()),
+      // preferredDays: this.preferredDays.map((date) => date.toISOString()),
       deadline: this.deadline.toISOString(),
       estimatedDuration: this.estimatedDuration?.toNumber() ?? 0,
       weight: this.weight,
@@ -146,13 +146,13 @@ export default class Task {
     this.type = type;
   }
 
-  public getPreferredDays(): Date[] {
-    return this.preferredDays;
-  }
+  // public getPreferredDays(): Date[] {
+  //   return this.preferredDays;
+  // }
 
-  public setPreferredDays(preferredDays: Date[]): void {
-    this.preferredDays = preferredDays;
-  }
+  // public setPreferredDays(preferredDays: Date[]): void {
+  //   this.preferredDays = preferredDays;
+  // }
 
   public getDeadline(): Date {
     return this.deadline;

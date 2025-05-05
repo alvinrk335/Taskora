@@ -31,7 +31,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
       return res.status(500).json({ error: "Invalid response from translation service" });
     }
     const optimizeResponse = await axios.post("http://localhost:8001/optimizeSchedule", {
-      listOfTask: translatedTasks,
+      translatedTasks,
     });
 
     const optimizedData = optimizeResponse.data;//optimizedTask
@@ -45,7 +45,6 @@ scheduleRouter.post("/optimize", async (req, res)=> {
       Description.fromString(task.description),
       task.priority,
       taskType.fromString(task.taskType),
-      (task.preferredDays ?? []).map((d: string) => new Date(d)),
       task.deadline ? new Date(task.deadline) : undefined
     ));
     
@@ -56,7 +55,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
         Duration.fromNumber(task.estimatedDuration),
         task.weight,
         new Date(task.deadline),
-        (task.preferredDays ?? []).map((d: string) => new Date(d))
+        // (task.preferredDays ?? []).map((d: string) => new Date(d))
       )
     );
     
@@ -79,7 +78,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
         description: initial.getDescription(),
         priority: initial.getPriority(),
         type: initial.getType(),
-        preferredDays: translated.getPreferredDays(),
+        // preferredDays: translated.getPreferredDays(),
         deadline: translated.getDeadline(),
         weight: translated.getWeight(),
         createdAt: Timestamp.now(),

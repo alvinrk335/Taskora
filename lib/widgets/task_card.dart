@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:taskora/model/task.dart';
 
 class TaskCard extends StatelessWidget {
-  // final Task task;
-  const TaskCard({super.key});
+  final Task task;
+  const TaskCard({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,11 @@ class TaskCard extends StatelessWidget {
         color: Colors.white,
         child: Column(
           children: [
-            Align(alignment: Alignment.topCenter, child: Text("data")),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Text(task.taskName.toString()),
+            ),
+            Text(task.toSummaryString(), style: TextStyle(fontSize: 14)),
           ],
         ),
       ),

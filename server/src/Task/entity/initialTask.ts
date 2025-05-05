@@ -9,7 +9,7 @@ export default class initialTask {
         private description: Description,
         private priority: number,
         private type: taskType,
-        private preferredDays?: Date[],
+        // private preferredDays?: Date[],
         private deadline?: Date,
   ) {}
 
@@ -77,15 +77,15 @@ export default class initialTask {
     this.deadline = deadline;
   }
 
-  public setPreferredDays(days: Date[]): void {
-    this.preferredDays = days;
-  }
+  // public setPreferredDays(days: Date[]): void {
+  //   this.preferredDays = days;
+  // }
 
-  public addPreferredDays(day: Date):void {
-    (this.preferredDays ?? []).push(day);
-  }
+  // public addPreferredDays(day: Date):void {
+  //   (this.preferredDays ?? []).push(day);
+  // }
 
-  public getPreferredDays(): Date[] {
-    return this.preferredDays ?? [];
-  }
+  // public getPreferredDays(): Date[] {
+  //   return this.preferredDays ?? [];
+  // }
 }
