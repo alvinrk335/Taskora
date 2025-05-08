@@ -169,6 +169,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                   Description(descController.text),
                   priority,
                   type,
+                  deadline: dateController.text.isEmpty ? null : DateTime.parse(dateController.text)
                 );
 
                 if (mounted) {

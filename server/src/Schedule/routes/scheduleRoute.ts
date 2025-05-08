@@ -107,7 +107,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     // const lastTask = tasks[tasks.length - 1];
     // const scheduleEnd = lastTask.getDeadline();
     const scheduleId = await axios.post("http://localhost:3000/id/get?type=schedule");
-
+    console.log(scheduleId)
     const schedule = new Schedule({
       scheduleId: scheduleId.data,
       tasks: tasks,

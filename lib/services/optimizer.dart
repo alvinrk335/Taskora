@@ -23,9 +23,10 @@ class Optimizer {
 
   Future<Schedule> optimize() async {
     final url = Uri.parse("$baseUrl/schedule/optimize");
+    
     final tasksJson = tasks.map((task) => task.toJson()).toList();
     log("input: $tasksJson");
-
+  
     final response = await http.post(
       url,
       headers: header,
@@ -38,7 +39,7 @@ class Optimizer {
       }),
     );
 
-    log("response from $url: $response");
+    log("response from $url: ${response.body}");
     return Schedule.fromJson(jsonDecode(response.body));
   }
 }

@@ -4,6 +4,7 @@ import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
+import 'package:taskora/bloc/initial_task/task_add_state.dart';
 import 'package:taskora/bloc/task_priority/task_priority_bloc.dart';
 import 'package:taskora/bloc/task_type/task_type_bloc.dart';
 import 'package:taskora/model/initial_task.dart';
@@ -122,23 +123,35 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
           const InitialTaskList(),
           const SizedBox(height: 40),
 
-          Row(
-            children: [
-              TextButton(onPressed: () {}, child: Text("Manual Scheduling")),
-              TextButton(
-                onPressed: () {
-                  optimizeAndAdd(context);
-                  Navigator.popUntil(
-                    context,
-                    (route) =>
-                        route.settings.name == null &&
-                        route is MaterialPageRoute &&
-                        route.builder(context) is CalendarPage,
-                  );
-                },
-                child: Text("Automatic Scheduling"),
-              ),
-            ],
+          BlocBuilder<TaskAddBloc, TaskAddState>(
+            builder: (taskContext, taskState) {
+              if (taskState.tasks.isNotEmpty) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {},
+                      child: Text("Manual Scheduling"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        optimizeAndAdd(context);
+                        Navigator.popUntil(
+                          context,
+                          (route) =>
+                              route.settings.name == null &&
+                              route is MaterialPageRoute &&
+                              route.builder(context) is CalendarPage,
+                        );
+                      },
+                      child: Text("Automatic Scheduling"),
+                    ),
+                  ],
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+            },
           ),
         ],
       ),
