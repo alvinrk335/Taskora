@@ -29,12 +29,10 @@ class TaskList extends StatelessWidget {
               children: [for (Task task in tasks) TaskCard(task: task)],
             );
           } else {
-            return Center(
-              child: Text(
-                "schedule is empty",
-              ),
-            );
+            return Center(child: Text("schedule is empty"));
           }
+        } else if (scheduleState is CalendarLoading) {
+          return SizedBox.shrink();
         }
         return Text("error no state");
       },

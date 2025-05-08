@@ -25,7 +25,7 @@ class HomePage extends StatelessWidget {
                   if (scheduleState is CalendarLoaded) {
                     return TaskList();
                   }
-                  return Text("error state");
+                  return Text("schedule empty");
                 },
               );
             }

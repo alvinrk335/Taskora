@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/model/schedule.dart';
-import 'package:taskora/pages/add_schedule.dart';
+import 'package:taskora/pages/add_days_page.dart';
 // import 'package:taskora/bloc/task_list/task_page_bloc.dart';
 import 'package:taskora/widgets/task_list.dart';
 
@@ -32,7 +32,7 @@ class TaskPage extends StatelessWidget {
                 onPressed:
                     () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddSchedule()),
+                      MaterialPageRoute(builder: (context) => AddDaysPage(),),
                     ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,

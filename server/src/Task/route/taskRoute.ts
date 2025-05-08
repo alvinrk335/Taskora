@@ -81,7 +81,7 @@ taskRouter.post("/translate", async (req, res) => {
               "taskId": same as input,
               "taskName": same as input,
               "estimatedDuration": <estimated duration as number in hours>,
-              "weight": <importance from 1 to 10, can be decimal>,
+              "weight":  <importance as a decimal between 0 and 1>,
               "deadline": same as input
             }
             `;

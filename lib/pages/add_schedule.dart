@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskora/bloc/auth/auth_bloc.dart';
+import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
 import 'package:taskora/bloc/task_priority/task_priority_bloc.dart';
 import 'package:taskora/bloc/task_type/task_type_bloc.dart';
+import 'package:taskora/model/initial_task.dart';
+import 'package:taskora/model/schedule.dart';
+import 'package:taskora/model/task.dart';
+import 'package:taskora/pages/calendar_page.dart';
+import 'package:taskora/repository/schedule_repository.dart';
+import 'package:taskora/repository/task_repository.dart';
+import 'package:taskora/services/optimizer.dart';
 import 'package:taskora/widgets/add_task_body.dart';
 import 'package:taskora/widgets/initial_task_list.dart';
 
@@ -30,6 +40,42 @@ class AddScheduleBody extends StatefulWidget {
 }
 
 class _AddScheduleBodyState extends State<AddScheduleBody> {
+  final scheduleRepo = ScheduleRepository();
+  final taskRepo = TaskRepository();
+
+  Future<Schedule> optimizeTask(BuildContext context) async {
+    final List<InitialTask> tasks = context.read<TaskAddBloc>().state.tasks;
+    final Map<String, double> workingHours =
+        context.read<AvailableDaysBloc>().state.weeklyWorkHours;
+    final List<DateTime> excludedDates =
+        context.read<AvailableDaysBloc>().state.dates;
+    final optimizer = Optimizer(
+      tasks: tasks,
+      excludedDates: excludedDates,
+      workingHours: workingHours,
+    );
+    Schedule schedule = await optimizer.optimize();
+
+    return schedule;
+  }
+
+  Future<void> optimizeAndAdd(BuildContext context) async {
+    final state = context.read<AuthBloc>().state;
+    Schedule schedule = await optimizeTask(context);
+
+    String uid;
+    if (state is LoggedIn) {
+      uid = state.user.uid;
+    } else {
+      uid = "";
+    }
+    await scheduleRepo.addSchedule(schedule, uid);
+
+    for (Task task in schedule.getTasks) {
+      await taskRepo.addTask(task);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,14 +115,32 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                   icon: const Icon(Icons.add),
                 ),
               ),
+              Text("add task"),
             ],
           ),
-          const Expanded(child: InitialTaskList()),
+
+          const InitialTaskList(),
+          const SizedBox(height: 40),
+
+          Row(
+            children: [
+              TextButton(onPressed: () {}, child: Text("Manual Scheduling")),
+              TextButton(
+                onPressed: () {
+                  optimizeAndAdd(context);
+                  Navigator.popUntil(
+                    context,
+                    (route) =>
+                        route.settings.name == null &&
+                        route is MaterialPageRoute &&
+                        route.builder(context) is CalendarPage,
+                  );
+                },
+                child: Text("Automatic Scheduling"),
+              ),
+            ],
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.offline_bolt),
       ),
     );
   }

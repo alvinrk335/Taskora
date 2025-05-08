@@ -162,6 +162,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     context.read<TaskPriorityBloc>().state.priority;
                 final type = context.read<TaskTypeBloc>().state.type;
                 final id = await generateId("task");
+                if (!mounted) return;
                 final newTask = InitialTask(
                   id,
                   Name(nameController.text),
@@ -169,8 +170,11 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                   priority,
                   type,
                 );
-                context.read<TaskAddBloc>().add(TaskAdded(task: newTask));
-                Navigator.pop(context);
+
+                if (mounted) {
+                  context.read<TaskAddBloc>().add(TaskAdded(task: newTask));
+                  Navigator.pop(context);
+                }
               },
               child: const Text("Add"),
             ),

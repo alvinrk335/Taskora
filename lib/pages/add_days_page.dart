@@ -1,0 +1,124 @@
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskora/bloc/available_days/available_days_bloc.dart';
+import 'package:taskora/bloc/available_days/available_days_event.dart';
+import 'package:taskora/bloc/available_days/available_days_state.dart';
+import 'package:taskora/pages/add_schedule.dart';
+import 'package:taskora/widgets/add_available_days_dialog.dart';
+import 'package:taskora/widgets/days_card.dart';
+
+class AddDaysPage extends StatefulWidget {
+  const AddDaysPage({super.key});
+
+  @override
+  State<AddDaysPage> createState() => _AddDaysPageState();
+}
+
+class _AddDaysPageState extends State<AddDaysPage> {
+  DateTime? excludedDay;
+
+  Future<void> _selectDate() async {
+    log("select date reached");
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        excludedDay = picked;
+      });
+      if (mounted) {
+        context.read<AvailableDaysBloc>().add(
+          AddAvailableDate(date: excludedDay ?? DateTime.now()),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back),
+        ),
+      ),
+      body: Column(
+        children: [
+          Row(
+            children: [
+              IconButton(
+                onPressed:
+                    () => showDialog(
+                      context: context,
+                      builder: (_) => AddAvailableDaysDialog(),
+                    ),
+                icon: Icon(Icons.add),
+              ),
+              Center(child: Text("Add your daily working hours")),
+            ],
+          ),
+          BlocBuilder<AvailableDaysBloc, AvailableDaysState>(
+            builder: (daysContext, daysState) {
+              if (daysState.weeklyWorkHours.isNotEmpty) {
+                log("weeklyWorkHours: ${daysState.weeklyWorkHours}");
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      DaysCard(workingHours: daysState.weeklyWorkHours),
+                  
+                      const SizedBox(height: 40),
+                      const Text("Add specific excluded dates (optional)"),
+                  
+                      TextField(
+                        readOnly: true,
+                        onTap: () => _selectDate(),
+                        decoration: const InputDecoration(
+                          labelText: "Excluded Dates",
+                          hintText: "Leave blank if no excluded dates",
+                          suffixIcon: Icon(Icons.calendar_today),
+                        ),
+                      ),
+                  
+                      Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text(
+                          "Dates : \n${daysState.dates.map((e) => e.toString()).join("\n")}",
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                            onPressed:
+                                () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddSchedule(),
+                                  ),
+                                ),
+                            child: Text("next"),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              } else if (daysState.weeklyWorkHours.isEmpty) {
+                return Center(
+                  child: Text("Please add your daily working hours"),
+                );
+              }
+              return Text("error no state");
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

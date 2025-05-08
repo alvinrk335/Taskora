@@ -17,12 +17,21 @@ const repo = new scheduleRepository();
 
 scheduleRouter.post("/optimize", async (req, res)=> {
   try {
-    const listOfTask = req.body.listOfTask; // initialTask
+    const {
+      listOfTask,
+      weeklyWorkingHours,
+      excludedDates,
+      daysToSchedule,
+      workloadThreshold,
+    } = req.body; // initialTask
 
     if (!listOfTask) {
       return res.status(300).json({error: "list of task is required"});
     }
-    const translateResponse = await axios.post("http://localhost:3000/task/translate", {
+    if (!weeklyWorkingHours || !excludedDates || !daysToSchedule || !workloadThreshold) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    const translateResponse = await axios.post("http://localhost:8008/task/translate", {
       listOfTask,
     });
 
@@ -30,8 +39,12 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     if (!translatedTasks || !Array.isArray(translatedTasks)) {
       return res.status(500).json({ error: "Invalid response from translation service" });
     }
-    const optimizeResponse = await axios.post("http://localhost:8001/optimizeSchedule", {
-      translatedTasks,
+    const optimizeResponse = await axios.post("http://localhost:8000/optimizeSchedule", {
+      tasks: translatedTasks,
+      weeklyWorkingHours,
+      excludedDates,
+      daysToSchedule,
+      workloadThreshold
     });
 
     const optimizedData = optimizeResponse.data;//optimizedTask
@@ -93,9 +106,10 @@ scheduleRouter.post("/optimize", async (req, res)=> {
 
     // const lastTask = tasks[tasks.length - 1];
     // const scheduleEnd = lastTask.getDeadline();
+    const scheduleId = await axios.post("http://localhost:3000/id/get?type=schedule");
 
     const schedule = new Schedule({
-      scheduleId: optimizeResponse.data.scheduleId,
+      scheduleId: scheduleId.data,
       tasks: tasks,
       scheduleStart: scheduleStart,
     });

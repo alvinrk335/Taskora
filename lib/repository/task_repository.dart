@@ -4,7 +4,7 @@ import 'package:taskora/model/task.dart';
 
 
 class TaskRepository {
-  final String baseUrl = 'http://localhost:3000';
+  final String baseUrl = 'http://10.2.2.2:3000';
 
   Future<Task?> getTask(String taskId) async {
     final url = Uri.parse('$baseUrl/task/getById?taskId=$taskId');
