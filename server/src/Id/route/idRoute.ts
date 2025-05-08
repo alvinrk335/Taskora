@@ -10,7 +10,7 @@ idRoute.get("/get",async (req, res) => {
             return res.status(400).json({ error: 'Invalid or missing "type" parameter' });
         }
         const newId = await getNewId(type);
-        res.json({ Id: newId });
+        res.status(200).json({ Id: newId });
     } catch (error) {
         console.error(error);
     }

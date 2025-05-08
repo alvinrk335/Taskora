@@ -23,17 +23,20 @@ class Optimizer {
 
   Future<Schedule> optimize() async {
     final url = Uri.parse("$baseUrl/schedule/optimize");
-    
+    final scheduleUrl = Uri.parse("$baseUrl/id/get?type=schedule");
     final tasksJson = tasks.map((task) => task.toJson()).toList();
-    log("input: $tasksJson");
-  
+
+    final scheduleResponse = await http.get(scheduleUrl, headers: header);
+    final scheduleId = jsonDecode(scheduleResponse.body)['data'];
+    log("input: $tasksJson, $scheduleId");
     final response = await http.post(
       url,
       headers: header,
       body: jsonEncode({
+        "scheduleId": scheduleId,
         "listOfTask": tasksJson,
         "weeklyWorkingHours": workingHours,
-        "excludedDays": excludedDates,
+        "excludedDates": excludedDates,
         "daysToSchedule": daysToSchedule,
         "workloadThreshold": threshold,
       }),

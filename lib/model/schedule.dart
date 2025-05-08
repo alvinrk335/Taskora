@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'task.dart'; // Pastikan file ini berisi class Task yang sudah kita buat sebelumnya
 
@@ -27,8 +29,13 @@ class Schedule {
   }
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
+    if (json.isEmpty || json['tasks'] == null || json['scheduleId'] == null) {
+      log("⚠️ JSON is invalid or error: $json");
+      throw Exception("Invalid schedule data");
+    }
     return Schedule(
-      scheduleId: json['scheduleId'],
+      scheduleId: json['scheduleId'] ?? '',
+
       tasks: (json['tasks'] as List).map((e) => Task.fromJson(e)).toList(),
       scheduleStart:
           json['scheduleStart'] != null

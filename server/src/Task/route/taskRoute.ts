@@ -57,7 +57,7 @@ taskRouter.put("/edit", async (req, res) => {
 });
 
 taskRouter.post("/translate", async (req, res) => {
-  const { listOfTask } = req.body;
+  const listOfTask  = req.body.listOfTask;
 
   if (!Array.isArray(listOfTask)) {
     return res.status(400).json({ error: "listOfTask must be an array" });
@@ -68,7 +68,7 @@ taskRouter.post("/translate", async (req, res) => {
       listOfTask.map(async (task) => {
         const prompt = `
             I am making an optimized schedule using linear programming with some constraints.
-            Please translate this natural language input:
+            Please translate this natural language input, with all of the field nullable:
             - taskId: ${task.taskId}
             - taskName: ${task.taskName}
             - description: ${task.description}
@@ -86,11 +86,11 @@ taskRouter.post("/translate", async (req, res) => {
             }
             `;
 
-        const response = await axios.post("http://127.0.0.1:8000/ask-gemini", {
+        const response = await axios.post("http://127.0.0.1:8008/ask-gemini", {
           prompt,
         });
 
-        return response.data.response; // Harus JSON-parsable
+        return response.data.translatedTask; // Harus JSON-parsable
       })
     );
 

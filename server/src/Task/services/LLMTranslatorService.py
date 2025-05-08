@@ -19,4 +19,4 @@ class Prompt(BaseModel):
 @app.post('/ask-gemini')
 def generateResponse(req: Prompt):
     response = model.generate_content(req.prompt)
-    return {"response": response.text}
+    return {"translatedTasks": response.text}

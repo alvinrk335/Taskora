@@ -18,6 +18,7 @@ const repo = new scheduleRepository();
 scheduleRouter.post("/optimize", async (req, res)=> {
   try {
     const {
+      scheduleId,
       listOfTask,
       weeklyWorkingHours,
       excludedDates,
@@ -25,13 +26,10 @@ scheduleRouter.post("/optimize", async (req, res)=> {
       workloadThreshold,
     } = req.body; // initialTask
 
-    if (!listOfTask) {
-      return res.status(300).json({error: "list of task is required"});
-    }
-    if (!weeklyWorkingHours || !excludedDates || !daysToSchedule || !workloadThreshold) {
+    if (!weeklyWorkingHours || !excludedDates || !daysToSchedule || !workloadThreshold || !listOfTask) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    const translateResponse = await axios.post("http://localhost:8008/task/translate", {
+    const translateResponse = await axios.post("http://localhost:3000/task/translate", {
       listOfTask,
     });
 
@@ -39,7 +37,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     if (!translatedTasks || !Array.isArray(translatedTasks)) {
       return res.status(500).json({ error: "Invalid response from translation service" });
     }
-    const optimizeResponse = await axios.post("http://localhost:8000/optimizeSchedule", {
+    const optimizeResponse = await axios.post("http://127.0.0.1:8000/optimizeSchedule", {
       tasks: translatedTasks,
       weeklyWorkingHours,
       excludedDates,
@@ -72,7 +70,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
       )
     );
     
-    const optimizedTasksModel: optimizedTask[] = optimizeResponse.data.tasks.map((task: any) => 
+    const optimizedTasksModel: optimizedTask[] = optimizedData.tasks.map((task: any) => 
       optimizedTask.fromJSON(task)
     );
 
@@ -106,10 +104,9 @@ scheduleRouter.post("/optimize", async (req, res)=> {
 
     // const lastTask = tasks[tasks.length - 1];
     // const scheduleEnd = lastTask.getDeadline();
-    const scheduleId = await axios.post("http://localhost:3000/id/get?type=schedule");
     console.log(scheduleId)
     const schedule = new Schedule({
-      scheduleId: scheduleId.data,
+      scheduleId: scheduleId,
       tasks: tasks,
       scheduleStart: scheduleStart,
     });
