@@ -69,6 +69,7 @@ class Schedule {
       scheduleEnd: this.scheduleEnd?.toDate().toISOString(), // Optional chaining untuk handle undefined
     };
   }
+  
 
   // Static method untuk membuat objek Schedule dari JSON
   public static fromJSON(data: any): Schedule {

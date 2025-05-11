@@ -9,20 +9,32 @@ export default class initialTask {
         private description: Description,
         private priority: number,
         private type: taskType,
-        // private preferredDays?: Date[],
-        private deadline?: Date,
+        private deadline?: Date | string,
   ) {}
 
   public toJSON() {
     return {
       taskId: this.taskId,
       taskName: this.taskName,
-      deadline: this.deadline ? this.deadline.toISOString() : null,
+      deadline: this.deadline ? typeof this.deadline == "string" ? new Date(this.deadline).toISOString() : this.deadline.toISOString() :null,
       priority: this.priority,
       description: this.description,
       taskType: this.type,
     };
+  }  
+  // From JSON method
+  public static fromJSON(json: any): initialTask {
+    // Convert the properties from JSON back to class instances
+    return new initialTask(
+      json.taskId,
+      Name.fromString(json.taskName), 
+      Description.fromString(json.description),
+      json.priority,
+      taskType.fromString(json.taskType), 
+      json.deadline ? new Date(json.deadline) : undefined
+    );
   }
+  
   // Getter dan Setter untuk taskId
   public getTaskId(): string {
     return this.taskId;
@@ -69,12 +81,20 @@ export default class initialTask {
   }
 
   // Getter dan Setter untuk deadline
-  public getDeadline(): Date | undefined {
+  public getDeadline(): Date | string | undefined {
     return this.deadline;
   }
 
   public setDeadline(deadline: Date | undefined): void {
     this.deadline = deadline;
+  }
+    public changeDateFormat(format : "date" | "string"): void{
+    if(format == "string"){
+      this.deadline = this.deadline instanceof Date ? new Date(this.deadline).toISOString() : this.deadline ;
+    }
+    else{
+      this.deadline = typeof this.deadline === "string"? new Date(this.deadline) : this.deadline;
+    }
   }
 
   // public setPreferredDays(days: Date[]): void {

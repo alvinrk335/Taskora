@@ -6,6 +6,7 @@ import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_event.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:taskora/widgets/calendar_widget.dart';
 
 class Calendar extends StatelessWidget {
   const Calendar({super.key});
@@ -25,20 +26,7 @@ class Calendar extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Center(
-                      child: TableCalendar(
-                        focusedDay: DateTime.now(),
-                        firstDay: DateTime(
-                          DateTime.now().year,
-                          DateTime.now().month,
-                          1,
-                        ),
-                        lastDay: DateTime(
-                          DateTime.now().year,
-                          DateTime.now().month + 1,
-                          0,
-                        ),
-                        eventLoader: (day) => events[day] ?? [],
-                      ),
+                      child: CalendarWidget(events: events),
                     ),
                   );
                 } else {

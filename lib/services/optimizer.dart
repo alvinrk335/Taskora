@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:taskora/model/initial_task.dart';
 import 'package:http/http.dart' as http;
 import 'package:taskora/model/schedule.dart';
+import 'package:taskora/services/id_generator.dart';
 
 class Optimizer {
   final List<InitialTask> tasks;
@@ -23,26 +24,23 @@ class Optimizer {
 
   Future<Schedule> optimize() async {
     final url = Uri.parse("$baseUrl/schedule/optimize");
-    final scheduleUrl = Uri.parse("$baseUrl/id/get?type=schedule");
+    final scheduleId = await generateId("schedule");
     final tasksJson = tasks.map((task) => task.toJson()).toList();
-
-    final scheduleResponse = await http.get(scheduleUrl, headers: header);
-    final scheduleId = jsonDecode(scheduleResponse.body)['data'];
-    log("input: $tasksJson, $scheduleId");
-    final response = await http.post(
-      url,
-      headers: header,
-      body: jsonEncode({
-        "scheduleId": scheduleId,
-        "listOfTask": tasksJson,
-        "weeklyWorkingHours": workingHours,
-        "excludedDates": excludedDates,
-        "daysToSchedule": daysToSchedule,
-        "workloadThreshold": threshold,
-      }),
-    );
+    final bodyJson = jsonEncode({
+      "scheduleId": scheduleId,
+      "listOfTask": tasksJson,
+      "weeklyWorkingHours": workingHours,
+      "excludedDates": excludedDates,
+      "daysToSchedule": daysToSchedule,
+      "workloadThreshold": threshold,
+    });
+    log(bodyJson);
+    final response = await http.post(url, headers: header, body: bodyJson);
 
     log("response from $url: ${response.body}");
+    if (response.statusCode != 200) {
+      log("error ${response.statusCode}");
+    }
     return Schedule.fromJson(jsonDecode(response.body));
   }
 }

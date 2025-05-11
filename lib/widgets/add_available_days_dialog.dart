@@ -35,13 +35,13 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
 
   Map<String, double> getWorkingHoursData() {
     return {
-      "monday": double.tryParse(mondayController.text) ?? 0,
-      "tuesday": double.tryParse(tuesdayController.text) ?? 0,
-      "wednesday": double.tryParse(wednesdayController.text) ?? 0,
-      "thursday": double.tryParse(thursdayController.text) ?? 0,
-      "friday": double.tryParse(fridayController.text) ?? 0,
-      "saturday": double.tryParse(saturdayController.text) ?? 0,
-      "sunday": double.tryParse(sundayController.text) ?? 0,
+      "Monday": double.tryParse(mondayController.text) ?? 0,
+      "Tuesday": double.tryParse(tuesdayController.text) ?? 0,
+      "Wednesday": double.tryParse(wednesdayController.text) ?? 0,
+      "Thursday": double.tryParse(thursdayController.text) ?? 0,
+      "Friday": double.tryParse(fridayController.text) ?? 0,
+      "Saturday": double.tryParse(saturdayController.text) ?? 0,
+      "Sunday": double.tryParse(sundayController.text) ?? 0,
     };
   }
 

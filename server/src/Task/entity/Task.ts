@@ -11,7 +11,7 @@ export default class Task {
   private priority: number;
   private type: taskType;
   // private preferredDays: Date[];
-  private deadline: Date;
+  private deadline? : Date | string;
   private weight: number;
   private createdAt: Timestamp;
   private updatedAt: Timestamp;
@@ -96,7 +96,7 @@ export default class Task {
       priority: this.priority,
       type: this.type.toString(),
       // preferredDays: this.preferredDays.map((date) => date.toISOString()),
-      deadline: this.deadline.toISOString(),
+      deadline: this.deadline? this.deadline instanceof Date ? this.deadline.toISOString() : new Date(this.deadline).toISOString() : undefined,
       estimatedDuration: this.estimatedDuration?.toNumber() ?? 0,
       weight: this.weight,
       createdAt: this.createdAt.toDate(),
@@ -154,7 +154,7 @@ export default class Task {
   //   this.preferredDays = preferredDays;
   // }
 
-  public getDeadline(): Date {
+  public getDeadline(): Date | string | undefined{
     return this.deadline;
   }
 

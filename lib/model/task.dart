@@ -11,7 +11,6 @@ class Task {
   Description description;
   int priority;
   TaskType type;
-  List<DateTime> preferredDays;
   DateTime? deadline;
   double weight;
   Timestamp createdAt;
@@ -25,7 +24,6 @@ class Task {
     required this.description,
     required this.priority,
     required this.type,
-    required this.preferredDays,
     required this.deadline,
     required this.weight,
     required this.createdAt,
@@ -52,10 +50,6 @@ class Task {
       description: Description.fromString(json['description']),
       priority: json['priority'],
       type: TaskType.fromString(json['type']),
-      preferredDays:
-          (json['preferredDays'] as List)
-              .map((d) => DateTime.parse(d))
-              .toList(),
       deadline: DateTime.parse(json['deadline']),
       weight: json['weight'].toDouble(),
       createdAt: Timestamp.fromDate(
@@ -83,8 +77,7 @@ class Task {
       'description': description.toString(),
       'priority': priority,
       'type': type.toString(),
-      'preferredDays': preferredDays.map((e) => e.toIso8601String()).toList(),
-      'deadline': deadline?.toIso8601String() ?? "No deadline" ,
+      'deadline': deadline?.toIso8601String() ?? "No deadline",
       'estimatedDuration': estimatedDuration?.toNumber() ?? 0,
       'weight': weight,
       'createdAt': createdAt.toDate().toIso8601String(),
@@ -118,13 +111,13 @@ class Task {
         .join(', ');
 
     return '''
-Task ID: $taskId
-Name: ${taskName.name}
-Deadline: $deadlineStr
-Type: ${type.toString().split('.').last}
-Priority: $priority
-Workload: $workloadStr
-Description: ${description.value}
-''';
+          Task ID: $taskId
+          Name: ${taskName.name}
+          Deadline: $deadlineStr
+          Type: ${type.toString().split('.').last}
+          Priority: $priority
+          Workload: $workloadStr
+          Description: ${description.value}
+          ''';
   }
 }

@@ -11,12 +11,16 @@ import Duration from "../../Task/entity/value_object/Duration";
 import optimizedTask from "../../Task/entity/optimizedTask";
 import TranslatedTask from "../../Task/entity/translatedTask";
 import initialTask from "../../Task/entity/initialTask";
+import translateTasks from "../services/translateTask";
 
 const scheduleRouter = Router();
 const repo = new scheduleRepository();
 
+
+
 scheduleRouter.post("/optimize", async (req, res)=> {
   try {
+    console.log(`input received: ${JSON.stringify(req.body, null, 2)}`)
     const {
       scheduleId,
       listOfTask,
@@ -29,15 +33,30 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     if (!weeklyWorkingHours || !excludedDates || !daysToSchedule || !workloadThreshold || !listOfTask) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    const translateResponse = await axios.post("http://localhost:3000/task/translate", {
-      listOfTask,
+    const listInitialTask = listOfTask.map((task: any) => {
+      const taskInstance = initialTask.fromJSON(task); 
+      taskInstance.changeDateFormat("string");
+      return taskInstance;
     });
+    console.log(`input sent to llm service ${JSON.stringify(listInitialTask, null, 2)}`)
 
-    const translatedTasks = translateResponse.data.translatedTasks;//translatedTask
+    const translateResponse = await translateTasks(listInitialTask);
+
+
+    const translatedTasks = translateResponse//translatedTask
     if (!translatedTasks || !Array.isArray(translatedTasks)) {
       return res.status(500).json({ error: "Invalid response from translation service" });
     }
-    const optimizeResponse = await axios.post("http://127.0.0.1:8000/optimizeSchedule", {
+
+    console.log("input to optimizer service:", JSON.stringify({
+      tasks: translatedTasks,
+      weeklyWorkingHours,
+      excludedDates,
+      daysToSchedule,
+      workloadThreshold
+    }, null, 2));
+
+    const optimizeResponse = await axios.post("http://optimizer:8000/optimizeSchedule", {
       tasks: translatedTasks,
       weeklyWorkingHours,
       excludedDates,
@@ -66,7 +85,6 @@ scheduleRouter.post("/optimize", async (req, res)=> {
         Duration.fromNumber(task.estimatedDuration),
         task.weight,
         new Date(task.deadline),
-        // (task.preferredDays ?? []).map((d: string) => new Date(d))
       )
     );
     
@@ -87,10 +105,10 @@ scheduleRouter.post("/optimize", async (req, res)=> {
         taskId: taskId,
         taskName: opt.getTaskName(), 
         description: initial.getDescription(),
-        priority: initial.getPriority(),
+        priority: initial.getPriority(),  
         type: initial.getType(),
         // preferredDays: translated.getPreferredDays(),
-        deadline: translated.getDeadline(),
+        deadline: translated.getDeadline() as Date,
         weight: translated.getWeight(),
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -100,7 +118,18 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     });
 
     const scheduleStart = Timestamp.now();
-    tasks.sort((a: Task, b: Task) => a.getDeadline().getTime() - b.getDeadline().getTime());
+    tasks.sort((a: Task, b: Task) =>  {
+      const aDeadline = a.getDeadline();
+      const bDeadline = b.getDeadline();
+
+      if(!aDeadline && !bDeadline) return 0;
+      if(!aDeadline) return 1;
+      if(!bDeadline) return -1;
+
+      return new Date(aDeadline).getTime() - new Date(bDeadline).getTime();
+    }
+
+    );
 
     // const lastTask = tasks[tasks.length - 1];
     // const scheduleEnd = lastTask.getDeadline();

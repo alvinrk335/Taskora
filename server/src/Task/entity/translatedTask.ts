@@ -7,7 +7,7 @@ export default class TranslatedTask {
         private taskName: Name,
         private estimatedDuration: Duration,
         private weight: number,
-        private deadline: Date,
+        private deadline?: Date | string,
         // private preferredDays?: Date[]
   ) {}
 
@@ -16,7 +16,7 @@ export default class TranslatedTask {
       taskId: this.taskId,
       estimatedDuration: this.estimatedDuration,
       weight: this.weight,
-      deadline: this.deadline.toISOString(),
+      deadline: this.deadline? this.deadline instanceof Date ? this.deadline.toISOString() : new Date(this.deadline).toISOString() : undefined,
       // preferredDays: (this.preferredDays ?? []).map((date) => date.toISOString()),
     };
   }
@@ -48,7 +48,7 @@ export default class TranslatedTask {
   }
 
   // Getter and Setter for deadline
-  public getDeadline(): Date {
+  public getDeadline(): Date | string | undefined{
     return this.deadline;
   }
 
@@ -71,5 +71,13 @@ export default class TranslatedTask {
 
   public setName(name: Name): void {
     this.taskName = name;
+  }
+  public changeDateFormat(format : "date" | "string"): void{
+    if(format == "string"){
+      this.deadline = this.deadline instanceof Date ? new Date(this.deadline).toISOString() : this.deadline ;
+    }
+    else{
+      this.deadline = typeof this.deadline === "string"? new Date(this.deadline) : this.deadline;
+    }
   }
 }

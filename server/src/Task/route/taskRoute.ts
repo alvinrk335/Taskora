@@ -1,7 +1,7 @@
 import {Router} from "express";
 import taskRepository from "../repository/taskRepository";
-import axios from "axios";
 import Task from "../entity/Task";
+import translateTasks from "../../Schedule/services/translateTask";
 
 const repo = new taskRepository();
 const taskRouter = Router();
@@ -27,7 +27,7 @@ taskRouter.get("/getById", async (req, res) =>{
 
 taskRouter.post("/add", async (req, res) => {
   try {
-    const task = req.body;
+    const task = req.body.task;
     const repoTask = Task.fromJSON(task);
     await repo.addTask(repoTask);
     res.status(201).json({message: "Task added successfully", task: repoTask.toJSON()});
@@ -57,43 +57,10 @@ taskRouter.put("/edit", async (req, res) => {
 });
 
 taskRouter.post("/translate", async (req, res) => {
-  const listOfTask  = req.body.listOfTask;
-
-  if (!Array.isArray(listOfTask)) {
-    return res.status(400).json({ error: "listOfTask must be an array" });
-  }
+  const listOfTask = req.body.listOfTask;
 
   try {
-    const translatedTasks = await Promise.all(
-      listOfTask.map(async (task) => {
-        const prompt = `
-            I am making an optimized schedule using linear programming with some constraints.
-            Please translate this natural language input, with all of the field nullable:
-            - taskId: ${task.taskId}
-            - taskName: ${task.taskName}
-            - description: ${task.description}
-            - priority: ${task.priority}
-            - taskType: ${task.type}
-            - deadline: ${task.deadline}
-
-            Into this JSON format:
-            {
-              "taskId": same as input,
-              "taskName": same as input,
-              "estimatedDuration": <estimated duration as number in hours>,
-              "weight":  <importance as a decimal between 0 and 1>,
-              "deadline": same as input
-            }
-            `;
-
-        const response = await axios.post("http://127.0.0.1:8008/ask-gemini", {
-          prompt,
-        });
-
-        return response.data.translatedTask; // Harus JSON-parsable
-      })
-    );
-
+    const translatedTasks = await translateTasks(listOfTask);
     return res.json({ translatedTasks });
   } catch (error) {
     console.error(error);

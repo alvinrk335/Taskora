@@ -13,9 +13,4 @@ app.use("/task", taskRouter);
 app.use("/schedule", scheduleRouter);
 app.use("/id", idRoute)
 
-const PORT = process.env.PORT || 3000;  // default ke 3000 jika environment variable PORT tidak ada
-
-// Menjalankan server pada port yang ditentukan
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+export default app;

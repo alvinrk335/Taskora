@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:taskora/model/task.dart';
 
-
 class TaskRepository {
-  final String baseUrl = 'http://10.2.2.2:3000';
+  final String baseUrl = 'http://10.0.2.2:3000';
 
   Future<Task?> getTask(String taskId) async {
     final url = Uri.parse('$baseUrl/task/getById?taskId=$taskId');
@@ -21,16 +21,16 @@ class TaskRepository {
     }
   }
 
-
   Future<void> addTask(Task task) async {
     final url = Uri.parse('$baseUrl/task/add');
+    log("sending requet to add task ${task.taskId} into $url");
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(task.toJson()),
     );
-
-    if (response.statusCode != 201) {
+    log("response from $url: ${response.body}");
+    if (response.statusCode != 200) {
       throw Exception('Failed to add task');
     }
   }
@@ -40,9 +40,7 @@ class TaskRepository {
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        "task": data.toJson(),
-      }), 
+      body: jsonEncode({"task": data.toJson()}),
     );
 
     if (response.statusCode != 200) {

@@ -29,6 +29,7 @@ class Schedule {
   }
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
+    log("input: ${json.toString()}");
     if (json.isEmpty || json['tasks'] == null || json['scheduleId'] == null) {
       log("⚠️ JSON is invalid or error: $json");
       throw Exception("Invalid schedule data");

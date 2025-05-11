@@ -1,31 +1,45 @@
 from typing import Dict, List
 from datetime import datetime, timedelta
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from fastapi import FastAPI
+import dateutil.parser
 import calendar
+import logging
 import pulp
 
 app = FastAPI()
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class TaskInput(BaseModel):
     taskId: str
     taskName: str
-    estimatedDuration: float
+    estimatedDuration: float  # Input in minutes, will be converted to hours
     weight: float
-    deadline: str  # ISO format
-    preferredDays: List[str] = []
+    deadline: datetime
+
+    @field_validator('deadline', mode='before')
+    @classmethod
+    def parse_deadline(cls, value):
+        if isinstance(value, datetime):
+            return value
+        try:
+            return dateutil.parser.parse(value)
+        except Exception as e:
+            raise ValueError(f"Invalid datetime format: {value}") from e
 
 class ScheduleRequest(BaseModel):
     daysToSchedule: int
-    weeklyWorkHours: Dict[str, float]
-    excludedDates: List[str] = []
+    weeklyWorkingHours: Dict[str, float]  # Input in minutes
+    excludedDates: List[datetime] = []
     tasks: List[TaskInput]
-    workloadThreshold: float
+    workloadThreshold: float  # Input in minutes
 
 class OptimizedTask(BaseModel):
     taskId: str
     taskName: str
-    workload: Dict[str, float]
+    workload: Dict[str, float]  # Output in minutes
 
 class ScheduleResponse(BaseModel):
     tasks: List[OptimizedTask]
@@ -43,80 +57,86 @@ def generate_available_time(start_date: datetime, days: int, weekly_hours: Dict[
 @app.post("/optimizeSchedule", response_model=ScheduleResponse)
 def optimize_schedule(schedule: ScheduleRequest):
     today = datetime.now().date()
-    availableTime = generate_available_time(today, schedule.daysToSchedule, schedule.weeklyWorkHours, schedule.excludedDates)
+    logger.info("Received schedule request with %d tasks", len(schedule.tasks))
+
+    # Convert inputs from minutes to hours
+    for task in schedule.tasks:
+        task.estimatedDuration /= 60.0  # minutes → hours
+
+    availableTime = generate_available_time(today, schedule.daysToSchedule, schedule.weeklyWorkingHours, [d.strftime('%Y-%m-%d') for d in schedule.excludedDates])
+    logger.info("Generated available time slots for %d days", len(availableTime))
+
     days = list(availableTime.keys())
     tasks = schedule.tasks
 
     prob = pulp.LpProblem("Task_Scheduling", pulp.LpMaximize)
+    logger.info("Initialized LP problem")
 
-    # Variabel x: alokasi waktu untuk tiap task di tiap hari
     x = {
         task.taskId: {
-            day: pulp.LpVariable(f"x_{task.taskId}_{day}", lowBound=0, cat='Continuous')
-            for day in days if not task.preferredDays or day in task.preferredDays
+            day: pulp.LpVariable(f"x_{task.taskId}_{day}", lowBound=0, cat='Continuous') for day in days
         }
         for task in tasks
     }
 
-    # Workload harian
     A = {day: pulp.LpVariable(f"A_{day}", lowBound=0, cat='Continuous') for day in days}
+    Ad = {day: pulp.LpVariable(f"Ad_{day}", lowBound=0, cat='Continuous') for day in days}
+    Yd = {day: pulp.LpVariable(f"Y_{day}", cat='Binary') for day in days}
+    cumulative_workload = {day: pulp.LpVariable(f"C_{day}", lowBound=0, cat='Continuous') for day in days}
 
-    # Akumulasi workload hingga hari ke-d
-    C = {day: pulp.LpVariable(f"C_{day}", lowBound=0, cat='Continuous') for day in days}
-
-    # Break day flag (binary)
-    b = {day: pulp.LpVariable(f"b_{day}", cat='Binary') for day in days}
-
-    # Objektif: Maksimalkan bobot * kedekatan deadline
+    # Objective
     objective_terms = []
     for task in tasks:
-        deadline = datetime.fromisoformat(task.deadline).date()
+        deadline = task.deadline.date()
         for day in x[task.taskId]:
             d_date = datetime.fromisoformat(day).date()
-            days_to_deadline = (deadline - d_date).days
-            Wd = 1 / (1 + max(0, days_to_deadline))
+            Wd = 1 / (1 + max(0, (deadline - d_date).days))
             objective_terms.append(x[task.taskId][day] * Wd * task.weight)
 
-    # Penalti untuk break day (opsional)
-    BREAK_PENALTY = 10
-    prob += pulp.lpSum(objective_terms) - BREAK_PENALTY * pulp.lpSum(b.values())
+    lambda_penalty = 200
+    prob += pulp.lpSum(objective_terms) - lambda_penalty * pulp.lpSum(Yd[day] for day in days)
 
-    # Constraint: durasi total tiap task
+    # Constraints
     for task in tasks:
-        prob += pulp.lpSum(x[task.taskId].values()) == task.estimatedDuration, f"Duration_{task.taskId}"
+        prob += pulp.lpSum(x[task.taskId].values()) == task.estimatedDuration
+        for day in days:
+            if day > task.deadline.strftime('%Y-%m-%d'):
+                if day in x[task.taskId]:
+                    prob += x[task.taskId][day] == 0
 
-    # Constraint: batas waktu per hari
     for day in days:
-        prob += pulp.lpSum(
-            x[task.taskId].get(day, 0) for task in tasks
-        ) <= availableTime[day], f"TimeLimit_{day}"
+        prob += pulp.lpSum(x[task.taskId].get(day, 0) for task in tasks) <= availableTime[day]
 
-    # Workload harian A[day]
     for day in days:
         prob += A[day] == pulp.lpSum(
             x[task.taskId].get(day, 0) * task.weight for task in tasks
-        ), f"Workload_{day}"
+        )
 
-    # Akumulasi workload C[day]
-    prob += C[days[0]] == A[days[0]], f"Accumulate_{days[0]}"
-    for i in range(1, len(days)):
-        prev_day = days[i - 1]
-        curr_day = days[i]
-        prob += C[curr_day] == C[prev_day] + A[curr_day], f"Accumulate_{curr_day}"
+    M = 1000
 
-    # Break day aktif jika akumulasi workload melewati threshold
-    big_M = 1000
+    for i, day in enumerate(days):
+        if i == 0:
+            prob += cumulative_workload[day] == A[day]
+        else:
+            prev_day = days[i - 1]
+            prob += cumulative_workload[day] == cumulative_workload[prev_day] + A[day]
+
     for day in days:
-        prob += C[day] <= schedule.workloadThreshold + big_M * b[day], f"ThresholdWithBreak_{day}"
+        prob += cumulative_workload[day] - schedule.workloadThreshold <= M * Yd[day]
+        prob += cumulative_workload[day] - schedule.workloadThreshold >= 1 - M * (1 - Yd[day])
+        prob += pulp.lpSum(x[task.taskId].get(day, 0) for task in tasks) <= (1 - Yd[day]) * 1000
+        prob += cumulative_workload[day] <= M * (1 - Yd[day])
 
-    # Solve
+    logger.info("Solving LP problem...")
     prob.solve()
+    logger.info("Solved LP with status: %s", pulp.LpStatus[prob.status])
 
     result_tasks = []
     for task in tasks:
         workload = {
-            day: float(pulp.value(x[task.taskId][day]))
-            for day in x[task.taskId] if pulp.value(x[task.taskId][day]) and pulp.value(x[task.taskId][day]) > 0
+            day: round(float(pulp.value(x[task.taskId][day])), 2)
+            for day in x[task.taskId]
+            if pulp.value(x[task.taskId][day]) and pulp.value(x[task.taskId][day]) > 0
         }
         result_tasks.append(OptimizedTask(taskId=task.taskId, taskName=task.taskName, workload=workload))
 

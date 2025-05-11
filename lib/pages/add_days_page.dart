@@ -27,6 +27,9 @@ class _AddDaysPageState extends State<AddDaysPage> {
       firstDate: DateTime(2025),
       lastDate: DateTime(2100),
     );
+
+
+    
     if (picked != null) {
       setState(() {
         excludedDay = picked;
@@ -39,6 +42,8 @@ class _AddDaysPageState extends State<AddDaysPage> {
     }
   }
 
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,17 +74,17 @@ class _AddDaysPageState extends State<AddDaysPage> {
                 log("weeklyWorkHours: ${daysState.weeklyWorkHours}");
                 return SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DaysCard(workingHours: daysState.weeklyWorkHours),
                   
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 70),
                       const Text("Add specific excluded dates (optional)"),
-                  
+                      const SizedBox(height: 30),
                       TextField(
                         readOnly: true,
                         onTap: () => _selectDate(),
                         decoration: const InputDecoration(
-                          labelText: "Excluded Dates",
                           hintText: "Leave blank if no excluded dates",
                           suffixIcon: Icon(Icons.calendar_today),
                         ),
