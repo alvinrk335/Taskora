@@ -23,7 +23,7 @@ def generateResponse(req: Prompt):
             model="gemini-2.0-flash", contents=req.prompt
         )
         print(f"response from model : {response.text}")
-        return {"translatedTasks": response.text}
+        return {"response": response.text}
     except Exception as e:
         print("🔥 Gemini API error:", e)
         return {"error": "Failed to translate tasks"}, 500

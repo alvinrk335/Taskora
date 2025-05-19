@@ -37,6 +37,10 @@ export default class UserRepository implements UserRepo {
   }
   async addUser(user: User): Promise<void> {
     try {
+      const userExist = await this.findUser(user.getUid);
+      if(userExist){
+        return;
+      }
       const handler = user.toHandler();
       const data = handler.toFirestore();
       await this.userCollection.doc(user.getUid).set(data);

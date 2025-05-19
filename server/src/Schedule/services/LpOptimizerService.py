@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel, field_validator
 from fastapi import FastAPI
@@ -17,11 +17,13 @@ class TaskInput(BaseModel):
     taskName: str
     estimatedDuration: float  # Input in minutes, will be converted to hours
     weight: float
-    deadline: datetime
+    deadline: Optional[datetime] = None  # Bisa None
 
     @field_validator('deadline', mode='before')
     @classmethod
     def parse_deadline(cls, value):
+        if value is None:
+            return None
         if isinstance(value, datetime):
             return value
         try:
@@ -31,10 +33,11 @@ class TaskInput(BaseModel):
 
 class ScheduleRequest(BaseModel):
     daysToSchedule: int
-    weeklyWorkingHours: Dict[str, float]  # Input in minutes
+    weeklyWorkingHours: Dict[str, float]  # Input in minutes per day name
     excludedDates: List[datetime] = []
     tasks: List[TaskInput]
     workloadThreshold: float  # Input in minutes
+
 
 class OptimizedTask(BaseModel):
     taskId: str
@@ -59,9 +62,9 @@ def optimize_schedule(schedule: ScheduleRequest):
     today = datetime.now().date()
     logger.info("Received schedule request with %d tasks", len(schedule.tasks))
 
-    # Convert inputs from minutes to hours
+    # Convert estimatedDuration dari menit ke jam
     for task in schedule.tasks:
-        task.estimatedDuration /= 60.0  # minutes → hours
+        task.estimatedDuration /= 60.0  # menit → jam
 
     availableTime = generate_available_time(today, schedule.daysToSchedule, schedule.weeklyWorkingHours, [d.strftime('%Y-%m-%d') for d in schedule.excludedDates])
     logger.info("Generated available time slots for %d days", len(availableTime))
@@ -80,17 +83,16 @@ def optimize_schedule(schedule: ScheduleRequest):
     }
 
     A = {day: pulp.LpVariable(f"A_{day}", lowBound=0, cat='Continuous') for day in days}
-    Ad = {day: pulp.LpVariable(f"Ad_{day}", lowBound=0, cat='Continuous') for day in days}
     Yd = {day: pulp.LpVariable(f"Y_{day}", cat='Binary') for day in days}
     cumulative_workload = {day: pulp.LpVariable(f"C_{day}", lowBound=0, cat='Continuous') for day in days}
 
     # Objective
     objective_terms = []
     for task in tasks:
-        deadline = task.deadline.date()
+        deadline = task.deadline.date() if task.deadline else None
         for day in x[task.taskId]:
             d_date = datetime.fromisoformat(day).date()
-            Wd = 1 / (1 + max(0, (deadline - d_date).days))
+            Wd = 1 / (1 + max(0, (deadline - d_date).days)) if deadline else 1.0
             objective_terms.append(x[task.taskId][day] * Wd * task.weight)
 
     lambda_penalty = 200
@@ -99,9 +101,9 @@ def optimize_schedule(schedule: ScheduleRequest):
     # Constraints
     for task in tasks:
         prob += pulp.lpSum(x[task.taskId].values()) == task.estimatedDuration
-        for day in days:
-            if day > task.deadline.strftime('%Y-%m-%d'):
-                if day in x[task.taskId]:
+        if task.deadline:
+            for day in days:
+                if day > task.deadline.strftime('%Y-%m-%d'):
                     prob += x[task.taskId][day] == 0
 
     for day in days:
@@ -122,8 +124,11 @@ def optimize_schedule(schedule: ScheduleRequest):
             prob += cumulative_workload[day] == cumulative_workload[prev_day] + A[day]
 
     for day in days:
+        # Jika workload > threshold, Yd[day] == 1, jika tidak 0
         prob += cumulative_workload[day] - schedule.workloadThreshold <= M * Yd[day]
         prob += cumulative_workload[day] - schedule.workloadThreshold >= 1 - M * (1 - Yd[day])
+
+        # Jika Yd[day] == 1 (break day), maka workload hari itu 0
         prob += pulp.lpSum(x[task.taskId].get(day, 0) for task in tasks) <= (1 - Yd[day]) * 1000
         prob += cumulative_workload[day] <= M * (1 - Yd[day])
 
@@ -134,7 +139,7 @@ def optimize_schedule(schedule: ScheduleRequest):
     result_tasks = []
     for task in tasks:
         workload = {
-            day: round(float(pulp.value(x[task.taskId][day])), 2)
+            day: round(float(pulp.value(x[task.taskId][day])), 2)  # convert back ke menit
             for day in x[task.taskId]
             if pulp.value(x[task.taskId][day]) and pulp.value(x[task.taskId][day]) > 0
         }

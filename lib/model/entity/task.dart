@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:taskora/model/description.dart';
-import 'package:taskora/model/duration.dart';
-import 'package:taskora/model/name.dart';
-import 'package:taskora/model/tasktype.dart';
+import 'package:taskora/model/value%20object/description.dart';
+import 'package:taskora/model/value%20object/duration.dart';
+import 'package:taskora/model/value%20object/name.dart';
+import 'package:taskora/model/value%20object/tasktype.dart';
 
 class Task {
   final String taskId;
@@ -98,26 +98,58 @@ class Task {
     workload[date] = duration;
   }
 
+  String toShortSummaryStringS() {
+    final deadlineStr =
+        deadline != null
+            ? DateFormat('yyyy-MM-dd').format(deadline!)
+            : 'No deadline';
+    // final workloadStr = workload.entries
+    //     .map((e) {
+    //       final dateStr = DateFormat('yyyy-MM-dd').format(e.key);
+    //       return '$dateStr: ${e.value}';
+    //     })
+    //     .join(', ');
+
+    return '''
+    Deadline: $deadlineStr
+    Description: ${description.value}
+    Type: ${type.toString().split('.').last}
+    Priority: $priority
+          ''';
+  }
+
   String toSummaryString() {
     final deadlineStr =
         deadline != null
             ? DateFormat('yyyy-MM-dd').format(deadline!)
             : 'No deadline';
+
+    final estDurationStr =
+        estimatedDuration != null
+            ? '${estimatedDuration!.toNumber()} mins'
+            : 'Unknown';
+
     final workloadStr = workload.entries
-        .map((e) {
-          final dateStr = DateFormat('yyyy-MM-dd').format(e.key);
-          return '$dateStr: ${e.value}';
+        .map((entry) {
+          final dateStr = DateFormat('yyyy-MM-dd').format(entry.key);
+          return '$dateStr: ${entry.value.toNumber()} hrs';
         })
-        .join(', ');
+        .join('\n');
 
     return '''
-          Task ID: $taskId
-          Name: ${taskName.name}
-          Deadline: $deadlineStr
-          Type: ${type.toString().split('.').last}
-          Priority: $priority
-          Workload: $workloadStr
-          Description: ${description.value}
-          ''';
+ID: $taskId
+Name: ${taskName.toString()}
+Description: ${description.value}
+Type: ${type.toString().split('.').last}
+Priority: $priority
+Deadline: $deadlineStr
+Estimated Duration: $estDurationStr
+Weight: $weight
+Created At: ${createdAt.toDate().toIso8601String()}
+Updated At: ${updatedAt.toDate().toIso8601String()}
+Workload:
+$workloadStr
+Total Workload: ${getTotalWorkload()} hrs
+''';
   }
 }

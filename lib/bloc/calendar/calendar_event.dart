@@ -8,3 +8,8 @@ class LoadRequest extends CalendarEvent {
 class DeloadRequest extends CalendarEvent {}
 
 class ReloadRequest extends CalendarEvent {}
+
+class DaySelected extends CalendarEvent {
+  final DateTime daySelected;
+  DaySelected({required this.daySelected});
+}

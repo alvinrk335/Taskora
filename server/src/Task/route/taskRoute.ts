@@ -18,7 +18,7 @@ taskRouter.get("/getById", async (req, res) =>{
       return res.status(404).json({error: "Task not found"});
     }
 
-    return res.json(task.toJSON());
+    return res.status(200).json(task.toJSON());
   } catch (error) {
     console.error(error);
     return res.status(500).json({error: "error fetching task"});
@@ -27,10 +27,10 @@ taskRouter.get("/getById", async (req, res) =>{
 
 taskRouter.post("/add", async (req, res) => {
   try {
-    const task = req.body.task;
+    const task = req.body;
     const repoTask = Task.fromJSON(task);
     await repo.addTask(repoTask);
-    res.status(201).json({message: "Task added successfully", task: repoTask.toJSON()});
+    res.status(200).json({message: "Task added successfully", task: repoTask.toJSON()});
   } catch (error) {
     console.error(error);
     res.status(500).json({error: "error adding task"});

@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskora/bloc/auth/auth_bloc.dart';
+import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/task_preview/task_preview_bloc.dart';
+import 'package:taskora/model/entity/schedule.dart';
+import 'package:taskora/pages/navigation.dart';
+import 'package:taskora/repository/schedule_repository.dart';
+import 'package:taskora/widgets/task%20preview/task_preview_list.dart';
+
+class TaskPreview extends StatelessWidget {
+  final repo = ScheduleRepository();
+  TaskPreview({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Schedule schedule = context.select(
+      (TaskPreviewBloc bloc) => bloc.state.schedule,
+    );
+    final authState = context.read<AuthBloc>().state;
+    String uid = "";
+    if (authState is LoggedIn) {
+      uid = authState.user.uid;
+    }
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                "Edited Task Preview",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Expanded(child: TaskPreviewList()),
+              SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      repo.addScheduleWithTask(schedule, uid);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => Navigation()),
+                        (route) => false,
+                      );
+                    },
+                    child: Text("Confirm Changes"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

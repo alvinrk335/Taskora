@@ -4,6 +4,7 @@ import admin from "../../firebase";
 const db = admin.firestore();
 export default class taskRepository {
   private taskCollection = db.collection("tasks");
+  private logHelper = "[TASK REPO]"
 
   async addTask(task: Task): Promise<void> {
     const finalTask = task.toJSON();
@@ -16,7 +17,9 @@ export default class taskRepository {
 
   async getTask(taskId: string): Promise<Task> {
     try {
-      const task = await this.taskCollection.doc(taskId).get();
+      const taskDoc = await this.taskCollection.doc(taskId).get();
+      const task = taskDoc.data();
+      console.log(`${this.logHelper} task got from db: ${JSON.stringify(task)}`);
       return Task.fromJSON(task);
     } catch (error) {
       console.error(error);

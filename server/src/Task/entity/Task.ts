@@ -2,7 +2,7 @@ import Duration from "./value_object/Duration";
 import Name from "./value_object/Name";
 import Description from "./value_object/Description";
 import taskType from "./value_object/TaskType";
-import {Timestamp} from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 
 export default class Task {
   private taskId: string;
@@ -10,8 +10,7 @@ export default class Task {
   private description: Description;
   private priority: number;
   private type: taskType;
-  // private preferredDays: Date[];
-  private deadline? : Date | string;
+  private deadline?: Date | string;
   private weight: number;
   private createdAt: Timestamp;
   private updatedAt: Timestamp;
@@ -24,33 +23,30 @@ export default class Task {
     description,
     priority,
     type,
-    // preferredDays
     deadline,
     weight,
     createdAt,
     updatedAt,
     workload,
     estimatedDuration,
-  }: {//dd
-        taskId: string;
-        taskName: Name;
-        description: Description;
-        priority: number;
-        type: taskType;
-        // preferredDays: Date[];
-        deadline: Date;
-        weight: number;
-        createdAt: Timestamp;
-        updatedAt: Timestamp;
-        workload: Map<Date, Duration>;
-        estimatedDuration?: Duration;
-    }) {
+  }: {
+    taskId: string;
+    taskName: Name;
+    description: Description;
+    priority: number;
+    type: taskType;
+    deadline: Date;
+    weight: number;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+    workload: Map<Date, Duration>;
+    estimatedDuration?: Duration;
+  }) {
     this.taskId = taskId;
     this.taskName = taskName;
     this.description = description;
     this.priority = priority;
     this.type = type;
-    // this.preferredDays = preferredDays;
     this.deadline = deadline;
     this.weight = weight;
     this.createdAt = createdAt;
@@ -58,13 +54,30 @@ export default class Task {
     this.workload = workload;
     this.estimatedDuration = estimatedDuration;
   }
+
+  public static parseFirestoreTimestamp(input: any): Date {
+    if (!input) return new Date();
+    if (input instanceof Timestamp) return input.toDate();
+    if (input._seconds && input._nanoseconds) {
+      return new Date(input._seconds * 1000 + Math.floor(input._nanoseconds / 1e6));
+    }
+    if (typeof input === 'string' || typeof input === 'number') {
+      return new Date(input);
+    }
+    return new Date(); // fallback
+  }
+
   static fromJSON(json: any): Task {
     const workloadMap = new Map<Date, Duration>();
     const rawWorkload = json.workload ?? {};
 
     for (const [dateStr, durationVal] of Object.entries(rawWorkload)) {
       const date = new Date(dateStr);
-      const duration = Duration.fromNumber(typeof durationVal === "number" ? durationVal : (durationVal as any).minutes);
+      const duration = Duration.fromNumber(
+        typeof durationVal === "number"
+          ? durationVal
+          : (durationVal as any).minutes
+      );
       workloadMap.set(date, duration);
     }
 
@@ -74,19 +87,19 @@ export default class Task {
       description: Description.fromString(json.description),
       priority: json.priority,
       type: taskType.fromString(json.type),
-      // preferredDays: (json.preferredDays ?? []).map((d: string) => new Date(d)),
-      deadline: new Date(json.deadline),
+      deadline: Task.parseFirestoreTimestamp(json.deadline),
       weight: json.weight,
-      createdAt: Timestamp.fromDate(new Date(json.createdAt)),
-      updatedAt: Timestamp.fromDate(new Date(json.updatedAt)),
+      createdAt: Timestamp.fromDate(Task.parseFirestoreTimestamp(json.createdAt)),
+      updatedAt: Timestamp.fromDate(Task.parseFirestoreTimestamp(json.updatedAt)),
       workload: workloadMap,
       estimatedDuration: Duration.fromNumber(json.estimatedDuration ?? 0),
     });
   }
+
   toJSON() {
     const workloadObject: { [date: string]: Number } = {};
     this.workload.forEach((value, key) => {
-      workloadObject[key.toISOString()] = value.toNumber();;
+      workloadObject[key.toISOString()] = value.toNumber();
     });
 
     return {
@@ -95,8 +108,10 @@ export default class Task {
       description: this.description.toString(),
       priority: this.priority,
       type: this.type.toString(),
-      // preferredDays: this.preferredDays.map((date) => date.toISOString()),
-      deadline: this.deadline? this.deadline instanceof Date ? this.deadline.toISOString() : new Date(this.deadline).toISOString() : undefined,
+      deadline:
+        this.deadline instanceof Date
+          ? this.deadline.toISOString()
+          : new Date(this.deadline ?? "").toISOString(),
       estimatedDuration: this.estimatedDuration?.toNumber() ?? 0,
       weight: this.weight,
       createdAt: this.createdAt.toDate(),
@@ -105,7 +120,7 @@ export default class Task {
     };
   }
 
-  // Getter dan Setter
+  // Getters & Setters
   public getTaskId(): string {
     return this.taskId;
   }
@@ -146,15 +161,7 @@ export default class Task {
     this.type = type;
   }
 
-  // public getPreferredDays(): Date[] {
-  //   return this.preferredDays;
-  // }
-
-  // public setPreferredDays(preferredDays: Date[]): void {
-  //   this.preferredDays = preferredDays;
-  // }
-
-  public getDeadline(): Date | string | undefined{
+  public getDeadline(): Date | string | undefined {
     return this.deadline;
   }
 
@@ -186,12 +193,10 @@ export default class Task {
     this.workload = workload;
   }
 
-  // Menambahkan atau memperbarui workload untuk tanggal tertentu
   public addWorkload(date: Date, duration: Duration): void {
     this.workload.set(date, duration);
   }
 
-  // Menghitung total durasi yang teralokasi
   public getTotalWorkload(): number {
     let total = 0;
     this.workload.forEach((duration) => {

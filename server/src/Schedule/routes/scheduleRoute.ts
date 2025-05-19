@@ -12,6 +12,7 @@ import optimizedTask from "../../Task/entity/optimizedTask";
 import TranslatedTask from "../../Task/entity/translatedTask";
 import initialTask from "../../Task/entity/initialTask";
 import translateTasks from "../services/translateTask";
+import reOptimize from "../services/reoptimize";
 
 const scheduleRouter = Router();
 const repo = new scheduleRepository();
@@ -22,6 +23,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
   try {
     console.log(`input received: ${JSON.stringify(req.body, null, 2)}`)
     const {
+      request,
       scheduleId,
       listOfTask,
       weeklyWorkingHours,
@@ -40,8 +42,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     });
     console.log(`input sent to llm service ${JSON.stringify(listInitialTask, null, 2)}`)
 
-    const translateResponse = await translateTasks(listInitialTask);
-
+    const translateResponse = await translateTasks( listInitialTask);
 
     const translatedTasks = translateResponse//translatedTask
     if (!translatedTasks || !Array.isArray(translatedTasks)) {
@@ -134,19 +135,22 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     // const lastTask = tasks[tasks.length - 1];
     // const scheduleEnd = lastTask.getDeadline();
     console.log(scheduleId)
-    const schedule = new Schedule({
+    let schedule = new Schedule({
       scheduleId: scheduleId,
       tasks: tasks,
       scheduleStart: scheduleStart,
     });
 
+    if(request && request.trim() !== ""){
+      const updatedScheduleJson = await reOptimize(schedule, request);
+      schedule = Schedule.fromJSON(updatedScheduleJson);
+    }
     return res.status(200).json(schedule.toJSON());
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
   }
 });
-
 scheduleRouter.get("/get", async (req, res) => {
   try {
     const scheduleId = req.query.scheduleId as string;
@@ -212,4 +216,19 @@ scheduleRouter.get("/getByUid", async (req, res ) => {
     return res.status(500).json({error: "error getting schedule to database"})
   }
 })
+
+scheduleRouter.post("/add/withTask", async (req, res) => {
+  try {
+    const scheduleJson = req.body.schedule;
+    const schedule = Schedule.fromJSON(scheduleJson);
+    const uid = req.body.uid;
+    await repo.addScheduleWithTask(schedule, uid)
+    return res.status(200).json({message: `success adding schedule ${JSON.stringify(schedule.toJSON())}`})
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({error: "error adding schedule and task"})
+  }
+})
+
+
 export default scheduleRouter;

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_event.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/calendar/calendar_bloc.dart';
+import 'package:taskora/bloc/calendar/calendar_event.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -17,7 +19,6 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
-        
         builder: (authContext, authState) {
           if (authState is LoggedIn) {
             return Padding(
@@ -57,7 +58,10 @@ class ProfilePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         ElevatedButton(
-                          onPressed: () => authContext.read<AuthBloc>().add(LogOut()),
+                          onPressed: () {
+                            authContext.read<AuthBloc>().add(LogOut());
+                            context.read<CalendarBloc>().add(DeloadRequest());
+                          },
                           child: Text("log out"),
                         ),
                       ],

@@ -12,15 +12,27 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     on<LoadRequest>((event, emit) async {
       try {
         emit(CalendarLoading());
+        log("calendar loading");
         final schedule = await repo.getScheduleByUid(event.uid);
-        emit(CalendarLoaded(schedule));
+        emit(CalendarLoaded(schedule: schedule));
+        log("calendar loaded");
       } catch (e) {
         log(e.toString());
       }
     });
 
-    on<DeloadRequest>((event, emit) => emit(CalendarEmpty()));
+    on<DeloadRequest>((event, emit) {
+      log("Calendar deloaded");
+      emit(CalendarInitial());
+    });
 
     on<ReloadRequest>((event, emit) => emit(CalendarInitial()));
+
+    on<DaySelected>((event, emit) {
+      final currState = state;
+      if (currState is CalendarLoaded) {
+        emit(currState.copyWith(selectedDay: event.daySelected));
+      }
+    });
   }
 }

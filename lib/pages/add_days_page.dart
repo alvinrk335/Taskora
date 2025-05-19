@@ -6,8 +6,8 @@ import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_event.dart';
 import 'package:taskora/bloc/available_days/available_days_state.dart';
 import 'package:taskora/pages/add_schedule.dart';
-import 'package:taskora/widgets/add_available_days_dialog.dart';
-import 'package:taskora/widgets/days_card.dart';
+import 'package:taskora/widgets/add%20available%20days/add_available_days_dialog.dart';
+import 'package:taskora/widgets/add%20available%20days/days_card.dart';
 
 class AddDaysPage extends StatefulWidget {
   const AddDaysPage({super.key});

@@ -16,7 +16,8 @@ def test_optimize_schedule():
             "Saturday": 0,
             "Sunday": 2
         },
-        "excludedDates": [],
+        "excludedDates": [    "2025-05-30T00:00:00+00:00",
+    "2025-05-29T00:00:00+00:00"],
         "workloadThreshold": 6,
         "tasks": [
             {
@@ -38,12 +39,11 @@ def test_optimize_schedule():
                 "taskName": "Task C",
                 "estimatedDuration": 7200,
                 "weight": 0.8,
-                "deadline": "2025-06-23T00:00:00+00:00",
+                "deadline": None,
             }
 
         ]
     })
-
     assert response.status_code == 200
     data = response.json()
     print(f"data :{data}")

@@ -1,4 +1,5 @@
 import admin from "../../firebase";
+
 import Schedule from "../entity/Schedule";
 
 const db = admin.firestore();
@@ -22,6 +23,33 @@ export default class scheduleRepository {
       }
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async addScheduleWithTask(schedule: Schedule, uid: string): Promise<void>{
+    try {
+      await db.runTransaction(async (transaction) => {
+      const scheduleId = schedule.getScheduleId();
+
+      for (const task of schedule.getTasks()) {
+        const taskId = task.getTaskId();
+        const docId = `${scheduleId}_${taskId}`;
+        const docRef= this.scheduleCollection.doc(docId);
+
+        const taskRef = db.collection("tasks").doc(taskId);
+
+        transaction.set(docRef, {
+          scheduleId,
+          taskId,
+          uid,
+        });
+
+        transaction.set(taskRef, task.toJSON(), {merge: true});
+      }
+
+      })
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -113,4 +141,5 @@ export default class scheduleRepository {
       throw new Error("error fetching schedule data");
     }
   }
+
 }

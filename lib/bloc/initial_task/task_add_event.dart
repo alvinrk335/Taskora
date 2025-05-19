@@ -1,4 +1,4 @@
-import 'package:taskora/model/initial_task.dart';
+import 'package:taskora/model/entity/initial_task.dart';
 
 abstract class TaskAddEvent {}
 
@@ -11,3 +11,9 @@ class TaskRemoved extends TaskAddEvent {
   final int index;
   TaskRemoved({required this.index});
 }
+
+class TaskEdited extends TaskAddEvent {
+  final InitialTask task;
+  TaskEdited({required this.task});
+}
+

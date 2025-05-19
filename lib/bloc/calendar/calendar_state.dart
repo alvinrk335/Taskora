@@ -1,5 +1,5 @@
-import 'package:taskora/model/schedule.dart';
-import 'package:taskora/model/task.dart';
+import 'package:taskora/model/entity/schedule.dart';
+import 'package:taskora/model/entity/task.dart';
 
 abstract class CalendarState {}
 
@@ -9,7 +9,8 @@ class CalendarLoading extends CalendarState {}
 
 class CalendarLoaded extends CalendarState {
   final Schedule schedule;
-  CalendarLoaded(this.schedule);
+  final DateTime? selectedDay;
+  CalendarLoaded({required this.schedule, this.selectedDay});
 
   loadEvent() {
     Map<DateTime, List<Task>> events = {};
@@ -20,6 +21,13 @@ class CalendarLoaded extends CalendarState {
       });
     }
     return events;
+  }
+
+  CalendarLoaded copyWith({Schedule? schedule, DateTime? selectedDay}) {
+    return CalendarLoaded(
+      schedule: schedule ?? this.schedule,
+      selectedDay: selectedDay ?? this.selectedDay,
+    );
   }
 }
 

@@ -3,19 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
+import 'package:taskora/bloc/calendar/calendar_bloc.dart';
+import 'package:taskora/bloc/calendar/calendar_event.dart';
 import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
 import 'package:taskora/bloc/initial_task/task_add_state.dart';
 import 'package:taskora/bloc/task_priority/task_priority_bloc.dart';
 import 'package:taskora/bloc/task_type/task_type_bloc.dart';
-import 'package:taskora/model/initial_task.dart';
-import 'package:taskora/model/schedule.dart';
-import 'package:taskora/model/task.dart';
-import 'package:taskora/pages/calendar_page.dart';
+import 'package:taskora/model/entity/initial_task.dart';
+import 'package:taskora/model/entity/schedule.dart';
+import 'package:taskora/pages/navigation.dart';
 import 'package:taskora/repository/schedule_repository.dart';
 import 'package:taskora/repository/task_repository.dart';
 import 'package:taskora/services/optimizer.dart';
-import 'package:taskora/widgets/add_task_body.dart';
-import 'package:taskora/widgets/initial_task_list.dart';
+import 'package:taskora/widgets/add%20schedule/add_task_body.dart';
+import 'package:taskora/widgets/add%20schedule/initial_task_list.dart';
 
 class AddSchedule extends StatelessWidget {
   const AddSchedule({super.key});
@@ -70,11 +71,7 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
     } else {
       uid = "";
     }
-    await scheduleRepo.addSchedule(schedule, uid);
-
-    for (Task task in schedule.getTasks) {
-      await taskRepo.addTask(task);
-    }
+    await scheduleRepo.addScheduleWithTask(schedule, uid);
   }
 
   @override
@@ -110,7 +107,7 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                                   value: context.read<TaskPriorityBloc>(),
                                 ),
                               ],
-                              child: const AddTaskDialog(),
+                              child: const AddOrEditTaskDialog(),
                             ),
                       ),
                   icon: const Icon(Icons.add),
@@ -135,13 +132,20 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                     ),
                     TextButton(
                       onPressed: () {
-                        optimizeAndAdd(context);
-                        Navigator.popUntil(
+                        final authState = context.read<AuthBloc>().state;
+                        if (authState is LoggedIn) {
+                          optimizeAndAdd(context);
+                          context.read<CalendarBloc>().add(
+                            LoadRequest(authState.user.uid),
+                          );
+                        }
+
+                        Navigator.pushAndRemoveUntil(
                           context,
-                          (route) =>
-                              route.settings.name == null &&
-                              route is MaterialPageRoute &&
-                              route.builder(context) is CalendarPage,
+                          MaterialPageRoute(
+                            builder: (_) => Navigation(),
+                          ),
+                          (route) => false,
                         );
                       },
                       child: Text("Automatic Scheduling"),

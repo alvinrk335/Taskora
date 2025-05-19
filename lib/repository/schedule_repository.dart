@@ -3,12 +3,13 @@ import 'dart:developer';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:taskora/model/schedule.dart';
-import 'package:taskora/model/task.dart';
+import 'package:taskora/model/entity/schedule.dart';
+import 'package:taskora/model/entity/task.dart';
 
 class ScheduleRepository {
   final String baseUrl = "http://10.0.2.2:3000";
   final Map<String, String> header = {'Content-Type': 'application/json'};
+  final String logHelper = "[SCHEDULE REPO]";
 
   Future<Map<String, dynamic>> getSchedule(String scheduleId) async {
     final url = Uri.parse('$baseUrl/schedule/get?scheduleId=$scheduleId');
@@ -38,9 +39,9 @@ class ScheduleRepository {
   Future<Schedule> getScheduleByUid(String uid) async {
     try {
       final url = Uri.parse('$baseUrl/schedule/getByUid?uid=$uid');
-      log("url: $url");
+      log("$logHelper url: $url");
       final response = await http.get(url, headers: header);
-      log("got response from $url : ${response.body}");
+      log("$logHelper response from $url : ${response.body}");
 
       if (response.statusCode == 300) {
         return Schedule.empty();
@@ -48,11 +49,11 @@ class ScheduleRepository {
       if (response.statusCode != 200) {
         throw Exception("failed getting schedule from server");
       }
-      log(jsonDecode(response.body));
+      log("$logHelper ${jsonDecode(response.body)}");
       final decoded = jsonDecode(response.body);
 
       final scheduleId = decoded['scheduleId'];
-      log("scheduleId: $scheduleId");
+      log("$logHelper scheduleID: $scheduleId");
       final List<String> taskIds = List<String>.from(decoded['taskIds']);
 
       final List<Task> tasks = [];
@@ -63,15 +64,16 @@ class ScheduleRepository {
           headers: header,
         );
 
-        log(jsonDecode(taskResponse.body));
         if (taskResponse.statusCode == 200) {
           final taskJson = jsonDecode(taskResponse.body);
           tasks.add(Task.fromJson(taskJson));
         } else {
-          log("Failed to fetch task $taskId");
+          log("$logHelper Failed to fetch task $taskId");
         }
       }
-      return Schedule(scheduleId: scheduleId, tasks: tasks);
+      final schedule = Schedule(scheduleId: scheduleId, tasks: tasks);
+      log("$logHelper schedule returned: ${schedule.toJson()}");
+      return schedule;
     } catch (e) {
       log(e.toString());
       return Schedule.empty();
@@ -115,4 +117,18 @@ class ScheduleRepository {
 
     log(response.body);
   }
+
+  Future<void> addScheduleWithTask(Schedule schedule, String uid) async {
+    final url = Uri.parse("$baseUrl/schedule/add/withTask");
+    final response = await http.post(
+      url,
+      headers: header,
+      body: jsonEncode({"schedule": schedule, "uid": uid}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception("failed editing schedule from server");
+    }
+    log("response from $url: ${jsonDecode(response.body)}");
+  }
+
 }

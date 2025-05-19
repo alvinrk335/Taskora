@@ -1,4 +1,4 @@
-import 'package:taskora/model/tasktype.dart';
+import 'package:taskora/model/value%20object/tasktype.dart';
 
 class TaskTypeState {
   final TaskType type;

@@ -29,7 +29,9 @@ class DefaultAppbar extends StatelessWidget implements PreferredSizeWidget {
               );
             } else {
               return ElevatedButton(
-                onPressed: () => authContext.read<AuthBloc>().add(LogIn()),
+                onPressed: () {
+                  authContext.read<AuthBloc>().add(LogIn());
+                },
                 child: Text("log in"),
               );
             }

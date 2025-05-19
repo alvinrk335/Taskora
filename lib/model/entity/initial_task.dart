@@ -1,6 +1,6 @@
-import 'package:taskora/model/description.dart';
-import 'package:taskora/model/name.dart';
-import 'package:taskora/model/tasktype.dart';
+import 'package:taskora/model/value%20object/description.dart';
+import 'package:taskora/model/value%20object/name.dart';
+import 'package:taskora/model/value%20object/tasktype.dart';
 
 class InitialTask {
   String taskId;

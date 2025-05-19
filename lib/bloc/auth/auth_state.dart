@@ -1,5 +1,5 @@
 
-import 'package:taskora/model/user.dart';
+import 'package:taskora/model/entity/user.dart';
 
 abstract class AuthState {}
 

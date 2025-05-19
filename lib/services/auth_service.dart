@@ -1,7 +1,7 @@
 // import 'dart:convert';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:taskora/model/user.dart' as model;
+import 'package:taskora/model/entity/user.dart' as model;
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -9,7 +9,6 @@ class AuthService {
 
   Future<model.User?> signInWithGoogle() async {
     try {
-      log("ginginginlogiiiiiin");
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         throw Exception("user adalah null");

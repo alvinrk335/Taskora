@@ -28,7 +28,7 @@ class DurationValue {
     final mins = minutes % 60;
     if (hours > 0 && mins > 0) return '${hours}h ${mins}m';
     if (hours > 0) return '${hours}h';
-    return '${mins}m';
+    return '$mins hrs';
   }
 
   bool equals(DurationValue other) {

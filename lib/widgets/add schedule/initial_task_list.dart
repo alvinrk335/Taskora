@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
 import 'package:taskora/bloc/initial_task/task_add_state.dart';
-import 'package:taskora/model/initial_task.dart';
-import 'package:taskora/widgets/initial_task_card.dart';
+import 'package:taskora/model/entity/initial_task.dart';
+import 'package:taskora/widgets/add%20schedule/initial_task_card.dart';
 
 class InitialTaskList extends StatelessWidget {
   const InitialTaskList({super.key});

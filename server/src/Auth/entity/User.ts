@@ -27,6 +27,23 @@ export class User {
       handler.getProfilePicture
     );
   }
+  toJson(): any {
+    return {
+      uid: this.uid,
+      username: this.username,
+      email: this.email ?? "",
+      profilePicture: this.profilePicture ?? ""
+    };
+  }
+
+  static fromJson(json: any): User {
+    return new User(
+      json.uid ?? "",
+      json.username ?? "",
+      json.email ?? "",
+      json.profilePicture ?? ""
+    );
+  }
   // Getter untuk uid
   get getUid(): string {
     return this.uid;
