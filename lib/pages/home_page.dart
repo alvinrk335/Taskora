@@ -178,7 +178,7 @@ class HomePage extends StatelessWidget {
         body: BlocBuilder<AuthBloc, AuthState>(
           builder: (authContext, authState) {
             if (authState is NotLoggedIn) {
-              return const Center(child: Text("login to see tasks"));
+              return const Center(child: Text("Please login to see your tasks", style: TextStyle(color: Colors.white70)));
             } else if (authState is LoggedIn) {
               return BlocBuilder<CalendarBloc, CalendarState>(
                 builder: (scheduleContext, scheduleState) {

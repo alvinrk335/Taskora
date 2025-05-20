@@ -34,7 +34,7 @@ class DefaultAppbar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   authContext.read<AuthBloc>().add(LogIn());
                 },
-                child: Text("LOGIN"),
+                child: Text("Login"),
 
               );
             }

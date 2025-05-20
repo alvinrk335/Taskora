@@ -117,7 +117,7 @@ class TaskPage extends StatelessWidget {
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [Icon(Icons.settings), Text("edit task")],
+                      children: [Icon(Icons.settings), Text("Edit task")],
                     ),
                   ),
                 ),

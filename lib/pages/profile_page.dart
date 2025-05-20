@@ -62,7 +62,7 @@ class ProfilePage extends StatelessWidget {
                             authContext.read<AuthBloc>().add(LogOut());
                             context.read<CalendarBloc>().add(DeloadRequest());
                           },
-                          child: Text("log out"),
+                          child: Text("Log out"),
                         ),
                       ],
                     ),

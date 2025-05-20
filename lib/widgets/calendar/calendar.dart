@@ -51,7 +51,12 @@ class Calendar extends StatelessWidget {
             },
           );
         } else {
-          return const Center(child: Text("login to see schedule"));
+          return const Center(
+            child: Text(
+              "Please login to see your schedule",
+              style: TextStyle(color: Colors.white70),
+            ),
+          );
 
         }
       },
