@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:taskora/bloc/calendar/calendar_bloc.dart';
+import 'package:taskora/bloc/calendar/calendar_state.dart';
+import 'package:taskora/model/entity/task.dart';
+import 'package:taskora/model/value%20object/card_type.dart';
+import 'package:taskora/model/value%20object/summary_type.dart';
+import 'package:taskora/widgets/task%20list/compact_task_card.dart';
+import 'package:taskora/widgets/task%20list/task_card.dart';
+
+class TaskList extends StatelessWidget {
+  final bool? compact;
+  final CardType cardType;
+  final void Function(Task task)? onTap;
+  final bool? showAll;
+  final SummaryType? summaryType;
+  const TaskList({
+    super.key,
+    required this.cardType,
+    this.onTap,
+    this.compact,
+    this.summaryType,
+    this.showAll,
+  });
+
+  void sortTaskByDeadline(List<Task> task) {
+    task.sort((a, b) {
+      if (a.deadline == null && b.deadline == null) {
+        return 0;
+      }
+      if (a.deadline == null) {
+        return 1;
+      }
+      if (b.deadline == null) {
+        return -1;
+      }
+      return a.deadline!.compareTo(b.deadline!);
+    });
+  }
+
+  bool sameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CalendarBloc, CalendarState>(
+      builder: (scheduleContext, scheduleState) {
+        if (scheduleState is CalendarLoaded) {
+          List<Task> tasks = scheduleState.schedule.getTasks;
+          sortTaskByDeadline(tasks);
+          if (tasks.isNotEmpty) {
+            final selectedDay = scheduleState.selectedDay;
+            if (showAll != null) {
+              if (showAll! == true) {
+                return Wrap(
+                  children: [
+                    for (Task task in tasks)
+                      (compact ?? false)
+                          ? CompactTaskCard(task: task)
+                          : TaskCard(
+                            task: task,
+                            cardType: cardType,
+                            onTap: onTap,
+                            summaryMode: summaryType ?? SummaryType.full,
+                          ),
+                  ],
+                );
+              }
+            } else {
+              if (selectedDay == null) {
+                return Wrap(
+                  children: [
+                    for (Task task in tasks)
+                      (compact ?? false)
+                          ? CompactTaskCard(task: task)
+                          : TaskCard(
+                            task: task,
+                            cardType: cardType,
+                            onTap: onTap,
+                            summaryMode: summaryType ?? SummaryType.full,
+                          ),
+                  ],
+                );
+              } else {
+                tasks =
+                    tasks.where((task) {
+                      return task.workload.keys.any(
+                        (date) => isSameDay(date, selectedDay),
+                      );
+                    }).toList();
+                return Wrap(
+                  children: [
+                    for (Task task in tasks)
+                      (compact ?? false)
+                          ? CompactTaskCard(task: task)
+                          : TaskCard(
+                            task: task,
+                            cardType: cardType,
+                            onTap: onTap,
+                            summaryMode: summaryType ?? SummaryType.full,
+                          ),
+                  ],
+                );
+              }
+            }
+          } else {
+            return Center(child: Text("schedule is empty"));
+          }
+        } else if (scheduleState is CalendarLoading) {
+          return SizedBox.shrink();
+        }
+        return Text("error no state");
+      },
+    );
+  }
+}
