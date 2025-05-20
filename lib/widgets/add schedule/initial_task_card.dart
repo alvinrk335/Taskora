@@ -16,7 +16,7 @@ class InitialTaskCard extends StatelessWidget {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
+        borderRadius: BorderRadius.circular(12.0),
         side: BorderSide(color: Colors.black),
       ),
       color: Colors.white,
@@ -38,6 +38,7 @@ class InitialTaskCard extends StatelessWidget {
           );
         },
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Align(
               alignment: Alignment.topCenter,
@@ -47,12 +48,15 @@ class InitialTaskCard extends StatelessWidget {
               ),
             ),
             Divider(),
-            Text(
-              "Deadline: ${task.deadline?.toString() ?? 'None'}\n"
-              "Type: ${task.type.toString()}\n"
-              "Description: ${task.description.toString()}\n"
-              "Priority: ${task.priority.toString()}",
-              overflow: TextOverflow.ellipsis,
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: Text(
+                "Deadline: ${task.deadline?.toString() ?? 'None'}\n"
+                "Type: ${task.type.toString()}\n"
+                "Description: ${task.description.toString()}\n"
+                "Priority: ${task.priority.toString()}",
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

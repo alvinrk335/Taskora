@@ -11,9 +11,11 @@ import 'package:taskora/bloc/task_priority/task_priority_bloc.dart';
 import 'package:taskora/bloc/task_type/task_type_bloc.dart';
 import 'package:taskora/model/entity/initial_task.dart';
 import 'package:taskora/model/entity/schedule.dart';
+import 'package:taskora/model/entity/work_hours.dart';
 import 'package:taskora/pages/navigation.dart';
 import 'package:taskora/repository/schedule_repository.dart';
 import 'package:taskora/repository/task_repository.dart';
+import 'package:taskora/repository/workhours_repository.dart';
 import 'package:taskora/services/optimizer.dart';
 import 'package:taskora/widgets/add%20schedule/add_task_body.dart';
 import 'package:taskora/widgets/add%20schedule/initial_task_list.dart';
@@ -44,6 +46,7 @@ class AddScheduleBody extends StatefulWidget {
 class _AddScheduleBodyState extends State<AddScheduleBody> {
   final scheduleRepo = ScheduleRepository();
   final taskRepo = TaskRepository();
+  final workHoursRepo = WorkHoursRepository();
 
   Future<Schedule> optimizeTask(BuildContext context) async {
     final List<InitialTask> tasks = context.read<TaskAddBloc>().state.tasks;
@@ -63,6 +66,7 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
 
   Future<void> optimizeAndAdd(BuildContext context) async {
     final state = context.read<AuthBloc>().state;
+
     Schedule schedule = await optimizeTask(context);
 
     String uid;
@@ -131,10 +135,28 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                       child: Text("Manual Scheduling"),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        //get working hour from state
+                        final Map<String, double> workingHours =
+                            context
+                                .read<AvailableDaysBloc>()
+                                .state
+                                .weeklyWorkHours;
+                        //get uid
+                        final authState = context.read<AuthBloc>().state;
+                        String uid = "";
+                        if (authState is LoggedIn) {
+                          uid = authState.user.uid;
+                        }
+                        await workHoursRepo.addWorkHours(
+                          WorkHours.fromMap(workingHours),
+                          uid,
+                        );
+
+                        if (!context.mounted) return;
                         optimizeAndAdd(context);
                         context.read<CalendarBloc>().add(ReloadRequest());
-                        
+
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (_) => Navigation()),
