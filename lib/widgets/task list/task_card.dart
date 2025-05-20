@@ -39,7 +39,9 @@ class TaskCard extends StatelessWidget {
         height: 20, // Set explicit height for smaller button
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14), // Half of height for perfect circle ends
+          borderRadius: BorderRadius.circular(
+            14,
+          ), // Half of height for perfect circle ends
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -58,7 +60,10 @@ class TaskCard extends StatelessWidget {
               }
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Reduced padding
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 4,
+              ), // Reduced padding
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -122,7 +127,10 @@ class TaskCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF80CBC4).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(4),
@@ -143,11 +151,7 @@ class TaskCard extends StatelessWidget {
                   buildEditButton(),
                 ],
               ),
-              Divider(
-                color: Colors.white24,
-                thickness: 1,
-                height: 24,
-              ),
+              Divider(color: Colors.white24, thickness: 1, height: 24),
               const SizedBox(height: 12),
               Expanded(
                 child: SingleChildScrollView(
@@ -157,11 +161,17 @@ class TaskCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.calendar_today, size: 16, color: Colors.white70),
+                          Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Colors.white70,
+                          ),
                           const SizedBox(width: 8),
                           Text(
-                            task.deadline?.toString().split(' ')[0] ?? 'No deadline',
+                            task.deadline?.toString().split(' ')[0] ??
+                                'No deadline',
                             style: textStyle,
+                            overflow: TextOverflow.fade,
                           ),
                         ],
                       ),
@@ -170,10 +180,7 @@ class TaskCard extends StatelessWidget {
                         children: [
                           Icon(Icons.flag, size: 16, color: Colors.white70),
                           const SizedBox(width: 8),
-                          Text(
-                            'Priority: ${task.priority}',
-                            style: textStyle,
-                          ),
+                          Text('Priority: ${task.priority}', style: textStyle),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -242,9 +249,14 @@ class TaskCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF80CBC4).withOpacity(0.15),
+                                color: const Color(
+                                  0xFF80CBC4,
+                                ).withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -263,11 +275,7 @@ class TaskCard extends StatelessWidget {
                       buildEditButton(),
                     ],
                   ),
-                  Divider(
-                    color: Colors.white24,
-                    thickness: 1,
-                    height: 24,
-                  ),
+                  Divider(color: Colors.white24, thickness: 1, height: 24),
                   const SizedBox(height: 12),
                   Expanded(
                     child: SingleChildScrollView(
@@ -277,10 +285,15 @@ class TaskCard extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.calendar_today, size: 16, color: Colors.white70),
+                              Icon(
+                                Icons.calendar_today,
+                                size: 16,
+                                color: Colors.white70,
+                              ),
                               const SizedBox(width: 8),
                               Text(
-                                task.deadline?.toString().split(' ')[0] ?? 'No deadline',
+                                task.deadline?.toString().split(' ')[0] ??
+                                    'No deadline',
                                 style: textStyle,
                               ),
                             ],
