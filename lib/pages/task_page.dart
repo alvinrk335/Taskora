@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
+import 'package:taskora/bloc/edit_task_list/edit_task_list_bloc.dart';
 import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
 import 'package:taskora/bloc/prompt_textfield/prompt_textfield_bloc.dart';
 import 'package:taskora/bloc/task_edit/task_edit_bloc.dart';
@@ -80,14 +81,21 @@ class TaskPage extends StatelessWidget {
                                 providers: [
                                   BlocProvider(create: (_) => TaskEditBloc()),
                                   BlocProvider(create: (_) => TaskAddBloc()),
+
                                   BlocProvider(
                                     create: (_) => PromptTextfieldBloc(),
+                                  ),
+                                  BlocProvider(
+                                    create: (_) => EditTaskListBloc(),
                                   ),
                                   BlocProvider(
                                     create: (_) => TaskPreviewBloc(),
                                   ),
                                   BlocProvider.value(
                                     value: context.read<AvailableDaysBloc>(),
+                                  ),
+                                  BlocProvider.value(
+                                    value: context.read<CalendarBloc>(),
                                   ),
                                 ],
                                 child: EditPage(),

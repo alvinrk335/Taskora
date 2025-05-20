@@ -141,5 +141,26 @@ export default class scheduleRepository {
       throw new Error("error fetching schedule data");
     }
   }
+  async removeScheduleWithTask(schedule: Schedule){
+    try {
+      await db.runTransaction(async(transaction) => {
+        const scheduleId = schedule.getScheduleId();
+        for(const task of schedule.getTasks()){
+          const taskId = task.getTaskId();
+          const docId = `${scheduleId}_${taskId}`;
+          const docRef= this.scheduleCollection.doc(docId);
+
+          const taskRef = db.collection("tasks").doc(taskId);
+
+          transaction.delete(docRef);
+
+          transaction.delete(taskRef);
+        }
+      })
+    } catch (error) {
+      console.error(error)
+
+    }
+  }
 
 }

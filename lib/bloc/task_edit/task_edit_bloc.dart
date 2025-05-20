@@ -8,5 +8,10 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
       final updatedState = state.addOrUpdateTask(event.task);
       emit(updatedState);
     });
+
+    on<RemoveTaskRequest>((event, emit) {
+      final updatedState = state.removeTask(event.taskId);
+      emit(updatedState);
+    });
   }
 }

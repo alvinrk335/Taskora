@@ -132,19 +132,12 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                     ),
                     TextButton(
                       onPressed: () {
-                        final authState = context.read<AuthBloc>().state;
-                        if (authState is LoggedIn) {
-                          optimizeAndAdd(context);
-                          context.read<CalendarBloc>().add(
-                            LoadRequest(authState.user.uid),
-                          );
-                        }
-
+                        optimizeAndAdd(context);
+                        context.read<CalendarBloc>().add(ReloadRequest());
+                        
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => Navigation(),
-                          ),
+                          MaterialPageRoute(builder: (_) => Navigation()),
                           (route) => false,
                         );
                       },

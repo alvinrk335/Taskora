@@ -13,6 +13,8 @@ class Optimizer {
   final int threshold = 6; // 4-6 banyak break, 7-10 sedang, 11+ berat
   final int daysToSchedule = 100;
   final String? request;
+  final bool? newSchedule;
+  final String? scheduleId;
 
   final String baseUrl = "http://10.0.2.2:3000";
   final Map<String, String> header = {'Content-Type': 'application/json'};
@@ -22,11 +24,18 @@ class Optimizer {
     required this.workingHours,
     required this.excludedDates,
     this.request,
+    this.newSchedule,
+    this.scheduleId,
   });
 
   Future<Schedule> optimize() async {
     final url = Uri.parse("$baseUrl/schedule/optimize");
-    final scheduleId = await generateId("schedule");
+    String scheduleId;
+    if (newSchedule ?? true) {
+      scheduleId = await generateId("schedule");
+    } else {
+      scheduleId = this.scheduleId ?? "";
+    }
     final tasksJson = tasks.map((task) => task.toJson()).toList();
     final excludedDatesString =
         excludedDates.map((date) => date.toIso8601String()).toList();

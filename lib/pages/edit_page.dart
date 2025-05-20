@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
+import 'package:taskora/bloc/edit_task_list/edit_task_list_bloc.dart';
+import 'package:taskora/bloc/edit_task_list/edit_task_list_state.dart';
 import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
 import 'package:taskora/bloc/prompt_textfield/prompt_textfield_bloc.dart';
 import 'package:taskora/bloc/prompt_textfield/prompt_textfield_event.dart';
@@ -17,12 +19,13 @@ import 'package:taskora/model/entity/initial_task.dart';
 import 'package:taskora/model/entity/schedule.dart';
 import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/model/value object/card_type.dart';
+import 'package:taskora/model/value%20object/summary_type.dart';
 import 'package:taskora/pages/task_preview.dart';
 import 'package:taskora/services/optimizer.dart';
 import 'package:taskora/widgets/add schedule/initial_task_list.dart';
 import 'package:taskora/widgets/add%20schedule/add_task_body.dart';
 import 'package:taskora/widgets/task list/task_edit_dialog.dart';
-import 'package:taskora/widgets/task list/task_list.dart';
+import 'package:taskora/widgets/task%20list/edit_task_list.dart';
 
 class EditPage extends StatefulWidget {
   const EditPage({super.key});
@@ -142,6 +145,12 @@ class _EditPageState extends State<EditPage> {
     final editedTasks = context.read<TaskEditBloc>().state.tasks;
     final List<InitialTask> newTasks = context.read<TaskAddBloc>().state.tasks;
     final requestPromptState = context.read<PromptTextfieldBloc>().state;
+    final scheduleState = context.read<CalendarBloc>().state;
+    String scheduleId = "";
+    if (scheduleState is CalendarLoaded) {
+      scheduleId = scheduleState.schedule.getScheduleId;
+    }
+
     String requestPrompt;
     if (requestPromptState is PromptTextfieldSaved) {
       requestPrompt = requestPromptState.prompt;
@@ -166,13 +175,15 @@ class _EditPageState extends State<EditPage> {
       listOfTask.add(task);
     }
     final availableDaysState = context.read<AvailableDaysBloc>().state;
-    final Map<String, double>workingHours = availableDaysState.weeklyWorkHours;
+    final Map<String, double> workingHours = availableDaysState.weeklyWorkHours;
     final List<DateTime> excludedDates = availableDaysState.dates;
     final optimizer = Optimizer(
       tasks: listOfTask,
       workingHours: workingHours,
       excludedDates: excludedDates,
       request: requestPrompt,
+      newSchedule: false,
+      scheduleId: scheduleId,
     );
 
     Schedule schedule = await optimizer.optimize();
@@ -260,13 +271,29 @@ class _EditPageState extends State<EditPage> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
-            TaskList(
-              showAll: true,
-              cardType: CardType.button,
-              onTap: (task) {
-                showDialog(
-                  context: context,
-                  builder: (_) => TaskEditDialog(task: task),
+            BlocBuilder<EditTaskListBloc, EditTaskListState>(
+              builder: (editTaskListContext, editTaskListState) {
+                return EditTaskList(
+                  showAll: true,
+                  cardType: CardType.button,
+                  summaryType: SummaryType.compact,
+                  onTap: (task) {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider.value(
+                                value: context.read<TaskEditBloc>(),
+                              ),
+                              BlocProvider.value(
+                                value: context.read<EditTaskListBloc>(),
+                              ),
+                            ],
+                            child: TaskEditDialog(task: task),
+                          ),
+                    );
+                  },
                 );
               },
             ),

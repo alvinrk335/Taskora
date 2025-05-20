@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskora/bloc/edit_task_list/edit_task_list_bloc.dart';
+import 'package:taskora/bloc/edit_task_list/edit_task_list_event.dart';
 import 'package:taskora/bloc/task_edit/task_edit_bloc.dart';
 import 'package:taskora/bloc/task_edit/task_edit_event.dart';
 import 'package:taskora/model/entity/task.dart';
@@ -8,7 +10,6 @@ import 'package:taskora/model/value%20object/description.dart';
 import 'package:taskora/model/value%20object/duration.dart';
 import 'package:taskora/model/value%20object/name.dart';
 import 'package:taskora/model/value%20object/tasktype.dart';
-import 'package:taskora/repository/task_repository.dart';
 
 class TaskEditDialog extends StatefulWidget {
   final Task task;
@@ -20,8 +21,6 @@ class TaskEditDialog extends StatefulWidget {
 }
 
 class _TaskEditDialogState extends State<TaskEditDialog> {
-  final repo = TaskRepository();
-
   late TextEditingController nameController;
   late TextEditingController descriptionController;
   late TextEditingController weightController;
@@ -173,11 +172,19 @@ class _TaskEditDialogState extends State<TaskEditDialog> {
 
                 const SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Cancel"),
+                      onPressed: () {
+                        context.read<TaskEditBloc>().add(
+                          RemoveTaskRequest(taskId: widget.task.taskId),
+                        );
+                        context.read<EditTaskListBloc>().add(
+                          RemoveFromTaskList(taskId: widget.task.taskId),
+                        );
+                        Navigator.pop(context);
+                      },
+                      child: const Text("remove"),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -207,7 +214,6 @@ class _TaskEditDialogState extends State<TaskEditDialog> {
                         context.read<TaskEditBloc>().add(
                           NewTaskAdded(task: editedTask),
                         );
-                        await repo.updateTask(editedTask);
                         if (!context.mounted) return;
                         Navigator.of(context).pop(editedTask);
                       },

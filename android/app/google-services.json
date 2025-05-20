@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "845917411115-msjnp451lrte37mdlo27n1j1u96l9o0l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taskora",
+            "certificate_hash": "fa4deee21b40a141c370378ca0a3a4d13c6f2ce2"
+          }
+        },
+        {
           "client_id": "845917411115-39d09votvecm2u2qn5fa67jmm444va8d.apps.googleusercontent.com",
           "client_type": 3
         }

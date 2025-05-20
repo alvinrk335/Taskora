@@ -107,6 +107,7 @@ class TaskCard extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     child: SizedBox(
                       width: 150,
+                      height: 150,
                       child: Text(
                         summaryMode == SummaryType.compact
                             ? task.toShortSummaryStringS()

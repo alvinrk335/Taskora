@@ -43,6 +43,7 @@ class TaskPreview extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
+                      repo.removeScheduleWithTask(schedule);
                       repo.addScheduleWithTask(schedule, uid);
                       Navigator.pushAndRemoveUntil(
                         context,

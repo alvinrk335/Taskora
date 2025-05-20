@@ -131,4 +131,14 @@ class ScheduleRepository {
     log("response from $url: ${jsonDecode(response.body)}");
   }
 
+  Future<void> removeScheduleWithTask(Schedule schedule) async {
+    final url = Uri.parse("$baseUrl/remove/withTask");
+    final body = jsonEncode({"schedule": schedule.toJson()});
+    final response = await http.post(url, headers: header, body: body);
+
+    if (response.statusCode != 200) {
+      throw Exception("failed editing schedule from server");
+    }
+    log("response from $url: ${jsonDecode(response.body)}");
+  }
 }
