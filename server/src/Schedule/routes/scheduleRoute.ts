@@ -230,10 +230,12 @@ scheduleRouter.post("/add/withTask", async (req, res) => {
   }
 })
 
-scheduleRouter.post("remove/withTask", async(req, res) => {
+scheduleRouter.post("/remove/withTask", async(req, res) => {
   try {
       const scheduleJson = req.body.schedule;
       const schedule = Schedule.fromJSON(scheduleJson);
+
+      console.log(`[REMOVE WITH TASK] gets : ${JSON.stringify(schedule.toJSON())}`);
     
       await repo.removeScheduleWithTask(schedule);
       return res.status(200).json({message: `success removing schedule ${schedule.getScheduleId} from db`})

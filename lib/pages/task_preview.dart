@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/calendar/calendar_bloc.dart';
+import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/bloc/task_preview/task_preview_bloc.dart';
 import 'package:taskora/model/entity/schedule.dart';
 import 'package:taskora/pages/navigation.dart';
@@ -17,6 +21,12 @@ class TaskPreview extends StatelessWidget {
     Schedule schedule = context.select(
       (TaskPreviewBloc bloc) => bloc.state.schedule,
     );
+    final oldScheduleState = context.read<CalendarBloc>().state;
+    Schedule oldSchedule = Schedule.empty();
+    if (oldScheduleState is CalendarLoaded) {
+      oldSchedule = oldScheduleState.schedule;
+    }
+    log("[TASK PREVIEW] in task preview : ${schedule.toJson()}");
     final authState = context.read<AuthBloc>().state;
     String uid = "";
     if (authState is LoggedIn) {
@@ -32,6 +42,7 @@ class TaskPreview extends StatelessWidget {
                 "Edited Task Preview",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
+
               Expanded(child: TaskPreviewList()),
               SizedBox(height: 40),
               Row(
@@ -43,7 +54,7 @@ class TaskPreview extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      repo.removeScheduleWithTask(schedule);
+                      repo.removeScheduleWithTask(oldSchedule);
                       repo.addScheduleWithTask(schedule, uid);
                       Navigator.pushAndRemoveUntil(
                         context,

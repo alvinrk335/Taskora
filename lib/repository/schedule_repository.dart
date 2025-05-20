@@ -132,8 +132,10 @@ class ScheduleRepository {
   }
 
   Future<void> removeScheduleWithTask(Schedule schedule) async {
-    final url = Uri.parse("$baseUrl/remove/withTask");
+    final url = Uri.parse("$baseUrl/schedule/remove/withTask");
     final body = jsonEncode({"schedule": schedule.toJson()});
+
+    log("$logHelper body : ${schedule.toJson()}");
     final response = await http.post(url, headers: header, body: body);
 
     if (response.statusCode != 200) {
