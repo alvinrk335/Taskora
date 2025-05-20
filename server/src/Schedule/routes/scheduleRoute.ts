@@ -222,6 +222,7 @@ scheduleRouter.post("/add/withTask", async (req, res) => {
     const scheduleJson = req.body.schedule;
     const schedule = Schedule.fromJSON(scheduleJson);
     const uid = req.body.uid;
+    console.log(`[ADD WITH TASK] gets : ${JSON.stringify(schedule.toJSON())}`);
     await repo.addScheduleWithTask(schedule, uid)
     return res.status(200).json({message: `success adding schedule ${JSON.stringify(schedule.toJSON())}`})
   } catch (error) {

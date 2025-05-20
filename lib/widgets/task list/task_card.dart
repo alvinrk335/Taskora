@@ -114,7 +114,7 @@ class TaskCard extends StatelessWidget {
                             : task.toSummaryString(),
                         style: TextStyle(fontSize: 14),
                         softWrap: true,
-                        overflow: TextOverflow.visible,
+                        overflow: TextOverflow.fade,
                         textAlign: TextAlign.left,
                       ),
                     ),

@@ -20,7 +20,6 @@ class TaskPreviewList extends StatelessWidget {
     List<Task> tasks = schedule.getTasks;
     return Wrap(
       children: [
-        Text("edited task preview"),
         for (Task task in tasks)
           TaskCard(
             task: task,
@@ -37,7 +36,7 @@ class TaskPreviewList extends StatelessWidget {
               );
             },
           ),
-      ]
+      ],
     );
   }
 }

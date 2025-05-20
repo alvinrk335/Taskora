@@ -33,40 +33,43 @@ class TaskPreview extends StatelessWidget {
       uid = authState.user.uid;
     }
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Text(
-                "Edited Task Preview",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Text(
+                  "Edited Task Preview",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
 
-              Expanded(child: TaskPreviewList()),
-              SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text("Cancel"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      repo.removeScheduleWithTask(oldSchedule);
-                      repo.addScheduleWithTask(schedule, uid);
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => Navigation()),
-                        (route) => false,
-                      );
-                    },
-                    child: Text("Confirm Changes"),
-                  ),
-                ],
-              ),
-            ],
+                TaskPreviewList(),
+                SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await repo.removeScheduleWithTask(oldSchedule);
+                        await repo.addScheduleWithTask(schedule, uid);
+                        if (!context.mounted) return;
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => Navigation()),
+                          (route) => false,
+                        );
+                      },
+                      child: Text("Confirm Changes"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
