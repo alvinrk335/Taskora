@@ -100,7 +100,8 @@ class _AddOrEditTaskDialogState extends State<AddOrEditTaskDialog> {
     return AlertDialog(
       contentPadding: const EdgeInsets.all(20),
       scrollable: true,
-      title: Text(isEdit ? "Edit Task" : "Add Task"),
+      title: Text(isEdit ? "View Details" : "Add Task"),
+
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

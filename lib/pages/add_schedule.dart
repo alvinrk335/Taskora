@@ -66,7 +66,10 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
 
   Future<void> optimizeAndAdd(BuildContext context) async {
     final state = context.read<AuthBloc>().state;
+<<<<<<< HEAD
+=======
 
+>>>>>>> 19e03416083a52dbc55c65818d121799ce284671
     Schedule schedule = await optimizeTask(context);
 
     String uid;
@@ -81,7 +84,9 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
@@ -156,7 +161,6 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                         if (!context.mounted) return;
                         optimizeAndAdd(context);
                         context.read<CalendarBloc>().add(ReloadRequest());
-
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (_) => Navigation()),
