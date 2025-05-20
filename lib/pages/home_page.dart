@@ -52,11 +52,8 @@ class HomePage extends StatelessWidget {
               if (authState is NotLoggedIn) {
                 return Text("log in to see tasks");
               } else if (authState is LoggedIn) {
-                final workHours =
-                    context.read<AvailableDaysBloc>().state.weeklyWorkHours;
                 return Column(
                   children: [
-                    Text(workHours as String),
                     BlocBuilder<CalendarBloc, CalendarState>(
                       builder: (scheduleContext, scheduleState) {
                         if (scheduleState is CalendarLoaded) {

@@ -20,6 +20,10 @@ export default class WorkHoursRepository{
             const workHoursDoc = await this.workHourCollection.doc(uid).get();
             const workHours = workHoursDoc.data();
             
+            if (!workHoursDoc.exists) {
+                console.log(`work hour is not found for this uid`);
+            }
+            
             return WorkHours.fromJson(workHours);
         } catch (error) {
             console.error(error)
