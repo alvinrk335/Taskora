@@ -13,16 +13,12 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create:
-              (_) =>
-                  AuthBloc(), 
-        ),
+        BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
         BlocProvider<NavbarBloc>(create: (_) => NavbarBloc()),
 
         BlocProvider(create: (_) => CalendarBloc()),
 
-        BlocProvider(create: (_) => AvailableDaysBloc())
+        BlocProvider(create: (_) => AvailableDaysBloc()),
       ],
       child: const MyApp(),
     ),

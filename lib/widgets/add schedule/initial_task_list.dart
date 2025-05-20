@@ -10,7 +10,6 @@ import 'package:taskora/widgets/task%20list/flat_task_card.dart';
 
 class InitialTaskList extends StatelessWidget {
   const InitialTaskList({super.key});
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaskAddBloc, TaskAddState>(

@@ -25,6 +25,7 @@ class DefaultAppbar extends StatelessWidget implements PreferredSizeWidget {
                 },
                 icon: CircleAvatar(
                   radius: 18, // smaller circle
+
                   backgroundImage: NetworkImage(authState.user.profilePicture),
                 ),
               );
@@ -34,6 +35,7 @@ class DefaultAppbar extends StatelessWidget implements PreferredSizeWidget {
                   authContext.read<AuthBloc>().add(LogIn());
                 },
                 child: Text("LOGIN"),
+
               );
             }
           },

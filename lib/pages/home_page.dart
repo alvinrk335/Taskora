@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+<<<<<<< HEAD
 import 'package:intl/intl.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
@@ -12,6 +13,8 @@ import 'package:taskora/widgets/appbar/default_appbar.dart';
 
 class HomePage extends StatelessWidget {
   final userRepo = UserRepository();
+  
+  final workHourRepo = WorkHoursRepository();
   HomePage({super.key});
 
   List<Task> getTodaysTasks(List<Task> tasks) {
@@ -148,8 +151,19 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-      listener: (authContext, authState) {
+
+      listener: (authContext, authState) async {
         if (authState is LoggedIn) {
+          final uid = authState.user.uid;
+
+          // Ambil work hours setelah login
+          final workHours = await workHourRepo.getWorkHoursByUid(uid);
+          if (!context.mounted) return;
+
+          context.read<AvailableDaysBloc>().add(
+            SetWeeklyWorkHours(weeklyHours: workHours.toMap()),
+          );
+
           final calendarState = context.read<CalendarBloc>().state;
           if (calendarState is CalendarInitial) {
             context.read<CalendarBloc>().add(LoadRequest(authState.user.uid));

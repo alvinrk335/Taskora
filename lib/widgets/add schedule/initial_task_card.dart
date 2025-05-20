@@ -13,6 +13,7 @@ class InitialTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return GestureDetector(
       onTap: () {
         showDialog(
