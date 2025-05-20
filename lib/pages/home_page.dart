@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-<<<<<<< HEAD
 import 'package:intl/intl.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/available_days/available_days_bloc.dart';
+import 'package:taskora/bloc/available_days/available_days_event.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_event.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/repository/user_repository.dart';
+import 'package:taskora/repository/workhours_repository.dart';
 import 'package:taskora/widgets/appbar/default_appbar.dart';
 
 class HomePage extends StatelessWidget {

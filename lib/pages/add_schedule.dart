@@ -66,10 +66,7 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
 
   Future<void> optimizeAndAdd(BuildContext context) async {
     final state = context.read<AuthBloc>().state;
-<<<<<<< HEAD
-=======
 
->>>>>>> 19e03416083a52dbc55c65818d121799ce284671
     Schedule schedule = await optimizeTask(context);
 
     String uid;
@@ -126,7 +123,10 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
             ],
           ),
 
-          const InitialTaskList(),
+          BlocProvider.value(
+            value: context.read<TaskAddBloc>(),
+            child: const InitialTaskList(),
+          ),
           const SizedBox(height: 40),
 
           BlocBuilder<TaskAddBloc, TaskAddState>(
@@ -160,6 +160,14 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
 
                         if (!context.mounted) return;
                         optimizeAndAdd(context);
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder:
+                              (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                        );
                         context.read<CalendarBloc>().add(ReloadRequest());
                         Navigator.pushAndRemoveUntil(
                           context,
