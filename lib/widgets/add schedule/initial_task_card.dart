@@ -13,54 +13,66 @@ class InitialTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.black),
-      ),
-      color: Colors.white,
-      child: InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder:
-                (_) => BlocProvider.value(
-                  value: context.read<TaskAddBloc>(),
-                  child: MultiBlocProvider(
-                    providers: [
-                      BlocProvider(create: (_) => TaskTypeBloc()),
-                      BlocProvider(create: (_) => TaskPriorityBloc()),
-                    ],
-                    child: AddOrEditTaskDialog(initialTask: task),
-                  ),
-                ),
-          );
-        },
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (_) => BlocProvider.value(
+            value: context.read<TaskAddBloc>(),
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => TaskTypeBloc()),
+                BlocProvider(create: (_) => TaskPriorityBloc()),
+              ],
+              child: AddOrEditTaskDialog(initialTask: task),
+            ),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-                task.taskName.toString(),
-                overflow: TextOverflow.ellipsis,
-              ),
+            Row(
+              children: [
+                Text(
+                  task.taskName.toString(),
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color(0xFF80CBC4),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Deadline: ${task.deadline?.toString().split(" ")[0] ?? 'None'}',
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
             ),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Text(
-                "Deadline: ${task.deadline?.toString() ?? 'None'}\n"
-                "Type: ${task.type.toString()}\n"
-                "Description: ${task.description.toString()}\n"
-                "Priority: ${task.priority.toString()}",
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+            const SizedBox(height: 8),
+            const Text('Description:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            Text(task.description.value, style: const TextStyle(color: Colors.white)),
+            const SizedBox(height: 8),
+            Text('Priority: ${task.priority}', style: const TextStyle(color: Colors.white)),
+            Text('Type: ${task.type.toString().split('.').last}', style: const TextStyle(color: Colors.white)),
           ],
         ),
-      ),
+      )),
     );
   }
 }

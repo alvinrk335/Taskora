@@ -77,7 +77,7 @@ class _TaskEditDialogState extends State<TaskEditDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  "Edit Task",
+                  "View Details",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),

@@ -2,9 +2,6 @@ class Description {
   final String value;
 
   Description(this.value) {
-    if (value.trim().isEmpty) {
-      throw ArgumentError("Description cannot be empty or blank");
-    }
     if (value.length > 500) {
       throw ArgumentError("Description is too long (max 500 characters)");
     }

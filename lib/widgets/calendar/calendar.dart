@@ -51,7 +51,8 @@ class Calendar extends StatelessWidget {
             },
           );
         } else {
-          return const Center(child: Text("log in to see schedule"));
+          return const Center(child: Text("login to see schedule"));
+
         }
       },
     );

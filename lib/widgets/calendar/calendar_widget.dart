@@ -40,7 +40,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   }
 
   List<Task> _getEventsForDay(DateTime day) {
-    return widget.events[day] ?? [];
+    // Normalize to year/month/day to match event keys
+    final normalizedDay = DateTime(day.year, day.month, day.day);
+    return widget.events[normalizedDay] ?? [];
   }
 
   @override
@@ -80,6 +82,28 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 selectedDayPredicate: (day) => isSameDay(day, selectedDay),
                 eventLoader: (day) => _getEventsForDay(day),
                 onDaySelected: _onDaySelected,
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, date, events) {
+                    // Normalize date for event matching
+                    final normalizedDate = DateTime(date.year, date.month, date.day);
+                    final hasEvents = widget.events[normalizedDate]?.isNotEmpty ?? false;
+                    if (hasEvents) {
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFFB74D), // orange
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }
+                    return null;
+                  },
+                ),
               ),
             ),
           ),
