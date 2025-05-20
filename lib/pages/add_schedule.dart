@@ -122,7 +122,10 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
             ],
           ),
 
-          const InitialTaskList(),
+          BlocProvider.value(
+            value: context.read<TaskAddBloc>(),
+            child: const InitialTaskList(),
+          ),
           const SizedBox(height: 40),
 
           BlocBuilder<TaskAddBloc, TaskAddState>(
@@ -137,25 +140,51 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                     ),
                     TextButton(
                       onPressed: () async {
-                        //get working hour from state
-                        final Map<String, double> workingHours =
-                            context
-                                .read<AvailableDaysBloc>()
-                                .state
-                                .weeklyWorkHours;
-                        //get uid
-                        final authState = context.read<AuthBloc>().state;
-                        String uid = "";
-                        if (authState is LoggedIn) {
-                          uid = authState.user.uid;
-                        }
-                        await workHoursRepo.addWorkHours(
-                          WorkHours.fromMap(workingHours),
-                          uid,
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder:
+                              (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                         );
+
+                        try {
+                          final Map<String, double> workingHours =
+                              context
+                                  .read<AvailableDaysBloc>()
+                                  .state
+                                  .weeklyWorkHours;
+
+                          final authState = context.read<AuthBloc>().state;
+                          String uid = "";
+                          if (authState is LoggedIn) {
+                            uid = authState.user.uid;
+                          }
+
+                          await workHoursRepo.addWorkHours(
+                            WorkHours.fromMap(workingHours),
+                            uid,
+                          );
+
+                          await optimizeAndAdd(context);
+                        } finally {
+                          // Tutup dialog loading
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        }
 
                         if (!context.mounted) return;
                         optimizeAndAdd(context);
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder:
+                              (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                        );
                         context.read<CalendarBloc>().add(ReloadRequest());
                         Navigator.pushAndRemoveUntil(
                           context,

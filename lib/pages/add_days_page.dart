@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_event.dart';
 import 'package:taskora/bloc/available_days/available_days_state.dart';
+import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
 import 'package:taskora/pages/add_schedule.dart';
 import 'package:taskora/widgets/add%20available%20days/add_available_days_dialog.dart';
 import 'package:taskora/widgets/add%20available%20days/days_card.dart';
@@ -28,8 +29,6 @@ class _AddDaysPageState extends State<AddDaysPage> {
       lastDate: DateTime(2100),
     );
 
-
-    
     if (picked != null) {
       setState(() {
         excludedDay = picked;
@@ -42,8 +41,6 @@ class _AddDaysPageState extends State<AddDaysPage> {
     }
   }
 
-
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +74,7 @@ class _AddDaysPageState extends State<AddDaysPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DaysCard(workingHours: daysState.weeklyWorkHours),
-                  
+
                       const SizedBox(height: 70),
                       const Text("Add specific excluded dates (optional)"),
                       const SizedBox(height: 30),
@@ -89,7 +86,7 @@ class _AddDaysPageState extends State<AddDaysPage> {
                           suffixIcon: Icon(Icons.calendar_today),
                         ),
                       ),
-                  
+
                       Padding(
                         padding: EdgeInsets.all(16),
                         child: Text(
@@ -104,7 +101,11 @@ class _AddDaysPageState extends State<AddDaysPage> {
                                 () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => AddSchedule(),
+                                    builder:
+                                        (context) => BlocProvider(
+                                          create: (_) => TaskAddBloc(),
+                                          child: AddSchedule(),
+                                        ),
                                   ),
                                 ),
                             child: Text("next"),

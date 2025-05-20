@@ -10,7 +10,9 @@ class Description {
   factory Description.fromString(String desc) {
     return Description(desc);
   }
-
+  bool get isNotEmpty => value.isNotEmpty;
+  bool get isEmpty => value.isEmpty;
+  
   @override
   String toString() {
     return value;
