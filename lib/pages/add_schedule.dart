@@ -66,7 +66,6 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
 
   Future<void> optimizeAndAdd(BuildContext context) async {
     final state = context.read<AuthBloc>().state;
-
     Schedule schedule = await optimizeTask(context);
 
     String uid;
