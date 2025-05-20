@@ -15,7 +15,7 @@ import 'package:taskora/widgets/appbar/default_appbar.dart';
 
 class HomePage extends StatelessWidget {
   final userRepo = UserRepository();
-  
+
   final workHourRepo = WorkHoursRepository();
   HomePage({super.key});
 
@@ -23,14 +23,18 @@ class HomePage extends StatelessWidget {
     final now = DateTime.now();
     return tasks.where((task) {
       // Check if any workload is scheduled for today
-      final hasWorkloadToday = task.workload.keys.any((date) =>
-        date.year == now.year && date.month == now.month && date.day == now.day
+      final hasWorkloadToday = task.workload.keys.any(
+        (date) =>
+            date.year == now.year &&
+            date.month == now.month &&
+            date.day == now.day,
       );
       // Also include if deadline is today
-      final isDeadlineToday = task.deadline != null &&
-        task.deadline!.year == now.year &&
-        task.deadline!.month == now.month &&
-        task.deadline!.day == now.day;
+      final isDeadlineToday =
+          task.deadline != null &&
+          task.deadline!.year == now.year &&
+          task.deadline!.month == now.month &&
+          task.deadline!.day == now.day;
       return hasWorkloadToday || isDeadlineToday;
     }).toList();
   }
@@ -44,10 +48,22 @@ class HomePage extends StatelessWidget {
     }).toList();
   }
 
+  String prioFromNumber(int prio) {
+    if (prio == 1) {
+      return "low";
+    } else if (prio == 2) {
+      return "medium";
+    } else if (prio == 3) {
+      return "high";
+    }
+    return "invalid priority";
+  }
+
   Widget buildEventCard(Task task) {
-    final deadlineStr = task.deadline != null
-        ? DateFormat('dd - MM - yyyy').format(task.deadline!)
-        : 'No deadline';
+    final deadlineStr =
+        task.deadline != null
+            ? DateFormat('dd - MM - yyyy').format(task.deadline!)
+            : 'No deadline';
     return Card(
       color: const Color(0xFF1E1E1E),
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -67,6 +83,7 @@ class HomePage extends StatelessWidget {
                     fontSize: 18,
                     color: Color(0xFF80CBC4),
                   ),
+                  overflow: TextOverflow.fade,
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -77,15 +94,31 @@ class HomePage extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
+                  overflow: TextOverflow.fade,
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            const Text('Description:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            Text(task.description.value, style: const TextStyle(color: Colors.white)),
+            const Text(
+              'Description:',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              task.description.value,
+              style: const TextStyle(color: Colors.white),
+            ),
             const SizedBox(height: 8),
-            Text('Priority: ${task.priority}', style: const TextStyle(color: Colors.white)),
-            Text('Type: ${task.type.toString().split('.').last}', style: const TextStyle(color: Colors.white)),
+            Text(
+              'Priority: ${prioFromNumber(task.priority)}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            Text(
+              'Type: ${task.type.toString().split('.').last}',
+              style: const TextStyle(color: Colors.white),
+            ),
           ],
         ),
       ),
@@ -93,16 +126,19 @@ class HomePage extends StatelessWidget {
   }
 
   Widget buildTodayEventCard(Task task) {
-    final deadlineStr = task.deadline != null
-        ? DateFormat('dd - MM - yyyy').format(task.deadline!)
-        : 'No deadline';
+    final deadlineStr =
+        task.deadline != null
+            ? DateFormat('dd - MM - yyyy').format(task.deadline!)
+            : 'No deadline';
     // Sum all workload for today (ignore time)
     final now = DateTime.now();
     final todayWorkload = task.workload.entries
-        .where((entry) =>
-            entry.key.year == now.year &&
-            entry.key.month == now.month &&
-            entry.key.day == now.day)
+        .where(
+          (entry) =>
+              entry.key.year == now.year &&
+              entry.key.month == now.month &&
+              entry.key.day == now.day,
+        )
         .fold<double>(0, (sum, entry) => sum + entry.value.toNumber());
     return Card(
       color: const Color(0xFF1E1E1E),
@@ -124,6 +160,7 @@ class HomePage extends StatelessWidget {
                     fontSize: 18,
                     color: Color(0xFF80CBC4),
                   ),
+                  overflow: TextOverflow.fade,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -133,6 +170,7 @@ class HomePage extends StatelessWidget {
                     color: Colors.white,
                     fontSize: 14,
                   ),
+                  overflow: TextOverflow.fade,
                 ),
               ],
             ),
@@ -142,7 +180,8 @@ class HomePage extends StatelessWidget {
                 fontFamily: 'Montserrat',
                 color: Color.fromARGB(255, 255, 255, 255),
                 fontWeight: FontWeight.bold,
-                fontSize: 14),
+                fontSize: 14,
+              ),
             ),
           ],
         ),
@@ -153,7 +192,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-
       listener: (authContext, authState) async {
         if (authState is LoggedIn) {
           final uid = authState.user.uid;
@@ -187,7 +225,10 @@ class HomePage extends StatelessWidget {
                     final todaysTasks = getTodaysTasks(allTasks);
                     final upcomingTasks = getUpcomingTasks(allTasks);
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 24,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -201,7 +242,10 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           if (todaysTasks.isEmpty)
-                            const Text("No events for today.", style: TextStyle(color: Colors.white70)),
+                            const Text(
+                              "No events for today.",
+                              style: TextStyle(color: Colors.white70),
+                            ),
                           ...todaysTasks.map(buildTodayEventCard),
                           const SizedBox(height: 32),
                           Text(
@@ -214,13 +258,21 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           if (upcomingTasks.isEmpty)
-                            const Text("No upcoming events.", style: TextStyle(color: Colors.white70)),
+                            const Text(
+                              "No upcoming events.",
+                              style: TextStyle(color: Colors.white70),
+                            ),
                           ...upcomingTasks.map(buildEventCard),
                         ],
                       ),
                     );
                   }
-                  return const Center(child: Text("Schedule empty", style: TextStyle(color: Colors.white70)));
+                  return const Center(
+                    child: Text(
+                      "Schedule empty",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  );
                 },
               );
             }
