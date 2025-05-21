@@ -66,7 +66,11 @@ class _EditPageState extends State<EditPage> {
     } else if (promptState is PromptTextfieldOpened) {
       return Container(
         decoration: BoxDecoration(
+<<<<<<< HEAD
           color: Colors.grey[200],
+=======
+          color: const Color.fromARGB(255, 51, 51, 51),
+>>>>>>> master
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(12),
@@ -79,6 +83,7 @@ class _EditPageState extends State<EditPage> {
               decoration: InputDecoration(
                 hintText: "e.g. jumat minggu depan gabisa",
                 filled: true,
+<<<<<<< HEAD
                 fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -88,6 +93,9 @@ class _EditPageState extends State<EditPage> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: Colors.blueAccent, width: 2),
                 ),
+=======
+                fillColor: const Color.fromARGB(255, 61, 61, 61),
+>>>>>>> master
                 contentPadding: EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 20,

@@ -5,7 +5,11 @@ import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/navbar/navbar_bloc.dart';
+<<<<<<< HEAD
 import 'package:taskora/pages/navigation.dart';
+=======
+import 'package:taskora/pages/login_prompt_page.dart';
+>>>>>>> master
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +64,11 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.black,
         ),
       ),
+<<<<<<< HEAD
       home: Navigation(),
+=======
+      home: LoginPromptPage(),
+>>>>>>> master
     );
   }
 }

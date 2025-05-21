@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+// ignore_for_file: deprecated_member_use
+
+>>>>>>> master
 import 'package:flutter/material.dart';
 import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/model/value%20object/card_type.dart';
@@ -37,7 +42,13 @@ class TaskCard extends StatelessWidget {
         height: 20, // Set explicit height for smaller button
         decoration: BoxDecoration(
           color: Colors.white,
+<<<<<<< HEAD
           borderRadius: BorderRadius.circular(14), // Half of height for perfect circle ends
+=======
+          borderRadius: BorderRadius.circular(
+            14,
+          ), // Half of height for perfect circle ends
+>>>>>>> master
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -56,7 +67,14 @@ class TaskCard extends StatelessWidget {
               }
             },
             child: Padding(
+<<<<<<< HEAD
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Reduced padding
+=======
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 4,
+              ), // Reduced padding
+>>>>>>> master
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -120,7 +138,14 @@ class TaskCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Container(
+<<<<<<< HEAD
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+=======
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+>>>>>>> master
                           decoration: BoxDecoration(
                             color: const Color(0xFF80CBC4).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(4),
@@ -141,11 +166,15 @@ class TaskCard extends StatelessWidget {
                   buildEditButton(),
                 ],
               ),
+<<<<<<< HEAD
               Divider(
                 color: Colors.white24,
                 thickness: 1,
                 height: 24,
               ),
+=======
+              Divider(color: Colors.white24, thickness: 1, height: 24),
+>>>>>>> master
               const SizedBox(height: 12),
               Expanded(
                 child: SingleChildScrollView(
@@ -155,11 +184,25 @@ class TaskCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
+<<<<<<< HEAD
                           Icon(Icons.calendar_today, size: 16, color: Colors.white70),
                           const SizedBox(width: 8),
                           Text(
                             task.deadline?.toString().split(' ')[0] ?? 'No deadline',
                             style: textStyle,
+=======
+                          Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Colors.white70,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            task.deadline?.toString().split(' ')[0] ??
+                                'No deadline',
+                            style: textStyle,
+                            overflow: TextOverflow.fade,
+>>>>>>> master
                           ),
                         ],
                       ),
@@ -168,10 +211,14 @@ class TaskCard extends StatelessWidget {
                         children: [
                           Icon(Icons.flag, size: 16, color: Colors.white70),
                           const SizedBox(width: 8),
+<<<<<<< HEAD
                           Text(
                             'Priority: ${task.priority}',
                             style: textStyle,
                           ),
+=======
+                          Text('Priority: ${task.priority}', style: textStyle),
+>>>>>>> master
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -240,9 +287,20 @@ class TaskCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Container(
+<<<<<<< HEAD
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF80CBC4).withOpacity(0.15),
+=======
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF80CBC4,
+                                ).withOpacity(0.15),
+>>>>>>> master
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -261,11 +319,15 @@ class TaskCard extends StatelessWidget {
                       buildEditButton(),
                     ],
                   ),
+<<<<<<< HEAD
                   Divider(
                     color: Colors.white24,
                     thickness: 1,
                     height: 24,
                   ),
+=======
+                  Divider(color: Colors.white24, thickness: 1, height: 24),
+>>>>>>> master
                   const SizedBox(height: 12),
                   Expanded(
                     child: SingleChildScrollView(
@@ -275,10 +337,22 @@ class TaskCard extends StatelessWidget {
                         children: [
                           Row(
                             children: [
+<<<<<<< HEAD
                               Icon(Icons.calendar_today, size: 16, color: Colors.white70),
                               const SizedBox(width: 8),
                               Text(
                                 task.deadline?.toString().split(' ')[0] ?? 'No deadline',
+=======
+                              Icon(
+                                Icons.calendar_today,
+                                size: 16,
+                                color: Colors.white70,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                task.deadline?.toString().split(' ')[0] ??
+                                    'No deadline',
+>>>>>>> master
                                 style: textStyle,
                               ),
                             ],

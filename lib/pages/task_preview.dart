@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+import 'dart:async';
+>>>>>>> master
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
+<<<<<<< HEAD
+=======
+import 'package:taskora/bloc/calendar/calendar_event.dart';
+>>>>>>> master
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/bloc/task_preview/task_preview_bloc.dart';
@@ -55,6 +63,7 @@ class TaskPreview extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () async {
+<<<<<<< HEAD
                         await repo.removeScheduleWithTask(oldSchedule);
                         await repo.addScheduleWithTask(schedule, uid);
                         if (!context.mounted) return;
@@ -63,6 +72,55 @@ class TaskPreview extends StatelessWidget {
                           MaterialPageRoute(builder: (_) => Navigation()),
                           (route) => false,
                         );
+=======
+                        // Show loading indicator
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => const Center(child: CircularProgressIndicator()),
+                        );
+                        
+                        try {
+                          // First update the schedule
+                          await repo.removeScheduleWithTask(oldSchedule);
+                          await repo.addScheduleWithTask(schedule, uid);
+
+                          if (!context.mounted) return;
+
+                          // Trigger a calendar reload before navigation
+                          context.read<CalendarBloc>().add(ReloadRequest());
+                          
+                          // Add a small delay to allow the calendar to reload
+                          await Future.delayed(const Duration(milliseconds: 100));
+                          
+                          // Close loading dialog and navigate home
+                          if (!context.mounted) return;
+                          Navigator.pop(context); // Close loading dialog
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => Navigation()),
+                            (route) => false,
+                          );
+                          
+                          if (!context.mounted) return;
+                          
+                          // Close loading dialog and navigate home
+                          Navigator.pop(context); // Close loading dialog
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => Navigation()),
+                            (route) => false,
+                          );
+                        } catch (e) {
+                          // If error, close loading and show error
+                          if (context.mounted) {
+                            Navigator.pop(context); // Close loading dialog
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error updating schedule: $e')),
+                            );
+                          }
+                        }
+>>>>>>> master
                       },
                       child: Text("Confirm Changes"),
                     ),

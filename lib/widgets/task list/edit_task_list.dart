@@ -52,6 +52,7 @@ class EditTaskList extends StatelessWidget {
       builder: (editTaskListContext, editTaskListState) {
         final scheduleState = context.read<CalendarBloc>().state;
         Schedule? schedule;
+<<<<<<< HEAD
         if (scheduleState is CalendarLoaded) {
           schedule = scheduleState.schedule;
         }
@@ -60,6 +61,19 @@ class EditTaskList extends StatelessWidget {
             AddToTaskList(task: task),
           );
         }
+=======
+        
+        if (scheduleState is CalendarLoaded) {
+          schedule = scheduleState.schedule;
+
+          for (Task task in schedule.getTasks) {
+            editTaskListContext.read<EditTaskListBloc>().add(
+              AddToTaskList(task: task),
+            );
+          }
+        }
+        
+>>>>>>> master
         List<Task> tasks = editTaskListState.tasks;
         sortTaskByDeadline(tasks);
         if (tasks.isNotEmpty) {

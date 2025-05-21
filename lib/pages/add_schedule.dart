@@ -67,9 +67,12 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
   Future<void> optimizeAndAdd(BuildContext context) async {
     final state = context.read<AuthBloc>().state;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 19e03416083a52dbc55c65818d121799ce284671
+=======
+>>>>>>> master
     Schedule schedule = await optimizeTask(context);
 
     String uid;
@@ -126,7 +129,14 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
             ],
           ),
 
+<<<<<<< HEAD
           const InitialTaskList(),
+=======
+          BlocProvider.value(
+            value: context.read<TaskAddBloc>(),
+            child: const InitialTaskList(),
+          ),
+>>>>>>> master
           const SizedBox(height: 40),
 
           BlocBuilder<TaskAddBloc, TaskAddState>(
@@ -141,6 +151,7 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                     ),
                     TextButton(
                       onPressed: () async {
+<<<<<<< HEAD
                         //get working hour from state
                         final Map<String, double> workingHours =
                             context
@@ -160,6 +171,53 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
 
                         if (!context.mounted) return;
                         optimizeAndAdd(context);
+=======
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder:
+                              (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                        );
+
+                        try {
+                          final Map<String, double> workingHours =
+                              context
+                                  .read<AvailableDaysBloc>()
+                                  .state
+                                  .weeklyWorkHours;
+
+                          final authState = context.read<AuthBloc>().state;
+                          String uid = "";
+                          if (authState is LoggedIn) {
+                            uid = authState.user.uid;
+                          }
+
+                          await workHoursRepo.addWorkHours(
+                            WorkHours.fromMap(workingHours),
+                            uid,
+                          );
+
+                          await optimizeAndAdd(context);
+                        } finally {
+                          // Tutup dialog loading
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        }
+
+                        if (!context.mounted) return;
+                        optimizeAndAdd(context);
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder:
+                              (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                        );
+>>>>>>> master
                         context.read<CalendarBloc>().add(ReloadRequest());
                         Navigator.pushAndRemoveUntil(
                           context,

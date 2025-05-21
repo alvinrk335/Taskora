@@ -10,6 +10,26 @@ import 'package:taskora/widgets/task%20list/flat_task_card.dart';
 
 class InitialTaskList extends StatelessWidget {
   const InitialTaskList({super.key});
+<<<<<<< HEAD
+=======
+
+  
+  void _showEditDialog(BuildContext context, InitialTask task) {
+    showDialog(
+      context: context,
+      builder: (ctx) => BlocProvider.value(
+        value: context.read<TaskAddBloc>(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => TaskTypeBloc()),
+            BlocProvider(create: (_) => TaskPriorityBloc()),
+          ],
+          child: AddOrEditTaskDialog(initialTask: task),
+        ),
+      ),
+    );
+  }
+>>>>>>> master
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaskAddBloc, TaskAddState>(
@@ -27,6 +47,7 @@ class InitialTaskList extends StatelessWidget {
           );
         }
 
+<<<<<<< HEAD
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: state.tasks.length,
@@ -37,11 +58,27 @@ class InitialTaskList extends StatelessWidget {
               onTap: () => _showEditDialog(context, task),
             );
           },
+=======
+        return SizedBox(
+          height: 300,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: state.tasks.length,
+            itemBuilder: (itemContext, index) {
+              final task = state.tasks[index];
+              return FlatTaskCard(
+                task: task,
+                onTap: () => _showEditDialog(context, task),
+              );
+            },
+          ),
+>>>>>>> master
         );
       },
     );
   }
 
+<<<<<<< HEAD
   void _showEditDialog(BuildContext context, InitialTask task) {
     showDialog(
       context: context,
@@ -57,4 +94,6 @@ class InitialTaskList extends StatelessWidget {
       ),
     );
   }
+=======
+>>>>>>> master
 }

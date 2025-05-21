@@ -5,8 +5,21 @@ class AvailableDaysState {
 
   const AvailableDaysState({
     required this.dates,
+<<<<<<< HEAD
     required this.weeklyWorkHours,
   });
+=======
+    Map<String, double>? weeklyWorkHours,
+  }) : weeklyWorkHours = weeklyWorkHours ?? const {
+    'Monday': 8,
+    'Tuesday': 8,
+    'Wednesday': 8,
+    'Thursday': 8,
+    'Friday': 8,
+    'Saturday': 8,
+    'Sunday': 8,
+  };
+>>>>>>> master
 
   Map<String, double> getAvailableTimePerDate() {
     final Map<String, double> result = {};

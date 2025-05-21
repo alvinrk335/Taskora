@@ -16,7 +16,11 @@ class WorkHoursRepository {
     final response = await http.post(url, headers: header, body: body);
 
     if (response.statusCode != 200) {
+<<<<<<< HEAD
       throw Exception("error from $url :$response");
+=======
+      throw Exception("error from $url :${response.body}");
+>>>>>>> master
     }
 
     log("$logHelper reponse from $url: ${jsonDecode(response.body)}");

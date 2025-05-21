@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import 'package:intl/intl.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
+=======
+import 'package:intl/intl.dart';
+import 'package:taskora/bloc/auth/auth_bloc.dart';
+import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/available_days/available_days_bloc.dart';
+import 'package:taskora/bloc/available_days/available_days_event.dart';
+>>>>>>> master
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_event.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/repository/user_repository.dart';
+<<<<<<< HEAD
+=======
+import 'package:taskora/repository/workhours_repository.dart';
+>>>>>>> master
 import 'package:taskora/widgets/appbar/default_appbar.dart';
 
 class HomePage extends StatelessWidget {
@@ -19,6 +31,7 @@ class HomePage extends StatelessWidget {
 
   List<Task> getTodaysTasks(List<Task> tasks) {
     final now = DateTime.now();
+<<<<<<< HEAD
     return tasks.where((task) {
       // Check if any workload is scheduled for today
       final hasWorkloadToday = task.workload.keys.any((date) =>
@@ -30,15 +43,48 @@ class HomePage extends StatelessWidget {
         task.deadline!.month == now.month &&
         task.deadline!.day == now.day;
       return hasWorkloadToday || isDeadlineToday;
+=======
+    final today = DateTime(now.year, now.month, now.day);
+    return tasks.where((task) {
+      // Only show tasks that have workload scheduled for today
+      return task.workload.keys.any((date) {
+        final scheduleDate = DateTime(date.year, date.month, date.day);
+        return scheduleDate.isAtSameMomentAs(today);
+      });
+>>>>>>> master
     }).toList();
   }
 
   List<Task> getUpcomingTasks(List<Task> tasks) {
     final now = DateTime.now();
+<<<<<<< HEAD
     return tasks.where((task) {
       if (task.deadline == null) return false;
       final d = task.deadline!;
       return d.isAfter(DateTime(now.year, now.month, now.day));
+=======
+    final tomorrow = DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
+    return tasks.where((task) {
+      // Show tasks that either:
+      // 1. Have workload scheduled for future dates
+      bool hasFutureWorkload = task.workload.keys.any((date) {
+        final scheduleDate = DateTime(date.year, date.month, date.day);
+        return scheduleDate.isAfter(tomorrow.subtract(const Duration(days: 1)));
+      });
+      
+      // 2. Have a deadline in the future
+      bool hasFutureDeadline = false;
+      if (task.deadline != null) {
+        final deadlineDate = DateTime(
+          task.deadline!.year, 
+          task.deadline!.month, 
+          task.deadline!.day
+        );
+        hasFutureDeadline = deadlineDate.isAfter(tomorrow.subtract(const Duration(days: 1)));
+      }
+      
+      return hasFutureWorkload || hasFutureDeadline;
+>>>>>>> master
     }).toList();
   }
 

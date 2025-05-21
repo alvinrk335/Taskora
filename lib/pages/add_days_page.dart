@@ -5,6 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_event.dart';
 import 'package:taskora/bloc/available_days/available_days_state.dart';
+<<<<<<< HEAD
+=======
+import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
+>>>>>>> master
 import 'package:taskora/pages/add_schedule.dart';
 import 'package:taskora/widgets/add%20available%20days/add_available_days_dialog.dart';
 import 'package:taskora/widgets/add%20available%20days/days_card.dart';
@@ -28,8 +32,11 @@ class _AddDaysPageState extends State<AddDaysPage> {
       lastDate: DateTime(2100),
     );
 
+<<<<<<< HEAD
 
     
+=======
+>>>>>>> master
     if (picked != null) {
       setState(() {
         excludedDay = picked;
@@ -42,6 +49,7 @@ class _AddDaysPageState extends State<AddDaysPage> {
     }
   }
 
+<<<<<<< HEAD
 
   
   @override
@@ -78,6 +86,46 @@ class _AddDaysPageState extends State<AddDaysPage> {
                     children: [
                       DaysCard(workingHours: daysState.weeklyWorkHours),
                   
+=======
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AvailableDaysBloc, AvailableDaysState>(
+      builder: (context, state) {
+        final hasWorkHours = state.weeklyWorkHours.values.any((v) => v != 0);
+        return Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back),
+            ),
+          ),
+          body: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (_) => AddAvailableDaysDialog(),
+                    ),
+                    icon: Icon(
+                      hasWorkHours ? Icons.edit : Icons.add,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    hasWorkHours ? 'Edit your daily working hours' : 'Add your daily working hours',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+              if (state.weeklyWorkHours.isNotEmpty) ...[
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DaysCard(workingHours: state.weeklyWorkHours),
+>>>>>>> master
                       const SizedBox(height: 70),
                       const Text("Add specific excluded dates (optional)"),
                       const SizedBox(height: 30),
@@ -89,17 +137,25 @@ class _AddDaysPageState extends State<AddDaysPage> {
                           suffixIcon: Icon(Icons.calendar_today),
                         ),
                       ),
+<<<<<<< HEAD
                   
                       Padding(
                         padding: EdgeInsets.all(16),
                         child: Text(
                           "Dates : \n${daysState.dates.map((e) => e.toString()).join("\n")}",
+=======
+                      Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text(
+                          "Dates : \n${state.dates.map((e) => e.toString()).join("\n")}",
+>>>>>>> master
                         ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           TextButton(
+<<<<<<< HEAD
                             onPressed:
                                 () => Navigator.push(
                                   context,
@@ -108,11 +164,25 @@ class _AddDaysPageState extends State<AddDaysPage> {
                                   ),
                                 ),
                             child: Text("next"),
+=======
+                            onPressed: () => Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                  create: (_) => TaskAddBloc(),
+                                  child: AddSchedule(),
+                                ),
+                              ),
+                              (route) => false,
+                            ),
+                            child: Text("done"),
+>>>>>>> master
                           ),
                         ],
                       ),
                     ],
                   ),
+<<<<<<< HEAD
                 );
               } else if (daysState.weeklyWorkHours.isEmpty) {
                 return Center(
@@ -124,6 +194,20 @@ class _AddDaysPageState extends State<AddDaysPage> {
           ),
         ],
       ),
+=======
+                ),
+              ] else if (state.weeklyWorkHours.isEmpty) ...[
+                Center(
+                  child: Text("Please add your daily working hours"),
+                ),
+              ] else ...[
+                Text("error no state"),
+              ],
+            ],
+          ),
+        );
+      },
+>>>>>>> master
     );
   }
 }

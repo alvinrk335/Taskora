@@ -1,5 +1,9 @@
 import { Router } from "express";
 import WorkHoursRepository from "../repository/workHoursRepository";
+<<<<<<< HEAD
+=======
+import { WorkHours } from "../entity/WorkHours";
+>>>>>>> master
 
 const workHoursRouter = Router();
 const repo = new WorkHoursRepository();
@@ -17,8 +21,15 @@ workHoursRouter.get("/get/byUid", async (req, res)=>{
 
 workHoursRouter.post("/add", async (req, res)=>{
     try {
+<<<<<<< HEAD
         const workHours = req.body.workHours;
         const uid = req.body.uid;
+=======
+        const workHoursJson = req.body.workHours;
+        const uid = req.body.uid;
+        const workHours = WorkHours.fromJson(workHoursJson)
+
+>>>>>>> master
         await repo.addWorkHours(workHours, uid);
 
         return res.status(200).json({message: "success adding workhours to db"})
