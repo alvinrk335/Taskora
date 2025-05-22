@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
@@ -12,10 +11,12 @@ import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/repository/user_repository.dart';
 import 'package:taskora/repository/workhours_repository.dart';
 import 'package:taskora/widgets/appbar/default_appbar.dart';
+import 'package:taskora/widgets/home%20page/all_event_list.dart';
+import 'package:taskora/widgets/home%20page/today_event_list.dart';
 
 class HomePage extends StatelessWidget {
   final userRepo = UserRepository();
-  
+
   final workHourRepo = WorkHoursRepository();
   HomePage({super.key});
 
@@ -23,14 +24,18 @@ class HomePage extends StatelessWidget {
     final now = DateTime.now();
     return tasks.where((task) {
       // Check if any workload is scheduled for today
-      final hasWorkloadToday = task.workload.keys.any((date) =>
-        date.year == now.year && date.month == now.month && date.day == now.day
+      final hasWorkloadToday = task.workload.keys.any(
+        (date) =>
+            date.year == now.year &&
+            date.month == now.month &&
+            date.day == now.day,
       );
       // Also include if deadline is today
-      final isDeadlineToday = task.deadline != null &&
-        task.deadline!.year == now.year &&
-        task.deadline!.month == now.month &&
-        task.deadline!.day == now.day;
+      final isDeadlineToday =
+          task.deadline != null &&
+          task.deadline!.year == now.year &&
+          task.deadline!.month == now.month &&
+          task.deadline!.day == now.day;
       return hasWorkloadToday || isDeadlineToday;
     }).toList();
   }
@@ -44,116 +49,23 @@ class HomePage extends StatelessWidget {
     }).toList();
   }
 
-  Widget buildEventCard(Task task) {
-    final deadlineStr = task.deadline != null
-        ? DateFormat('dd - MM - yyyy').format(task.deadline!)
-        : 'No deadline';
-    return Card(
-      color: const Color(0xFF1E1E1E),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  task.taskName.toString(),
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Color(0xFF80CBC4),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Deadline:  $deadlineStr',
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Text('Description:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            Text(task.description.value, style: const TextStyle(color: Colors.white)),
-            const SizedBox(height: 8),
-            Text('Priority: ${task.priority}', style: const TextStyle(color: Colors.white)),
-            Text('Type: ${task.type.toString().split('.').last}', style: const TextStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
+  String prioFromNumber(int prio) {
+    if (prio == 1) {
+      return "low";
+    } else if (prio == 2) {
+      return "medium";
+    } else if (prio == 3) {
+      return "high";
+    }
+    return "invalid priority";
   }
 
-  Widget buildTodayEventCard(Task task) {
-    final deadlineStr = task.deadline != null
-        ? DateFormat('dd - MM - yyyy').format(task.deadline!)
-        : 'No deadline';
-    // Sum all workload for today (ignore time)
-    final now = DateTime.now();
-    final todayWorkload = task.workload.entries
-        .where((entry) =>
-            entry.key.year == now.year &&
-            entry.key.month == now.month &&
-            entry.key.day == now.day)
-        .fold<double>(0, (sum, entry) => sum + entry.value.toNumber());
-    return Card(
-      color: const Color(0xFF1E1E1E),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task.taskName.toString(),
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Color(0xFF80CBC4),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Deadline: $deadlineStr',
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-            Text(
-              'workload: ${todayWorkload > 0 ? todayWorkload.toInt() : '-'} hrs',
-              style: const TextStyle(
-                fontFamily: 'Montserrat',
-                color: Color.fromARGB(255, 255, 255, 255),
-                fontWeight: FontWeight.bold,
-                fontSize: 14),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  
+  
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-
       listener: (authContext, authState) async {
         if (authState is LoggedIn) {
           final uid = authState.user.uid;
@@ -187,7 +99,10 @@ class HomePage extends StatelessWidget {
                     final todaysTasks = getTodaysTasks(allTasks);
                     final upcomingTasks = getUpcomingTasks(allTasks);
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 24,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -201,8 +116,11 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           if (todaysTasks.isEmpty)
-                            const Text("No events for today.", style: TextStyle(color: Colors.white70)),
-                          ...todaysTasks.map(buildTodayEventCard),
+                            const Text(
+                              "No events for today.",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ...todaysTasks.map((task) => TodayEventList(task: task)),
                           const SizedBox(height: 32),
                           Text(
                             "Upcoming Events",
@@ -214,13 +132,21 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           if (upcomingTasks.isEmpty)
-                            const Text("No upcoming events.", style: TextStyle(color: Colors.white70)),
-                          ...upcomingTasks.map(buildEventCard),
+                            const Text(
+                              "No upcoming events.",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ...upcomingTasks.map((task) => AllEventList(task: task)),
                         ],
                       ),
                     );
                   }
-                  return const Center(child: Text("Schedule empty", style: TextStyle(color: Colors.white70)));
+                  return const Center(
+                    child: Text(
+                      "Schedule empty",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  );
                 },
               );
             }
