@@ -47,7 +47,7 @@ taskRouter.put("/edit", async (req, res) => {
 
     const task = Task.fromJSON(data);
 
-    await repo.setTask(data.taskId, task);
+    await repo.setTask(task.getTaskId(), task.toJSON());
 
     return res.status(200).json({message: `task ${task.getTaskName()} updated sucessfully`});
   } catch (error) {

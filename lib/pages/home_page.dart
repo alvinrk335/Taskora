@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
@@ -12,6 +11,8 @@ import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/repository/user_repository.dart';
 import 'package:taskora/repository/workhours_repository.dart';
 import 'package:taskora/widgets/appbar/default_appbar.dart';
+import 'package:taskora/widgets/home%20page/all_event_list.dart';
+import 'package:taskora/widgets/home%20page/today_event_list.dart';
 
 class HomePage extends StatelessWidget {
   final userRepo = UserRepository();
@@ -59,135 +60,8 @@ class HomePage extends StatelessWidget {
     return "invalid priority";
   }
 
-  Widget buildEventCard(Task task) {
-    final deadlineStr =
-        task.deadline != null
-            ? DateFormat('dd - MM - yyyy').format(task.deadline!)
-            : 'No deadline';
-    return Card(
-      color: const Color(0xFF1E1E1E),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  task.taskName.toString(),
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Color(0xFF80CBC4),
-                  ),
-                  overflow: TextOverflow.fade,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Deadline:  $deadlineStr',
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  overflow: TextOverflow.fade,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Description:',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              task.description.value,
-              style: const TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Priority: ${prioFromNumber(task.priority)}',
-              style: const TextStyle(color: Colors.white),
-            ),
-            Text(
-              'Type: ${task.type.toString().split('.').last}',
-              style: const TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildTodayEventCard(Task task) {
-    final deadlineStr =
-        task.deadline != null
-            ? DateFormat('dd - MM - yyyy').format(task.deadline!)
-            : 'No deadline';
-    // Sum all workload for today (ignore time)
-    final now = DateTime.now();
-    final todayWorkload = task.workload.entries
-        .where(
-          (entry) =>
-              entry.key.year == now.year &&
-              entry.key.month == now.month &&
-              entry.key.day == now.day,
-        )
-        .fold<double>(0, (sum, entry) => sum + entry.value.toNumber());
-    return Card(
-      color: const Color(0xFF1E1E1E),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task.taskName.toString(),
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Color(0xFF80CBC4),
-                  ),
-                  overflow: TextOverflow.fade,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Deadline: $deadlineStr',
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.fade,
-                ),
-              ],
-            ),
-            Text(
-              'workload: ${todayWorkload > 0 ? todayWorkload.toInt() : '-'} hrs',
-              style: const TextStyle(
-                fontFamily: 'Montserrat',
-                color: Color.fromARGB(255, 255, 255, 255),
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  
+  
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +120,7 @@ class HomePage extends StatelessWidget {
                               "No events for today.",
                               style: TextStyle(color: Colors.white70),
                             ),
-                          ...todaysTasks.map(buildTodayEventCard),
+                          ...todaysTasks.map((task) => TodayEventList(task: task)),
                           const SizedBox(height: 32),
                           Text(
                             "Upcoming Events",
@@ -262,7 +136,7 @@ class HomePage extends StatelessWidget {
                               "No upcoming events.",
                               style: TextStyle(color: Colors.white70),
                             ),
-                          ...upcomingTasks.map(buildEventCard),
+                          ...upcomingTasks.map((task) => AllEventList(task: task)),
                         ],
                       ),
                     );

@@ -27,7 +27,7 @@ export default class taskRepository {
     }
   }
 
-  async setTask(taskId: string, data: Partial<Task>): Promise<void> {
+  async setTask(taskId: string, data: any): Promise<void> {
     try {
       await this.taskCollection.doc(taskId).update(data);
     } catch (error) {

@@ -176,15 +176,6 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                         }
 
                         if (!context.mounted) return;
-                        optimizeAndAdd(context);
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder:
-                              (_) => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                        );
                         context.read<CalendarBloc>().add(ReloadRequest());
                         Navigator.pushAndRemoveUntil(
                           context,

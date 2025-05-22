@@ -25,6 +25,7 @@ export default async function reOptimize(scheduleJson: any, request: string){
     ${request}
     ⚠️ Important:
     - DO NOT remove any existing tasks unless explicitly stated in the request.
+    - DO NOT change any scheduleId and taskId
     - Preserve all fields that is not expliclitly or implicitly stated in the request.
     - Add the new task(s) if required, and integrate them into the workload accordingly.
     - Keep the JSON format and structure exactly the same as the input.

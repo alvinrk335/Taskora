@@ -32,6 +32,34 @@ class Task {
     this.estimatedDuration,
   });
 
+  Task copyWith({
+    String? taskId,
+    Name? taskName,
+    Description? description,
+    int? priority,
+    TaskType? type,
+    DateTime? deadline,
+    double? weight,
+    Timestamp? createdAt,
+    Timestamp? updatedAt,
+    Map<DateTime, DurationValue>? workload,
+    DurationValue? estimatedDuration,
+  }) {
+    return Task(
+      taskId: taskId ?? this.taskId,
+      taskName: taskName ?? this.taskName,
+      description: description ?? this.description,
+      priority: priority ?? this.priority,
+      deadline: deadline ?? this.deadline,
+      createdAt: createdAt ?? this.createdAt,
+      type: type ?? this.type,
+      updatedAt: updatedAt ?? this.updatedAt,
+      weight: weight ?? this.weight,
+      workload: workload ?? this.workload,
+      estimatedDuration: estimatedDuration ?? estimatedDuration,
+    );
+  }
+
   factory Task.fromJson(Map<String, dynamic> json) {
     final Map<DateTime, DurationValue> workloadMap = {};
     final rawWorkload = json['workload'] ?? {};
