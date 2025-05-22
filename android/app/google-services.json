@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "845917411115-4i47u04q97fdb5lih9ebh5ejrsvdsub0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taskora",
+            "certificate_hash": "331f7ee3b15f27e47a5802545859872ebfe8edb4"
+          }
+        },
+        {
           "client_id": "845917411115-dh5q8fl5gcdl5od8kgmivq6frfh7uj7u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
