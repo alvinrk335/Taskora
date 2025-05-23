@@ -25,7 +25,7 @@ class LoginPromptPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Please login to proceed',
+                'Press login to proceed',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
@@ -36,7 +36,12 @@ class LoginPromptPage extends StatelessWidget {
                 height: 16,
               ), // reduced space between text and button
               GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => Center(child: CircularProgressIndicator()),
+                  );
                   context.read<AuthBloc>().add(LogIn());
                 },
                 child: Container(
@@ -76,12 +81,12 @@ class LoginPromptPage extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: Image(
-                            image: AssetImage('../Assets/GoogleLogo.png'),
+                            image: AssetImage('lib/Assets/GoogleLogo.png'),
                             fit: BoxFit.contain,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10), // slightly larger gap
+                      const SizedBox(width: 10),
                       const Text(
                         'Sign in with Google',
                         style: TextStyle(

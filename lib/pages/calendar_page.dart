@@ -11,7 +11,6 @@ import 'package:taskora/pages/task_page.dart';
 import 'package:taskora/repository/schedule_repository.dart';
 import 'package:taskora/widgets/calendar/calendar.dart';
 
-import 'package:taskora/widgets/appbar/default_appbar.dart';
 import 'package:taskora/widgets/task%20list/task_list.dart';
 
 class CalendarPage extends StatelessWidget {
@@ -47,7 +46,6 @@ class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: DefaultAppbar(),
       body: RefreshIndicator(
         onRefresh: () async {
           context.read<CalendarBloc>().add(ReloadRequest());

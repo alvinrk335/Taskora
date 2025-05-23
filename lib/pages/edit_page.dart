@@ -66,7 +66,7 @@ class _EditPageState extends State<EditPage> {
     } else if (promptState is PromptTextfieldOpened) {
       return Container(
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: Colors.black,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(12),
@@ -77,12 +77,12 @@ class _EditPageState extends State<EditPage> {
               maxLines: null,
               minLines: 5,
               decoration: InputDecoration(
-                hintText: "e.g. jumat minggu depan gabisa",
+                hintText: "e.g. i cannot do tasks in monday next week",
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: Colors.black87,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: Colors.black87),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -93,7 +93,7 @@ class _EditPageState extends State<EditPage> {
                   horizontal: 20,
                 ),
               ),
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14, color: Colors.white),
             ),
             const SizedBox(width: 8),
             Row(
@@ -126,11 +126,19 @@ class _EditPageState extends State<EditPage> {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: Colors.grey[200],
+              color: Colors.grey,
             ),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Text(promptState.prompt),
+              child: Text(
+                promptState.prompt,
+                style: TextStyle(
+                  color:
+                      promptState.prompt != ""
+                          ? Colors.blueGrey[400]
+                          : Colors.black,
+                ),
+              ),
             ),
           ),
         ],

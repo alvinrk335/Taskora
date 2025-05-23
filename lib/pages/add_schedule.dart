@@ -176,12 +176,14 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                         }
 
                         if (!context.mounted) return;
-                        context.read<CalendarBloc>().add(ReloadRequest());
-                        Navigator.pushAndRemoveUntil(
+                        
+                        await Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (_) => Navigation()),
                           (route) => false,
                         );
+                        
+                        context.read<CalendarBloc>().add(ReloadRequest());
                       },
                       child: Text("Automatic Scheduling"),
                     ),

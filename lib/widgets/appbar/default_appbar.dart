@@ -3,9 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_event.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
-import 'package:taskora/bloc/calendar/calendar_bloc.dart';
-import 'package:taskora/bloc/calendar/calendar_event.dart';
 import 'package:taskora/pages/profile_page.dart';
+
 
 class DefaultAppbar extends StatelessWidget implements PreferredSizeWidget {
   const DefaultAppbar({super.key});
@@ -15,7 +14,7 @@ class DefaultAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       leading: IconButton(
         onPressed: () {
-          context.read<CalendarBloc>().add(ReloadRequest());
+          Scaffold.of(context).openDrawer();
         },
         icon: Icon(Icons.menu),
       ),

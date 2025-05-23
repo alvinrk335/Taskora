@@ -10,7 +10,6 @@ import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/repository/user_repository.dart';
 import 'package:taskora/repository/workhours_repository.dart';
-import 'package:taskora/widgets/appbar/default_appbar.dart';
 import 'package:taskora/widgets/home%20page/all_event_list.dart';
 import 'package:taskora/widgets/home%20page/today_event_list.dart';
 
@@ -86,7 +85,6 @@ class HomePage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: DefaultAppbar(),
         body: BlocBuilder<AuthBloc, AuthState>(
           builder: (authContext, authState) {
             if (authState is NotLoggedIn) {

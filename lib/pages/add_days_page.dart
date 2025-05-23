@@ -43,87 +43,157 @@ class _AddDaysPageState extends State<AddDaysPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
         ),
       ),
-      body: Column(
-        children: [
-          Row(
-            children: [
-              IconButton(
-                onPressed:
-                    () => showDialog(
-                      context: context,
-                      builder: (_) => AddAvailableDaysDialog(),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed:
+                      () => showDialog(
+                        context: context,
+                        builder: (_) => const AddAvailableDaysDialog(),
+                      ),
+                  icon: const Icon(Icons.add),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Add your daily working hours",
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                icon: Icon(Icons.add),
-              ),
-              Center(child: Text("Add your daily working hours")),
-            ],
-          ),
-          BlocBuilder<AvailableDaysBloc, AvailableDaysState>(
-            builder: (daysContext, daysState) {
-              if (daysState.weeklyWorkHours.isNotEmpty) {
-                log("weeklyWorkHours: ${daysState.weeklyWorkHours}");
-                return SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DaysCard(workingHours: daysState.weeklyWorkHours),
-
-                      const SizedBox(height: 70),
-                      const Text("Add specific excluded dates (optional)"),
-                      const SizedBox(height: 30),
-                      TextField(
-                        readOnly: true,
-                        onTap: () => _selectDate(),
-                        decoration: const InputDecoration(
-                          hintText: "Leave blank if no excluded dates",
-                          suffixIcon: Icon(Icons.calendar_today),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text(
-                          "Dates : \n${daysState.dates.map((e) => e.toString()).join("\n")}",
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            BlocBuilder<AvailableDaysBloc, AvailableDaysState>(
+              builder: (daysContext, daysState) {
+                if (daysState.weeklyWorkHours.isNotEmpty) {
+                  log("$daysState");
+                  return Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextButton(
-                            onPressed:
-                                () => Navigator.push(
+                          DaysCard(workingHours: daysState.weeklyWorkHours),
+                          const SizedBox(height: 40),
+                          Text(
+                            "Add specific excluded dates (optional)",
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            readOnly: true,
+                            onTap: () => _selectDate(),
+                            decoration: const InputDecoration(
+                              hintText: "Leave blank if no excluded dates",
+                              suffixIcon: Icon(Icons.calendar_today),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          if (daysState.dates.isNotEmpty)
+                            if (daysState.dates.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ...daysState.dates.map(
+                                    (date) => Container(
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 6,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.cardColor,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.05,
+                                            ),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                            style: theme.textTheme.bodyMedium,
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.close,
+                                              color: Colors.redAccent,
+                                            ),
+                                            onPressed: () {
+                                              context
+                                                  .read<AvailableDaysBloc>()
+                                                  .add(
+                                                    RemoveAvailableDate(
+                                                      date: date,
+                                                    ),
+                                                  );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                          const SizedBox(height: 32),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder:
                                         (context) => BlocProvider(
                                           create: (_) => TaskAddBloc(),
-                                          child: AddSchedule(),
+                                          child: const AddSchedule(),
                                         ),
                                   ),
-                                ),
-                            child: Text("next"),
+                                );
+                              },
+                              child: const Text("Next"),
+                            ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                );
-              } else if (daysState.weeklyWorkHours.isEmpty) {
-                return Center(
-                  child: Text("Please add your daily working hours"),
-                );
-              }
-              return Text("error no state");
-            },
-          ),
-        ],
+                    ),
+                  );
+                } else {
+                  return const Expanded(
+                    child: Center(
+                      child: Text("Please add your daily working hours"),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
