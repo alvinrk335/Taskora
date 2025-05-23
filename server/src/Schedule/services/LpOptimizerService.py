@@ -136,6 +136,37 @@ def optimize_schedule(schedule: ScheduleRequest):
     prob.solve()
     logger.info("Solved LP with status: %s", pulp.LpStatus[prob.status])
 
+
+    # Objective value log
+    objective_value = pulp.value(prob.objective)
+    logger.info("Objective value (schedule optimality score): %.2f", objective_value)
+
+    # Count tasks completed on time
+    on_time_tasks = 0
+    late_tasks = 0
+    for task in tasks:
+        if task.deadline:
+            last_day = max(
+                (day for day in x[task.taskId] if pulp.value(x[task.taskId][day]) > 0),
+                default=None
+            )
+            if last_day:
+                if datetime.fromisoformat(last_day).date() <= task.deadline.date():
+                    on_time_tasks += 1
+                else:
+                    late_tasks += 1
+    logger.info("Tasks completed on time: %d", on_time_tasks)
+    logger.info("Tasks completed late: %d", late_tasks)
+
+    # Workload per day
+    for day in days:
+        daily_load = sum(pulp.value(x[task.taskId][day]) or 0 for task in tasks)
+        logger.info("Workload on %s: %.2f jam", day, daily_load)
+
+    # Break days (Yd == 1)
+    break_days = [day for day in days if pulp.value(Yd[day]) == 1]
+    logger.info("Break days (Yd == 1): %s", break_days)
+
     result_tasks = []
     for task in tasks:
         workload = {

@@ -22,6 +22,7 @@ const repo = new scheduleRepository();
 scheduleRouter.post("/optimize", async (req, res)=> {
   try {
     console.log(`input received: ${JSON.stringify(req.body, null, 2)}`)
+    const tStart = Date.now();
     const {
       request,
       scheduleId,
@@ -108,7 +109,6 @@ scheduleRouter.post("/optimize", async (req, res)=> {
         description: initial.getDescription(),
         priority: initial.getPriority(),  
         type: initial.getType(),
-        // preferredDays: translated.getPreferredDays(),
         deadline: translated.getDeadline() as Date,
         weight: translated.getWeight(),
         createdAt: Timestamp.now(),
@@ -145,6 +145,16 @@ scheduleRouter.post("/optimize", async (req, res)=> {
       const updatedScheduleJson = await reOptimize(schedule, request);
       schedule = Schedule.fromJSON(updatedScheduleJson);
     }
+    //log scheduling time
+    const tEnd = Date.now();
+    const durationMs = tEnd - tStart;
+    const durationSec = (durationMs / 1000).toFixed(2);
+    console.log(`Schedule generation completed in ${durationMs} ms (${durationSec} seconds)`);
+
+    //log constraint compliance
+    checkConstraintCompliance(optimizedData, excludedDates, workloadThreshold);
+
+
     return res.status(200).json(schedule.toJSON());
   } catch (error) {
     console.error(error);
@@ -247,5 +257,57 @@ scheduleRouter.post("/remove/withTask", async(req, res) => {
 
 })
 
+function checkConstraintCompliance(
+  optimizedData: any,
+  excludedDates: string[],
+  workloadThreshold: number
+) {
+  console.log("🔍 Validating constraint compliance...");
+
+  const violations: string[] = [];
+
+  let workloadPerDay: { [date: string]: number } = {};
+
+  for (const task of optimizedData.tasks) {
+    const { taskId, taskName, assignedDates, workload, estimatedDuration, deadline } = task;
+
+    // Check excluded dates
+    for (const date of assignedDates) {
+      if (excludedDates.includes(date)) {
+        violations.push(`❌ Task ${taskName} (${taskId}) assigned on excluded date ${date}`);
+      }
+
+      // Track workload per day
+      workloadPerDay[date] = (workloadPerDay[date] || 0) + workload;
+    }
+
+    // Check if estimatedDuration is matched (optional)
+    const totalAssigned = assignedDates.length * workload;
+    if (totalAssigned < estimatedDuration) {
+      violations.push(`⚠️ Task ${taskName} (${taskId}) assigned duration < estimated (${totalAssigned} < ${estimatedDuration})`);
+    }
+
+    // Check deadline
+    const latestAssigned = Math.max(...task.assignedDates.map((d: string) => new Date(d).getTime()));
+    if (latestAssigned > new Date(deadline).getTime()) {
+      violations.push(`❌ Task ${taskName} (${taskId}) scheduled past deadline (${new Date(latestAssigned).toISOString()} > ${deadline})`);
+    }
+  }
+
+  // Check workload threshold
+  for (const [date, totalWorkload] of Object.entries(workloadPerDay)) {
+    if (totalWorkload > workloadThreshold) {
+      violations.push(`⚠️ Workload on ${date} exceeds threshold (${totalWorkload} > ${workloadThreshold})`);
+    }
+  }
+
+  // Log summary
+  if (violations.length > 0) {
+    console.warn("❗ Constraint violations detected:");
+    violations.forEach(v => console.warn(v));
+  } else {
+    console.log("✅ All constraints satisfied.");
+  }
+}
 
 export default scheduleRouter;
