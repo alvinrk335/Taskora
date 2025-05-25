@@ -28,6 +28,7 @@ export default async function translateTasks(listOfTask: initialTask[]) {
         - priority: ${task.getPriority()}
         - taskType: ${task.getType().toString()}
         - deadline: ${task.getDeadline() ? task.getDeadline()?.toString() : ''}
+        - taskType: ${task.getType()}
 
         Into this JSON format:
         {
@@ -36,7 +37,8 @@ export default async function translateTasks(listOfTask: initialTask[]) {
           "estimatedDuration": <estimated duration as number in minutes based on the combination of description, task type, and task name>,
           "weight":  <importance as a decimal between 0 and 1 based on the combination of description, task type and task name
           , with 1 being very important/difficult and 0 being less important/difficult>,
-          "deadline": same as input
+          "deadline": same as input,
+          "taskType": same as input
         }
       `;
 

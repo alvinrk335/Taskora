@@ -3,14 +3,14 @@ class TaskType {
 
   const TaskType._(this._value);
 
-  static const TaskType weekly = TaskType._("weekly");
+  static const TaskType assignment = TaskType._("assignment");
   static const TaskType daily = TaskType._("daily");
   static const TaskType project = TaskType._("project");
   static const TaskType work = TaskType._("work");
   static const TaskType other = TaskType._("other");
 
   static const List<TaskType> values = [
-    weekly,
+    assignment,
     daily,
     project,
     work,
@@ -19,8 +19,8 @@ class TaskType {
 
   static TaskType fromString(String value) {
     switch (value.toLowerCase()) {
-      case 'weekly':
-        return weekly;
+      case 'assignment':
+        return assignment;
       case 'daily':
         return daily;
       case 'project':

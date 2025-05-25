@@ -5,7 +5,7 @@ class taskType {
     this.value = value;
   }
 
-  static readonly WEEKLY = new taskType("weekly");
+  static readonly ASSIGNMENT = new taskType("assignment");
   static readonly DAILY = new taskType("daily");
   static readonly PROJECT = new taskType("project");
   static readonly WORK = new taskType("work");
@@ -13,8 +13,8 @@ class taskType {
 
   static fromString(value: string): taskType {
     switch (value.toLowerCase()) {
-    case "weekly":
-      return taskType.WEEKLY;
+    case "assignment":
+      return taskType.ASSIGNMENT;
     case "daily":
       return taskType.DAILY;
     case "project":

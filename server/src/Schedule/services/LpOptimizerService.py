@@ -18,6 +18,7 @@ class TaskInput(BaseModel):
     estimatedDuration: float  # Input in minutes, will be converted to hours
     weight: float
     deadline: Optional[datetime] = None  # Bisa None
+    taskType: Optional[str] = None
 
     @field_validator('deadline', mode='before')
     @classmethod
@@ -155,6 +156,12 @@ def optimize_schedule(schedule: ScheduleRequest):
                     on_time_tasks += 1
                 else:
                     late_tasks += 1
+        if task.taskType == "daily":
+            duration_per_day = task.estimatedDuration / len(days)
+            for day in x[task.taskId]:
+                prob += x[task.taskId][day] == duration_per_day 
+
+
     logger.info("Tasks completed on time: %d", on_time_tasks)
     logger.info("Tasks completed late: %d", late_tasks)
 

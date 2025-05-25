@@ -44,57 +44,53 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
     };
   }
 
+  Widget buildDayInput(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: "Enter hours",
+          prefixIcon: Icon(Icons.access_time),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          hintStyle: TextStyle(color: Colors.white24),
+          labelStyle: TextStyle(color: Colors.white),
+          filled: true,
+          fillColor: Colors.black38,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //monday
-          Text("Monday"),
-          TextField(controller: mondayController),
-          SizedBox(height: 10),
-
-          //tuesday
-          Text("Tuesday"),
-          TextField(controller: tuesdayController),
-          SizedBox(height: 10),
-
-          //wednesday
-          Text("Wednesday"),
-          TextField(controller: wednesdayController),
-          SizedBox(height: 10),
-
-          //thursday
-          Text("Thursday"),
-          TextField(controller: thursdayController),
-          SizedBox(height: 10),
-
-          //friday
-          Text("Friday"),
-          TextField(controller: fridayController),
-          SizedBox(height: 10),
-
-          //saturday
-          Text("Saturday"),
-          TextField(controller: saturdayController),
-          SizedBox(height: 10),
-
-          //sunday
-          Text("Sunday"),
-          TextField(controller: sundayController),
-          SizedBox(height: 10),
-        ],
+      title: Text(
+        "Set Weekly Work Hours",
+        style: TextStyle(fontWeight: FontWeight.bold),
       ),
-
-      //actions
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildDayInput("Monday", mondayController),
+            buildDayInput("Tuesday", tuesdayController),
+            buildDayInput("Wednesday", wednesdayController),
+            buildDayInput("Thursday", thursdayController),
+            buildDayInput("Friday", fridayController),
+            buildDayInput("Saturday", saturdayController),
+            buildDayInput("Sunday", sundayController),
+          ],
+        ),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text("cancel"),
+          child: Text("Cancel"),
         ),
-
-        TextButton(
+        ElevatedButton.icon(
           onPressed: () {
             log("confirm button pressed");
             context.read<AvailableDaysBloc>().add(
@@ -102,9 +98,11 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
             );
             Navigator.pop(context);
           },
-          child: Text("confirm"),
+          icon: Icon(Icons.check),
+          label: Text("Confirm"),
         ),
       ],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }
 }
