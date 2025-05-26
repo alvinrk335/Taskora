@@ -130,7 +130,7 @@ def optimize_schedule(schedule: ScheduleRequest):
         prob += cumulative_workload[day] - schedule.workloadThreshold >= 1 - M * (1 - Yd[day])
 
         # Jika Yd[day] == 1 (break day), maka workload hari itu 0
-        prob += pulp.lpSum(x[task.taskId].get(day, 0) for task in tasks) <= (1 - Yd[day]) * 1000
+        prob += pulp.lpSum(x[task.taskId].get(day, 0) for task in tasks) <= (1 - Yd[day]) * M
         prob += cumulative_workload[day] <= M * (1 - Yd[day])
 
     logger.info("Solving LP problem...")
