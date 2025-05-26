@@ -34,8 +34,8 @@ export default async function translateTasks(listOfTask: initialTask[]) {
         {
           "taskId": same as input,
           "taskName": same as input,
-          "estimatedDuration": <estimated duration as number in minutes based on the combination of description, task type, and task name>,
-          "weight":  <importance as a decimal between 0 and 1 based on the combination of description, task type and task name
+          "estimatedDuration": <estimated duration as number in minutes based on the combination of description, task type, and priority>,
+          "weight":  <importance as a decimal between 0 and 1 based on the combination of description, task type and priority
           , with 1 being very important/difficult and 0 being less important/difficult>,
           "deadline": same as input,
           "taskType": same as input

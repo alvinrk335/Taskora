@@ -2,7 +2,7 @@ export default class Duration {
   private readonly minutes: number;
 
   constructor(minutes: number) {
-    if (!Number.isInteger(minutes) || minutes < 0) {
+    if (minutes < 0) {
       throw new Error("Duration must be a non-negative integer.");
     }
     this.minutes = minutes;

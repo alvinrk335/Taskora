@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
+import 'package:taskora/bloc/task_add/task_add_bloc.dart';
 import 'package:taskora/bloc/task_priority/task_priority_bloc.dart';
 import 'package:taskora/bloc/task_type/task_type_bloc.dart';
 import 'package:taskora/model/entity/initial_task.dart';

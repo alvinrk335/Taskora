@@ -10,7 +10,7 @@ export default class Task {
   private description: Description;
   private priority: number;
   private type: taskType;
-  private deadline?: Date | string;
+  private deadline: Date | string | null;
   private weight: number;
   private createdAt: Timestamp;
   private updatedAt: Timestamp;
@@ -35,7 +35,7 @@ export default class Task {
     description: Description;
     priority: number;
     type: taskType;
-    deadline: Date;
+    deadline: Date | string | null;
     weight: number;
     createdAt: Timestamp;
     updatedAt: Timestamp;
@@ -55,16 +55,17 @@ export default class Task {
     this.estimatedDuration = estimatedDuration;
   }
 
-  public static parseFirestoreTimestamp(input: any): Date {
-    if (!input) return new Date();
+  public static parseFirestoreTimestamp(input: any): Date | null {
+    if (!input) return null;
     if (input instanceof Timestamp) return input.toDate();
     if (input._seconds && input._nanoseconds) {
       return new Date(input._seconds * 1000 + Math.floor(input._nanoseconds / 1e6));
     }
-    if (typeof input === 'string' || typeof input === 'number') {
-      return new Date(input);
+    if (typeof input === "string" || typeof input === "number") {
+      const d = new Date(input);
+      return isNaN(d.getTime()) ? null : d;
     }
-    return new Date(); // fallback
+    return null; // fallback
   }
 
   static fromJSON(json: any): Task {
@@ -87,20 +88,30 @@ export default class Task {
       description: Description.fromString(json.description),
       priority: json.priority,
       type: taskType.fromString(json.type),
-      deadline: Task.parseFirestoreTimestamp(json.deadline),
+      deadline: Task.parseFirestoreTimestamp(json.deadline ?? null),
       weight: json.weight,
-      createdAt: Timestamp.fromDate(Task.parseFirestoreTimestamp(json.createdAt)),
-      updatedAt: Timestamp.fromDate(Task.parseFirestoreTimestamp(json.updatedAt)),
+      createdAt: Timestamp.fromDate(Task.parseFirestoreTimestamp(json.createdAt) ?? new Date()),
+      updatedAt: Timestamp.fromDate(Task.parseFirestoreTimestamp(json.updatedAt) ?? new Date()),
       workload: workloadMap,
-      estimatedDuration: Duration.fromNumber(json.estimatedDuration ?? 0),
+      estimatedDuration: Duration.fromMinutes(json.estimatedDuration ?? 0),
     });
   }
 
   toJSON() {
-    const workloadObject: { [date: string]: Number } = {};
+    const workloadObject: { [date: string]: number } = {};
     this.workload.forEach((value, key) => {
       workloadObject[key.toISOString()] = value.toNumber();
     });
+
+    let deadlineISO: string | null = null;
+    if (this.deadline instanceof Date && !isNaN(this.deadline.getTime())) {
+      deadlineISO = this.deadline.toISOString();
+    } else if (typeof this.deadline === "string") {
+      const parsedDate = new Date(this.deadline);
+      if (!isNaN(parsedDate.getTime())) {
+        deadlineISO = parsedDate.toISOString();
+      }
+    }
 
     return {
       taskId: this.taskId,
@@ -108,10 +119,7 @@ export default class Task {
       description: this.description.toString(),
       priority: this.priority,
       type: this.type.toString(),
-      deadline:
-        this.deadline instanceof Date
-          ? this.deadline.toISOString()
-          : new Date(this.deadline ?? "").toISOString(),
+      deadline: deadlineISO,
       estimatedDuration: this.estimatedDuration?.toNumber() ?? 0,
       weight: this.weight,
       createdAt: this.createdAt.toDate(),
@@ -161,11 +169,11 @@ export default class Task {
     this.type = type;
   }
 
-  public getDeadline(): Date | string | undefined {
+  public getDeadline(): Date | string | null {
     return this.deadline;
   }
 
-  public setDeadline(deadline: Date): void {
+  public setDeadline(deadline: Date | string | null): void {
     this.deadline = deadline;
   }
 
@@ -203,5 +211,49 @@ export default class Task {
       total += duration.toNumber();
     });
     return total;
+  }
+
+  toComplianceFormat(): {
+    taskId: string;
+    taskName: string;
+    deadline?: string;
+    estimatedDuration?: number;
+    workload?: { [date: string]: number };
+  } {
+    const rawWorkloadMap = this.getWorkload();
+    const plainWorkload: { [date: string]: number } = {};
+
+    if (rawWorkloadMap) {
+      for (const [date, duration] of rawWorkloadMap.entries()) {
+        const dateString = date instanceof Date ? date.toISOString().split("T")[0] : String(date);
+        plainWorkload[dateString] =
+          typeof duration === "object" && "getInHours" in duration
+            ? duration.getInHours()
+            : typeof duration === "number"
+            ? duration
+            : 0;
+      }
+    }
+
+    const deadline = this.getDeadline();
+
+    let deadlineStr: string | undefined;
+    if (deadline instanceof Date) {
+      deadlineStr = deadline.toISOString().split("T")[0];
+    } else if (typeof deadline === "string") {
+      deadlineStr = deadline.split("T")[0];
+    } else {
+      deadlineStr = undefined;
+    }
+
+    return {
+      taskId: this.getTaskId(),
+      taskName: this.getTaskName().name,
+      deadline: deadlineStr,
+      estimatedDuration: this.getEstimatedDuration()
+        ? this.getEstimatedDuration().getInHours()
+        : undefined,
+      workload: Object.keys(plainWorkload).length > 0 ? plainWorkload : undefined,
+    };
   }
 }

@@ -4,7 +4,7 @@ import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/bloc/edit_task_list/edit_task_list_bloc.dart';
-import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
+import 'package:taskora/bloc/task_add/task_add_bloc.dart';
 import 'package:taskora/bloc/prompt_textfield/prompt_textfield_bloc.dart';
 import 'package:taskora/bloc/task_edit/task_edit_bloc.dart';
 import 'package:taskora/bloc/task_preview/task_preview_bloc.dart';

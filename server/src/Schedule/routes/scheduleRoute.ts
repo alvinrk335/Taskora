@@ -13,6 +13,7 @@ import TranslatedTask from "../../Task/entity/translatedTask";
 import initialTask from "../../Task/entity/initialTask";
 import translateTasks from "../services/translateTask";
 import reOptimize from "../services/reoptimize";
+import { checkCompliance } from "../services/checkConstraintCompliance";
 
 const scheduleRouter = Router();
 const repo = new scheduleRepository();
@@ -84,9 +85,9 @@ scheduleRouter.post("/optimize", async (req, res)=> {
       new TranslatedTask(
         task.taskId,
         Name.fromString(task.taskName),
-        Duration.fromNumber(task.estimatedDuration),
+        Duration.fromMinutes(task.estimatedDuration),
         task.weight,
-        new Date(task.deadline),
+        task.deadline ? new Date(task.deadline) : undefined
       )
     );
     
@@ -109,7 +110,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
         description: initial.getDescription(),
         priority: initial.getPriority(),  
         type: initial.getType(),
-        deadline: translated.getDeadline() as Date,
+        deadline: translated.getDeadline() !== null ? translated.getDeadline() as Date : null,
         weight: translated.getWeight(),
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -152,8 +153,10 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     console.log(`Schedule generation completed in ${durationMs} ms (${durationSec} seconds)`);
 
     //log constraint compliance
-    checkConstraintCompliance(optimizedData, excludedDates, workloadThreshold);
-
+    const rawTasks = schedule.getTasks(); // Task[]
+    const complianceInput = rawTasks.map(task => task.toComplianceFormat());
+    const complianceResults = checkCompliance(complianceInput);
+    console.log(complianceResults)
 
     return res.status(200).json(schedule.toJSON());
   } catch (error) {
@@ -256,58 +259,5 @@ scheduleRouter.post("/remove/withTask", async(req, res) => {
   }
 
 })
-
-function checkConstraintCompliance(
-  optimizedData: any,
-  excludedDates: string[],
-  workloadThreshold: number
-) {
-  console.log("🔍 Validating constraint compliance...");
-
-  const violations: string[] = [];
-
-  let workloadPerDay: { [date: string]: number } = {};
-
-  for (const task of optimizedData.tasks) {
-    const { taskId, taskName, assignedDates, workload, estimatedDuration, deadline } = task;
-
-    // Check excluded dates
-    for (const date of assignedDates) {
-      if (excludedDates.includes(date)) {
-        violations.push(`❌ Task ${taskName} (${taskId}) assigned on excluded date ${date}`);
-      }
-
-      // Track workload per day
-      workloadPerDay[date] = (workloadPerDay[date] || 0) + workload;
-    }
-
-    // Check if estimatedDuration is matched (optional)
-    const totalAssigned = assignedDates.length * workload;
-    if (totalAssigned < estimatedDuration) {
-      violations.push(`⚠️ Task ${taskName} (${taskId}) assigned duration < estimated (${totalAssigned} < ${estimatedDuration})`);
-    }
-
-    // Check deadline
-    const latestAssigned = Math.max(...task.assignedDates.map((d: string) => new Date(d).getTime()));
-    if (latestAssigned > new Date(deadline).getTime()) {
-      violations.push(`❌ Task ${taskName} (${taskId}) scheduled past deadline (${new Date(latestAssigned).toISOString()} > ${deadline})`);
-    }
-  }
-
-  // Check workload threshold
-  for (const [date, totalWorkload] of Object.entries(workloadPerDay)) {
-    if (totalWorkload > workloadThreshold) {
-      violations.push(`⚠️ Workload on ${date} exceeds threshold (${totalWorkload} > ${workloadThreshold})`);
-    }
-  }
-
-  // Log summary
-  if (violations.length > 0) {
-    console.warn("❗ Constraint violations detected:");
-    violations.forEach(v => console.warn(v));
-  } else {
-    console.log("✅ All constraints satisfied.");
-  }
-}
 
 export default scheduleRouter;

@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_event.dart';
 import 'package:taskora/bloc/available_days/available_days_state.dart';
-import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
+import 'package:taskora/bloc/task_add/task_add_bloc.dart';
 import 'package:taskora/pages/add_schedule.dart';
 import 'package:taskora/widgets/add%20available%20days/add_available_days_dialog.dart';
 import 'package:taskora/widgets/add%20available%20days/days_card.dart';

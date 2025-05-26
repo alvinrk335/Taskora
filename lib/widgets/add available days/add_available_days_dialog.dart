@@ -54,7 +54,17 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
           labelText: label,
           hintText: "Enter hours",
           prefixIcon: Icon(Icons.access_time),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              width: 0.5,
+              color: Colors.grey.shade600,
+            ), // lebih soft
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(width: 0.5, color: Colors.grey),
+          ),
           hintStyle: TextStyle(color: Colors.white24),
           labelStyle: TextStyle(color: Colors.white),
           filled: true,
