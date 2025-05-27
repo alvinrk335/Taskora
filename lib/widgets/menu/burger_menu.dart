@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/pages/personal_info_page.dart';
 
 class BurgerMenu extends StatelessWidget {
@@ -46,9 +47,15 @@ class BurgerMenu extends StatelessWidget {
             title: Text('Personal Info'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => PersonalInfoPage()));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder:
+                      (_) => BlocProvider(
+                        create: (_) => AvailableDaysBloc(),
+                        child: PersonalInfoPage(),
+                      ),
+                ),
+              );
             },
           ),
         ],

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:taskora/bloc/auth/auth_bloc.dart';
+import 'package:taskora/bloc/auth/auth_state.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_event.dart';
 import 'package:taskora/bloc/available_days/available_days_state.dart';
 import 'package:intl/intl.dart';
+import 'package:taskora/model/entity/work_hours.dart';
+import 'package:taskora/repository/workhours_repository.dart';
 
 class PersonalInfoPage extends StatelessWidget {
-  const PersonalInfoPage({super.key});
+  final repo = WorkHoursRepository();
+  PersonalInfoPage({super.key});
 
   String capitalize(String text) {
     if (text.isEmpty) return text;
@@ -110,6 +115,26 @@ class PersonalInfoPage extends StatelessWidget {
                       );
                     }),
                   ],
+                  ElevatedButton(
+                    onPressed: () async {
+                      final workHours =
+                          context
+                              .read<AvailableDaysBloc>()
+                              .state
+                              .weeklyWorkHours;
+
+                      final state = context.read<AuthBloc>().state;
+                      String uid = "";
+                      if (state is LoggedIn) {
+                        uid = state.user.uid;
+                      }
+                      await repo.addWorkHours(
+                        WorkHours.fromMap(workHours),
+                        uid,
+                      );
+                    },
+                    child: Text("confirm"),
+                  ),
                 ],
               ),
             );
