@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskora/bloc/initial_task/task_add_event.dart';
-import 'package:taskora/bloc/initial_task/task_add_state.dart';
+import 'package:taskora/bloc/task_add/task_add_event.dart';
+import 'package:taskora/bloc/task_add/task_add_state.dart';
 
 class TaskAddBloc extends Bloc<TaskAddEvent, TaskAddState> {
   TaskAddBloc() : super(TaskAddState(tasks: [])) {

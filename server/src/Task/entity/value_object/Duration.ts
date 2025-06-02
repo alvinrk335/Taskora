@@ -2,7 +2,7 @@ export default class Duration {
   private readonly minutes: number;
 
   constructor(minutes: number) {
-    if (!Number.isInteger(minutes) || minutes < 0) {
+    if (minutes < 0) {
       throw new Error("Duration must be a non-negative integer.");
     }
     this.minutes = minutes;
@@ -11,7 +11,6 @@ export default class Duration {
     return new Duration(num);
   }
 
-  // Static factory method untuk fleksibilitas
   public static fromHours(hours: number): Duration {
     return new Duration(hours * 60);
   }

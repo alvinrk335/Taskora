@@ -9,7 +9,7 @@ function sanitizeLLMResponse(raw: string): string {
 }
 
 const logHelper = "[REOPTIMIZER]"
-export default async function reOptimize(scheduleJson: any, request: string){
+export default async function reOptimize(scheduleJson: any, request: string, workhours: any){
     const formattedSchedule = typeof scheduleJson === "string" 
     ? scheduleJson 
     : JSON.stringify(scheduleJson, null, 2);
@@ -19,6 +19,9 @@ export default async function reOptimize(scheduleJson: any, request: string){
 
     with this schedule data:
     ${formattedSchedule}
+    
+    and this work hours data:
+    ${workhours}
 
 
     please change it based on this request:
@@ -29,6 +32,8 @@ export default async function reOptimize(scheduleJson: any, request: string){
     - Preserve all fields that is not expliclitly or implicitly stated in the request.
     - Add the new task(s) if required, and integrate them into the workload accordingly.
     - Keep the JSON format and structure exactly the same as the input.
+    - make sure sum of all workload each day does not exceed that of the work hours in that certain day
+    - please make sure that break day still exist based on the break day pattern you see in the workloads
 
     with the format still the same as the initial schedule data
     `

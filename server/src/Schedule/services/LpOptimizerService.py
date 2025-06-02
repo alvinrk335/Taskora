@@ -104,7 +104,7 @@ def optimize_schedule(schedule: ScheduleRequest):
         prob += pulp.lpSum(x[task.taskId].values()) == task.estimatedDuration
         if task.deadline:
             for day in days:
-                if day > task.deadline.strftime('%Y-%m-%d'):
+                if day >= task.deadline.strftime('%Y-%m-%d'):
                     prob += x[task.taskId][day] == 0
 
     for day in days:

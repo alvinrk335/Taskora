@@ -7,7 +7,7 @@ export default class TranslatedTask {
         private taskName: Name,
         private estimatedDuration: Duration,
         private weight: number,
-        private deadline?: Date | string,
+        private deadline?: Date | string | null,
         // private preferredDays?: Date[]
   ) {}
 
@@ -48,7 +48,7 @@ export default class TranslatedTask {
   }
 
   // Getter and Setter for deadline
-  public getDeadline(): Date | string | undefined{
+  public getDeadline(): Date | string | undefined | null{
     return this.deadline;
   }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
-import 'package:taskora/bloc/initial_task/task_add_event.dart';
+import 'package:taskora/bloc/task_add/task_add_bloc.dart';
+import 'package:taskora/bloc/task_add/task_add_event.dart';
 import 'package:taskora/bloc/task_priority/task_priority_bloc.dart';
 import 'package:taskora/bloc/task_priority/task_priority_event.dart';
 import 'package:taskora/bloc/task_priority/task_priority_state.dart';
@@ -41,7 +41,9 @@ class _AddOrEditTaskDialogState extends State<AddOrEditTaskDialog> {
         dateController.text = DateFormat('yyyy-MM-dd').format(task.deadline!);
       }
       context.read<TaskTypeBloc>().add(TypeChanged(type: task.type));
-      context.read<TaskPriorityBloc>().add(PriorityChanged(priority: task.priority));
+      context.read<TaskPriorityBloc>().add(
+        PriorityChanged(priority: task.priority),
+      );
     }
   }
 
@@ -125,12 +127,13 @@ class _AddOrEditTaskDialogState extends State<AddOrEditTaskDialog> {
             builder: (context, state) {
               return DropdownButton<TaskType>(
                 value: state.type,
-                items: TaskType.values.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type.toString().split('.').last),
-                  );
-                }).toList(),
+                items:
+                    TaskType.values.map((type) {
+                      return DropdownMenuItem(
+                        value: type,
+                        child: Text(type.toString().split('.').last),
+                      );
+                    }).toList(),
                 onChanged: (newType) {
                   context.read<TaskTypeBloc>().add(TypeChanged(type: newType));
                 },
@@ -139,19 +142,43 @@ class _AddOrEditTaskDialogState extends State<AddOrEditTaskDialog> {
           ),
           const SizedBox(height: 20),
           const Text("Enter task description"),
-          TextField(controller: descController),
+          const SizedBox(height: 5),
+          TextField(
+            controller: descController,
+            maxLines: null,
+            minLines: 5,
+            decoration: InputDecoration(
+              hintText: "enter a brief description about your task",
+              hintStyle: TextStyle(color: Colors.grey),
+              filled: true,
+              fillColor: Colors.black45,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.black87),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 20,
+              ),
+            ),
+          ),
           const SizedBox(height: 20),
           const Text("Enter Task Priority"),
           BlocBuilder<TaskPriorityBloc, TaskPriorityState>(
             builder: (context, state) {
               return DropdownButton<String>(
                 value: prioFromNumber(state.priority),
-                items: ["LOW", "MEDIUM", "HIGH"].map((priority) {
-                  return DropdownMenuItem(
-                    value: priority,
-                    child: Text(priority),
-                  );
-                }).toList(),
+                items:
+                    ["LOW", "MEDIUM", "HIGH"].map((priority) {
+                      return DropdownMenuItem(
+                        value: priority,
+                        child: Text(priority),
+                      );
+                    }).toList(),
                 onChanged: (newPriority) {
                   context.read<TaskPriorityBloc>().add(
                     PriorityChanged(priority: prioToNumber(newPriority!)),
@@ -179,9 +206,10 @@ class _AddOrEditTaskDialogState extends State<AddOrEditTaskDialog> {
               Description(descController.text),
               priority,
               type,
-              deadline: dateController.text.isEmpty
-                  ? null
-                  : DateTime.parse(dateController.text),
+              deadline:
+                  dateController.text.isEmpty
+                      ? null
+                      : DateTime.parse(dateController.text),
             );
 
             if (!context.mounted) return;

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:taskora/bloc/initial_task/task_add_bloc.dart';
-import 'package:taskora/bloc/initial_task/task_add_state.dart';
+import 'package:taskora/bloc/task_add/task_add_bloc.dart';
+import 'package:taskora/bloc/task_add/task_add_event.dart';
+import 'package:taskora/bloc/task_add/task_add_state.dart';
 import 'package:taskora/bloc/task_priority/task_priority_bloc.dart';
 import 'package:taskora/bloc/task_type/task_type_bloc.dart';
 import 'package:taskora/model/entity/initial_task.dart';
@@ -11,22 +12,23 @@ import 'package:taskora/widgets/task%20list/flat_task_card.dart';
 class InitialTaskList extends StatelessWidget {
   const InitialTaskList({super.key});
 
-  
   void _showEditDialog(BuildContext context, InitialTask task) {
     showDialog(
       context: context,
-      builder: (ctx) => BlocProvider.value(
-        value: context.read<TaskAddBloc>(),
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (_) => TaskTypeBloc()),
-            BlocProvider(create: (_) => TaskPriorityBloc()),
-          ],
-          child: AddOrEditTaskDialog(initialTask: task),
-        ),
-      ),
+      builder:
+          (ctx) => BlocProvider.value(
+            value: context.read<TaskAddBloc>(),
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => TaskTypeBloc()),
+                BlocProvider(create: (_) => TaskPriorityBloc()),
+              ],
+              child: AddOrEditTaskDialog(initialTask: task),
+            ),
+          ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaskAddBloc, TaskAddState>(
@@ -54,6 +56,9 @@ class InitialTaskList extends StatelessWidget {
               return FlatTaskCard(
                 task: task,
                 onTap: () => _showEditDialog(context, task),
+                onDelete: () {
+                  context.read<TaskAddBloc>().add(TaskRemoved(index: index));
+                },
               );
             },
           ),
@@ -61,5 +66,4 @@ class InitialTaskList extends StatelessWidget {
       },
     );
   }
-
 }

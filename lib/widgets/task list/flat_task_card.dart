@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class FlatTaskCard extends StatelessWidget {
   final dynamic task; // Can be Task or InitialTask
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
-  const FlatTaskCard({super.key, required this.task, this.onTap});
+  const FlatTaskCard({
+    super.key,
+    required this.task,
+    this.onTap,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +48,11 @@ class FlatTaskCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                ),
+                IconButton(
+                  onPressed: onDelete ?? () {},
+                  icon: const Icon(Icons.delete, color: Colors.redAccent),
+                  tooltip: 'Delete Task',
                 ),
               ],
             ),
