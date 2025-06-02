@@ -143,7 +143,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     });
 
     if(request && request.trim() !== ""){
-      const updatedScheduleJson = await reOptimize(schedule, request);
+      const updatedScheduleJson = await reOptimize(schedule, request, weeklyWorkingHours);
       schedule = Schedule.fromJSON(updatedScheduleJson);
     }
     //log scheduling time

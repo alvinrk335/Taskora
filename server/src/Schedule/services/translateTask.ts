@@ -20,8 +20,10 @@ export default async function translateTasks(listOfTask: initialTask[]) {
         You are a strict JSON translator.
         ONLY return a valid JSON object based on the input below, without any explanation or Markdown.
 
-        I am making an optimized schedule using linear programming with some constraints.
-        Please translate this natural language input, with you filling the field missing according to the given instruction below:
+
+        imagine myself as an individual not a group.
+        i am making an optimized schedule using linear programming with some constraints.
+        translate this natural language input, with you filling the field missing according to the given instruction below:
         - taskId: ${task.getTaskId()}
         - taskName: ${task.getTaskName().toString()}
         - description: ${task.getDescription().toString()}

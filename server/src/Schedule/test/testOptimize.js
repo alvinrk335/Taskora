@@ -14,7 +14,7 @@ const scheduleOptimizeTest = async () => {
       taskName: "Software Engineering Project",
       description: "Make a simple scheduling app with core optimizer service already exist",
       taskType: "Project",
-      deadline: futureDate(40),
+      deadline: futureDate(100),
       priority: "High"
     },
     {
@@ -22,7 +22,7 @@ const scheduleOptimizeTest = async () => {
       taskName: "Make Optimizer Service",
       description: "Make core optimizer module for scheduling system using LP",
       taskType: "Project",
-      deadline: futureDate(20),
+      deadline: futureDate(40),
       priority: "High"
     },
      {
@@ -48,7 +48,47 @@ const scheduleOptimizeTest = async () => {
       taskType: "other",
       deadline: futureDate(35),
       priority: "Medium"
-    }
+    },
+   {
+    taskId: "task-006",
+    taskName: "Frontend UI development",
+    description: "create custom calendar UI and task display using Flutter",
+    taskType: "project",
+    deadline: futureDate(25),
+    priority: "Medium"
+  },
+  {
+    taskId: "task-007",
+    taskName: "Weekly team meeting",
+    description: "attend a 1-hour meeting with the project team every Friday",
+    taskType: "other",
+    deadline: null,
+    priority: "Low"
+  },
+  {
+    taskId: "task-008",
+    taskName: "Database schema design",
+    description: "design Firestore schema to support user, task, and schedule entities",
+    taskType: "assignment",
+    deadline: futureDate(15),
+    priority: "High"
+  },
+  {
+    taskId: "task-009",
+    taskName: "Research paper draft",
+    description: "write a draft of the research paper for LLM + LP scheduling optimization",
+    taskType: "project",
+    deadline: futureDate(20),
+    priority: "High"
+  },
+  {
+    taskId: "task-010",
+    taskName: "Test coverage improvement",
+    description: "add unit and integration tests to improve backend code reliability",
+    taskType: "other",
+    deadline: futureDate(30),
+    priority: "Medium"
+  },
   ];
   const weeklyWorkingHours = {
     Monday: 4.0,
@@ -66,8 +106,8 @@ const scheduleOptimizeTest = async () => {
     listOfTask: tasks,
     weeklyWorkingHours: weeklyWorkingHours,
     excludedDates: [],
-    daysToSchedule: 40,
-    workloadThreshold: 8
+    daysToSchedule: 200,
+    workloadThreshold: 11
   };
 
   try {

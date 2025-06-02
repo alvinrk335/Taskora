@@ -11,7 +11,6 @@ export default class Duration {
     return new Duration(num);
   }
 
-  // Static factory method untuk fleksibilitas
   public static fromHours(hours: number): Duration {
     return new Duration(hours * 60);
   }
