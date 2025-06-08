@@ -31,7 +31,14 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     on<DaySelected>((event, emit) {
       final currState = state;
       if (currState is CalendarLoaded) {
+        // If event.daySelected is null, deselect (set selectedDay to null)
         emit(currState.copyWith(selectedDay: event.daySelected));
+      }
+    });
+    on<CalendarFormatChanged>((event, emit) {
+      final currState = state;
+      if (currState is CalendarLoaded) {
+        emit(currState.copyWith(calendarFormat: event.calendarFormat));
       }
     });
   }

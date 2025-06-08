@@ -48,7 +48,6 @@ class BurgerMenu extends StatelessWidget {
             leading: Icon(Icons.person_outline),
             title: Text('Personal Info'),
             onTap: () {
-              Navigator.pop(context);
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder:
@@ -64,7 +63,6 @@ class BurgerMenu extends StatelessWidget {
             leading: Icon(Icons.settings),
             title: Text("Settings"),
             onTap: () {
-              Navigator.pop(context);
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder:
@@ -74,6 +72,7 @@ class BurgerMenu extends StatelessWidget {
                       ),
                 ),
               );
+              
             },
           ),
         ],

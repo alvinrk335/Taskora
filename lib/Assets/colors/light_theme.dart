@@ -1,103 +1,186 @@
 import 'package:flutter/material.dart';
-import 'package:taskora/Assets/colors/app_colors.dart';
+import 'package:taskora/Assets/colors/box_decoration_theme.dart';
 
 ThemeData lightTheme() {
   return ThemeData.light().copyWith(
     colorScheme: ColorScheme.light(
-      primary: AppColors.primary,
-      secondary: AppColors.accent,
-      background: AppColors.background,
-      surface: AppColors.text,
-      onPrimary: AppColors.text,
-      onSecondary: AppColors.text,
-      onBackground: AppColors.text,
-      onSurface: AppColors.text,
+      primary: const Color(0xFF1976D2), // Previous primary blue
+      secondary: const Color(0xFF5AC8FA), // Soft Blue (suggested)
+      background: const Color(0xFFF7F8FA),
+      surface: Colors.white,
+      onPrimary: Colors.white,
+      onSecondary: const Color(0xFF222B45),
+      onBackground: const Color(0xFF222B45),
+      onSurface: const Color(0xFF222B45),
+      error: const Color(0xFFFF3B30),
     ),
-    scaffoldBackgroundColor: AppColors.background,
+    scaffoldBackgroundColor: const Color(0xFFF7F8FA),
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.primary,
+      backgroundColor: const Color(0xFF1976D2),
       foregroundColor: Colors.white,
-      elevation: 0,
-    ),
-    cardColor: AppColors.background,
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.accent,
-        foregroundColor: Colors.white,
-        textStyle: const TextStyle(fontWeight: FontWeight.bold),
+      elevation: 2,
+      titleTextStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 22,
+        color: Colors.white,
+        letterSpacing: 0.5,
       ),
+      iconTheme: const IconThemeData(color: Colors.white),
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.white,
+    cardColor: Colors.white,
+    cardTheme: CardTheme(
+      color: Colors.white,
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
     ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppColors.text),
-      bodyMedium: TextStyle(color: AppColors.text),
-      titleMedium: TextStyle(color: AppColors.text), // Untuk label input
+      bodyLarge: TextStyle(
+        color: Color(0xFF222B45), // Default text: black
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+      ),
+      bodyMedium: TextStyle(color: Color(0xFF222B45), fontSize: 14),
+      titleMedium: TextStyle(
+        color: Color(0xFF222B45), // Use black for titles
+        fontWeight: FontWeight.w600,
+        fontSize: 16,
+      ),
+      headlineSmall: TextStyle(
+        color: Color(0xFF222B45), // Use black for headlines
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+      ),
+      labelLarge: TextStyle(
+        color: Color(0xFF5AC8FA), // Use secondary only for labels/badges
+        fontWeight: FontWeight.w600,
+        fontSize: 15,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(
+          0xFF5AC8FA,
+        ), // Use secondary color for buttons
+        foregroundColor: Colors.white,
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 2,
+        shadowColor: const Color(0xFF5AC8FA).withOpacity(0.15),
+      ),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: const Color(0xFF1976D2),
+      foregroundColor: Colors.white,
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.white, // Lebih kontras di background terang
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: AppColors.border),
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Color(0xFFE4E9F2)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: AppColors.background),
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Color(0xFFF7F8FA)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: AppColors.primary, width: 2),
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
       ),
-      hintStyle: const TextStyle(color: Colors.black54),
-      labelStyle: TextStyle(color: AppColors.primary),
-      floatingLabelStyle: TextStyle(color: AppColors.primary),
-      iconColor: AppColors.primary,
+      hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
+      labelStyle: const TextStyle(
+        color: Color(0xFF1976D2),
+        fontWeight: FontWeight.w500,
+      ),
+      floatingLabelStyle: const TextStyle(
+        color: Color(0xFF1976D2),
+        fontWeight: FontWeight.w600,
+      ),
+      iconColor: const Color(0xFF1976D2),
     ),
-
     dialogTheme: DialogTheme(
-      backgroundColor: AppColors.background, // Warna background dialog
-      titleTextStyle: TextStyle(
-        color: AppColors.text,
+      backgroundColor: Colors.white,
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      titleTextStyle: const TextStyle(
+        color: Color(0xFF1976D2),
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
-      contentTextStyle: TextStyle(color: AppColors.text, fontSize: 16),
+      contentTextStyle: const TextStyle(color: Color(0xFF222B45), fontSize: 16),
     ),
     drawerTheme: DrawerThemeData(
-      backgroundColor: AppColors.background, // Warna background drawer
-      scrimColor: Colors.black.withOpacity(
-        0.5,
-      ), // Warna overlay saat drawer kebuka
+      backgroundColor: Colors.white,
+      scrimColor: Colors.black.withOpacity(0.4),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+      ),
     ),
     datePickerTheme: DatePickerThemeData(
-      backgroundColor: AppColors.background,
-      headerBackgroundColor: AppColors.primary,
+      backgroundColor: Colors.white,
+      headerBackgroundColor: const Color(0xFF1976D2),
       headerForegroundColor: Colors.white,
-      surfaceTintColor: AppColors.primary,
+      surfaceTintColor: const Color(0xFF1976D2),
       dayForegroundColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.selected)) return Colors.white;
-        return AppColors.text;
+        return const Color(0xFF222B45);
       }),
       dayBackgroundColor: MaterialStateColor.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) return AppColors.accent;
+        if (states.contains(MaterialState.selected))
+          return const Color(0xFF5AC8FA);
         return Colors.transparent;
       }),
       yearForegroundColor: MaterialStateColor.resolveWith((states) {
         if (states.contains(MaterialState.selected)) return Colors.white;
-        return AppColors.text;
+        return const Color(0xFF222B45);
       }),
       yearBackgroundColor: MaterialStateColor.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) return AppColors.accent;
+        if (states.contains(MaterialState.selected))
+          return const Color(0xFF5AC8FA);
         return Colors.transparent;
       }),
-      todayForegroundColor: MaterialStateProperty.all(AppColors.primary),
+      todayForegroundColor: MaterialStateProperty.all(const Color(0xFF1976D2)),
       todayBackgroundColor: MaterialStateProperty.all(
-        AppColors.primary.withOpacity(0.2),
+        const Color(0xFF1976D2).withOpacity(0.13),
       ),
     ),
+    extensions: <ThemeExtension<dynamic>>[
+      TaskoraBoxDecorationTheme(
+        card: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF1976D2).withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        input: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFF1976D2).withOpacity(0.12)),
+        ),
+        dialog: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF1976D2).withOpacity(0.10),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+      ),
+    ],
   );
 }

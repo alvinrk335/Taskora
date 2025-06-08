@@ -116,9 +116,11 @@ class _AddOrEditTaskDialogState extends State<AddOrEditTaskDialog> {
             readOnly: true,
             onTap: _selectDate,
             decoration: const InputDecoration(
-              labelText: "Deadline",
+              labelText: null, // Remove label to prevent floating
               hintText: "Leave blank if no deadline",
               suffixIcon: Icon(Icons.calendar_today),
+              floatingLabelBehavior:
+                  FloatingLabelBehavior.never, // Prevent label from floating
             ),
           ),
           const SizedBox(height: 20),

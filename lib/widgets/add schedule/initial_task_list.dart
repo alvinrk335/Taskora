@@ -42,22 +42,20 @@ class InitialTaskList extends StatelessWidget {
           );
         }
 
-        return SizedBox(
-          height: 550,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: state.tasks.length,
-            itemBuilder: (itemContext, index) {
-              final task = state.tasks[index];
-              return FlatTaskCard(
-                task: task,
-                onTap: () => _showEditDialog(context, task),
-                onDelete: () {
-                  context.read<TaskAddBloc>().add(TaskRemoved(index: index));
-                },
-              );
-            },
-          ),
+        return ListView.builder(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: state.tasks.length,
+          itemBuilder: (itemContext, index) {
+            final task = state.tasks[index];
+            return FlatTaskCard(
+              task: task,
+              onTap: () => _showEditDialog(context, task),
+              onDelete: () {
+                context.read<TaskAddBloc>().add(TaskRemoved(index: index));
+              },
+            );
+          },
         );
       },
     );

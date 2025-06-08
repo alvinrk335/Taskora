@@ -15,6 +15,7 @@ class TaskList extends StatelessWidget {
   final void Function(Task task)? onTap;
   final bool? showAll;
   final SummaryType? summaryType;
+  final bool? timeline;
   const TaskList({
     super.key,
     required this.cardType,
@@ -22,6 +23,7 @@ class TaskList extends StatelessWidget {
     this.compact,
     this.summaryType,
     this.showAll,
+    this.timeline,
   });
 
   void sortTaskByDeadline(List<Task> task) {
@@ -50,8 +52,44 @@ class TaskList extends StatelessWidget {
         if (scheduleState is CalendarLoaded) {
           List<Task> tasks = scheduleState.schedule.getTasks;
           sortTaskByDeadline(tasks);
+          final selectedDay = scheduleState.selectedDay;
+          if (timeline == true && selectedDay != null) {
+            // Only show tasks for selectedDay (timeline mode)
+            tasks =
+                tasks.where((task) {
+                  return task.workload.keys.any(
+                    (date) => isSameDay(date, selectedDay),
+                  );
+                }).toList();
+            if (tasks.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text("Tidak ada event pada hari ini."),
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: Text(
+                    "Timeline Hari Ini",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                ...tasks.map(
+                  (task) => ListTile(
+                    title: Text(task.taskName.toString()),
+                    subtitle: Text(task.type.toString()),
+                  ),
+                ),
+              ],
+            );
+          }
           if (tasks.isNotEmpty) {
-            final selectedDay = scheduleState.selectedDay;
             if (showAll != null) {
               if (showAll! == true) {
                 return Wrap(

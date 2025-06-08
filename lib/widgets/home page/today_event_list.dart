@@ -116,15 +116,18 @@ class TodayEventList extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.secondary.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(4),
-                      color: Colors.grey.shade200,
                     ),
                     child: Text(
                       task.type.toString().split('.').last,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'Montserrat',
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                   ),

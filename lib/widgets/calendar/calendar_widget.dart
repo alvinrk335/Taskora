@@ -1,10 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:taskora/Assets/colors/app_colors.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_event.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
@@ -25,7 +22,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   @override
   void initState() {
     super.initState();
-
     Timer(const Duration(milliseconds: 300), () {
       if (!mounted) return;
       setState(() {
@@ -35,7 +31,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    context.read<CalendarBloc>().add(DaySelected(daySelected: selectedDay));
+    final calendarState = context.read<CalendarBloc>().state;
+    DateTime? currentSelected;
+    if (calendarState is CalendarLoaded) {
+      currentSelected = calendarState.selectedDay;
+    }
+    if (currentSelected != null && isSameDay(currentSelected, selectedDay)) {
+      context.read<CalendarBloc>().add(DaySelected(daySelected: null));
+    } else {
+      context.read<CalendarBloc>().add(DaySelected(daySelected: selectedDay));
+    }
     setState(() {
       _focusedDay = focusedDay;
     });
@@ -52,8 +57,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     return BlocBuilder<CalendarBloc, CalendarState>(
       builder: (calendarContext, calendarState) {
         DateTime? selectedDay;
+        CalendarFormat? calendarFormat;
         if (calendarState is CalendarLoaded) {
+          if (calendarState.selectedDay != null &&
+              isSameDay(calendarState.selectedDay, _focusedDay)) {
+            selectedDay = null;
+          } else {
+            selectedDay = calendarState.selectedDay ?? _focusedDay;
+          }
           selectedDay = calendarState.selectedDay;
+          calendarFormat = calendarState.calendarFormat;
         }
 
         return SingleChildScrollView(
@@ -65,6 +78,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeInOut,
               child: TableCalendar(
+                calendarFormat: calendarFormat ?? CalendarFormat.month,
                 focusedDay: _focusedDay,
                 firstDay: DateTime(
                   DateTime.now().year,
@@ -86,37 +100,45 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   titleCentered: true,
                   formatButtonVisible: false,
                   titleTextStyle: TextStyle(
-                    color: AppColors.text,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                   leftChevronIcon: Icon(
                     Icons.chevron_left,
-                    color: AppColors.text,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   rightChevronIcon: Icon(
                     Icons.chevron_right,
-                    color: AppColors.text,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
 
                 // Teks nama hari
                 daysOfWeekStyle: DaysOfWeekStyle(
-                  weekdayStyle: TextStyle(color: AppColors.text),
-                  weekendStyle: TextStyle(color: AppColors.accent),
+                  weekdayStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  weekendStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 ),
 
                 // Style angka tanggal
                 calendarStyle: CalendarStyle(
-                  defaultTextStyle: TextStyle(color: AppColors.text),
-                  weekendTextStyle: TextStyle(color: AppColors.accent),
+                  defaultTextStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  weekendTextStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                   selectedDecoration: BoxDecoration(
-                    color: AppColors.accent,
+                    color: Theme.of(context).colorScheme.secondary,
                     shape: BoxShape.circle,
                   ),
                   selectedTextStyle: const TextStyle(color: Colors.white),
                   todayDecoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
                   todayTextStyle: const TextStyle(color: Colors.white),
@@ -140,7 +162,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                           width: 6,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: AppColors.accent,
+                            color: Theme.of(context).colorScheme.secondary,
                             shape: BoxShape.circle,
                           ),
                         ),

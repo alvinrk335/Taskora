@@ -10,6 +10,7 @@ import 'package:taskora/model/value%20object/card_type.dart';
 import 'package:taskora/pages/task_page.dart';
 import 'package:taskora/repository/schedule_repository.dart';
 import 'package:taskora/widgets/calendar/calendar.dart';
+import 'package:taskora/widgets/calendar/calendar_layout_dialog.dart';
 
 import 'package:taskora/widgets/task%20list/task_list.dart';
 
@@ -53,13 +54,39 @@ class CalendarPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Row(
+                //bikin ini lebih terlihat seperti navbar
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.filter_list),
+                    onPressed: () {
+                      // Implement filter functionality
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.calendar_view_month),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => BlocProvider.value(
+                            value: context.read<CalendarBloc>(),
+                            child: CalendarLayoutDialog(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
               Center(child: Calendar()),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (authContext, authState) {
                   if (authState is NotLoggedIn) {
                     return SizedBox.shrink();
                   } else if (authState is LoggedIn) {
-                    return TaskList(cardType: CardType.regular, compact: true);
+                    return TaskList(cardType: CardType.regular, compact: true,);
                   }
                   return Text("data");
                 },
