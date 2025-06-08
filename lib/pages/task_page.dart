@@ -39,9 +39,9 @@ class TaskPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 20),
             schedule!.isEmpty()
-                ? Align(
-                  alignment: Alignment.topCenter,
+                ? Center(
                   child: ElevatedButton(
                     onPressed:
                         () => Navigator.push(
@@ -51,8 +51,6 @@ class TaskPage extends StatelessWidget {
                           ),
                         ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.deepPurple,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -65,12 +63,14 @@ class TaskPage extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Icon(Icons.task), Text("create new schedule")],
+                      children: [
+                        Icon(Icons.task),
+                        Text("\tcreate new schedule"),
+                      ],
                     ),
                   ),
                 )
-                : Align(
-                  alignment: Alignment.topCenter,
+                : Center(
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -104,8 +104,6 @@ class TaskPage extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.deepPurple,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -117,7 +115,7 @@ class TaskPage extends StatelessWidget {
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [Icon(Icons.settings), Text("edit task")],
+                      children: [Icon(Icons.settings), Text("\tedit task")],
                     ),
                   ),
                 ),

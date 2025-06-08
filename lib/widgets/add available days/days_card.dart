@@ -30,12 +30,7 @@ class DaysCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Working Hours",
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text("Working Hours", style: TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           ...workingHours.entries.map(
             (entry) => Padding(
@@ -52,7 +47,6 @@ class DaysCard extends StatelessWidget {
                   Text(
                     "${entry.value} hrs",
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

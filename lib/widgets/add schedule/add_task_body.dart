@@ -149,16 +149,12 @@ class _AddOrEditTaskDialogState extends State<AddOrEditTaskDialog> {
             minLines: 5,
             decoration: InputDecoration(
               hintText: "enter a brief description about your task",
-              hintStyle: TextStyle(color: Colors.grey),
               filled: true,
-              fillColor: Colors.black45,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.black87),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.blueAccent, width: 2),
               ),
               contentPadding: EdgeInsets.symmetric(
                 vertical: 16,

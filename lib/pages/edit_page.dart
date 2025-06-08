@@ -65,10 +65,7 @@ class _EditPageState extends State<EditPage> {
       );
     } else if (promptState is PromptTextfieldOpened) {
       return Container(
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
@@ -77,12 +74,10 @@ class _EditPageState extends State<EditPage> {
               maxLines: null,
               minLines: 5,
               decoration: InputDecoration(
-                hintText: "e.g. i cannot do tasks in monday next week",
+                hintText: "type your preference here",
                 filled: true,
-                fillColor: Colors.black87,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.black87),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

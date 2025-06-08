@@ -25,7 +25,7 @@ class FlatTaskCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF424242), // Changed to a lighter gray color
+// Changed to a lighter gray color
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -41,9 +41,7 @@ class FlatTaskCard extends StatelessWidget {
                       fontFamily: 'Montserrat',
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
-                      color: Color(
-                        0xFF80CBC4,
-                      ), // Changed back to teal for better contrast
+                      // Changed back to teal for better contrast
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -62,7 +60,7 @@ class FlatTaskCard extends StatelessWidget {
                 Icon(
                   Icons.calendar_today,
                   size: 16,
-                  color: Colors.white,
+
                 ), // Changed to pure white
                 const SizedBox(width: 4),
                 Text(
@@ -71,7 +69,7 @@ class FlatTaskCard extends StatelessWidget {
                   style: const TextStyle(
                     // Made color constant
                     fontFamily: 'Montserrat',
-                    color: Colors.white, // Changed to pure white
+ // Changed to pure white
                     fontSize: 14,
                   ),
                 ),
@@ -79,7 +77,7 @@ class FlatTaskCard extends StatelessWidget {
                 Icon(
                   Icons.flag,
                   size: 16,
-                  color: Colors.white,
+                  // color: Colors.white,
                 ), // Changed to pure white
                 const SizedBox(width: 4),
                 Text(
@@ -87,7 +85,7 @@ class FlatTaskCard extends StatelessWidget {
                   style: const TextStyle(
                     // Made color constant
                     fontFamily: 'Montserrat',
-                    color: Colors.white, // Changed to pure white
+                    // color: Colors.white, // Changed to pure white
                     fontSize: 14,
                   ),
                 ),
@@ -99,8 +97,6 @@ class FlatTaskCard extends StatelessWidget {
                 task.description.toString(),
 
                 style: const TextStyle(
-                  // Made color constant
-                  color: Colors.white, // Changed to pure white
                   fontSize: 14,
                   height: 1.4,
                 ),
@@ -112,17 +108,11 @@ class FlatTaskCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(
-                  0xFF80CBC4,
-                ), // Using teal color for tag background
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 task.type.toString(),
                 style: const TextStyle(
-                  color:
-                      Colors
-                          .black, // Changed to black for contrast with teal background
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),

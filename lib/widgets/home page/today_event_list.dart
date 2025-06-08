@@ -14,6 +14,19 @@ class TodayEventList extends StatelessWidget {
     showDialog(context: context, builder: (_) => TodayTaskDialog(task: task));
   }
 
+  String prioFromNumber(int prio) {
+    switch (prio) {
+      case 1:
+        return 'low';
+      case 2:
+        return 'medium';
+      case 3:
+        return 'high';
+      default:
+        return 'invalid';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
@@ -33,77 +46,133 @@ class TodayEventList extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => _openTaskDialog(context),
-      child: Row(
-        children: [
-          Card(
-            color: const Color(0xFF1E1E1E),
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Expanded info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          task.taskName.toString(),
-                          style: const TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Color(0xFF80CBC4),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Deadline: $deadlineStr',
-                          style: const TextStyle(
-                            fontFamily: 'Montserrat',
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                          overflow: TextOverflow.fade,
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Task Name
                   Text(
-                    'workload: ${todayWorkload > 0 ? todayWorkload.toInt() : '-'} hrs',
+                    task.taskName.toString(),
                     style: const TextStyle(
                       fontFamily: 'Montserrat',
-                      color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 18,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Deadline + Priority
+                  Row(
+                    children: [
+                      const Icon(Icons.calendar_today, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        deadlineStr,
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const Icon(Icons.flag, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        prioFromNumber(task.priority),
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Type badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: Colors.grey.shade200,
+                    ),
+                    child: Text(
+                      task.type.toString().split('.').last,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Montserrat',
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          BlocBuilder<TaskDoneBloc, TaskDoneState>(
-            builder: (taskDoneContext, taskDoneState) {
-              if (taskDoneState.done == true) {
-                return Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    shape: BoxShape.circle,
+
+            const SizedBox(width: 12),
+
+            // Workload + Done Icon
+            Column(
+              children: [
+                Text(
+                  'Workload\n${todayWorkload > 0 ? todayWorkload.toInt() : '-'} hrs',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
                   ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 20),
-                );
-              } else {
-                return SizedBox.shrink();
-              }
-            },
-          ),
-        ],
+                ),
+                const SizedBox(height: 8),
+                BlocBuilder<TaskDoneBloc, TaskDoneState>(
+                  builder: (context, state) {
+                    if (state.done == true) {
+                      return Container(
+                        width: 32,
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

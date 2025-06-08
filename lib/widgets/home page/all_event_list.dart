@@ -4,88 +4,120 @@ import 'package:taskora/model/entity/task.dart';
 
 class AllEventList extends StatelessWidget {
   final Task task;
+  final VoidCallback? onTap;
 
-  const AllEventList({super.key, required this.task});
+  const AllEventList({super.key, required this.task, this.onTap});
 
-    String prioFromNumber(int prio) {
-    if (prio == 1) {
-      return "low";
-    } else if (prio == 2) {
-      return "medium";
-    } else if (prio == 3) {
-      return "high";
+  String prioFromNumber(int prio) {
+    switch (prio) {
+      case 1:
+        return 'low';
+      case 2:
+        return 'medium';
+      case 3:
+        return 'high';
+      default:
+        return 'invalid';
     }
-    return "invalid priority";
   }
 
-  Widget buildEventCard(Task task) {
-    final deadlineStr =
+  @override
+  Widget build(BuildContext context) {
+    final deadline =
         task.deadline != null
             ? DateFormat('dd - MM - yyyy').format(task.deadline!)
-            : 'No deadline';
-    return Card(
-      color: const Color(0xFF1E1E1E),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+            : 'None';
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(5, 10),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Title
+            Text(
+              task.taskName.toString(),
+              style: const TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            const SizedBox(height: 8),
+
+            // Deadline + Priority
             Row(
               children: [
+                const Icon(Icons.calendar_today, size: 16),
+                const SizedBox(width: 4),
                 Text(
-                  task.taskName.toString(),
+                  deadline,
                   style: const TextStyle(
                     fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Color(0xFF80CBC4),
-                  ),
-                  overflow: TextOverflow.fade,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Deadline:  $deadlineStr',
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: Colors.white,
                     fontSize: 14,
-                    fontWeight: FontWeight.w400,
                   ),
-                  overflow: TextOverflow.fade,
+                ),
+                const SizedBox(width: 16),
+                const Icon(Icons.flag, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  prioFromNumber(task.priority),
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Description:',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+
+            if (task.description.value.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                task.description.value,
+                style: const TextStyle(fontSize: 14, height: 1.4),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Text(
-              task.description.value,
-              style: const TextStyle(color: Colors.white),
-            ),
+            ],
+
             const SizedBox(height: 8),
-            Text(
-              'Priority: ${prioFromNumber(task.priority)}',
-              style: const TextStyle(color: Colors.white),
-            ),
-            Text(
-              'Type: ${task.type.toString().split('.').last}',
-              style: const TextStyle(color: Colors.white),
+
+            // Type Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: Colors.grey.shade200,
+              ),
+              child: Text(
+                task.type.toString().split('.').last,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return buildEventCard(task);
   }
 }

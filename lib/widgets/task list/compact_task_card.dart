@@ -26,7 +26,9 @@ class CompactTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
+      color: theme.cardColor,
       child: SizedBox(
         height: 40,
         child: Row(

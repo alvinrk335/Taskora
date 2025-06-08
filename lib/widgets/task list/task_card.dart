@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:taskora/model/entity/task.dart';
 import 'package:taskora/model/value%20object/card_type.dart';
@@ -20,28 +18,31 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardBg = const Color(0xFF2D2D2D);
-    final titleStyle = const TextStyle(
-      fontFamily: 'Montserrat',
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-      color: Color(0xFF80CBC4),
-    );
-    final textStyle = const TextStyle(
-      fontFamily: 'Montserrat',
-      fontSize: 14,
-      color: Colors.white70,
-      height: 1.4,
-    );
+    final theme = Theme.of(context);
+
+    final cardBg = theme.cardColor; // ambil warna card dari theme
+    final titleStyle =
+        theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold) ??
+        TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.primary,
+        );
+
+    final textStyle =
+        theme.textTheme.bodyMedium?.copyWith(height: 1.4) ??
+        TextStyle(
+          fontSize: 14,
+          color: theme.textTheme.bodyMedium?.color ?? Colors.grey,
+          height: 1.4,
+        );
 
     Widget buildEditButton() {
       return Container(
-        height: 20, // Set explicit height for smaller button
+        height: 20,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(
-            14,
-          ), // Half of height for perfect circle ends
+          color: theme.colorScheme.secondary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -60,24 +61,21 @@ class TaskCard extends StatelessWidget {
               }
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ), // Reduced padding
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     Icons.edit_outlined,
-                    size: 14, // Smaller icon
-                    color: Color(0xFF7E57C2),
+                    size: 14,
+                    color: theme.colorScheme.secondary,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     'view details',
                     style: TextStyle(
-                      color: Color(0xFF7E57C2),
-                      fontSize: 11, // Smaller text
+                      color: theme.colorScheme.secondary,
+                      fontSize: 11,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -99,7 +97,7 @@ class TaskCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: cardBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white10),
+            border: Border.all(color: theme.dividerColor),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
@@ -132,15 +130,15 @@ class TaskCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF80CBC4).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(4),
+                            color: theme.colorScheme.primary.withOpacity(0.1),
                           ),
                           child: Text(
                             task.type.toString(),
                             style: TextStyle(
-                              color: Color(0xFF80CBC4),
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                         ),
@@ -151,7 +149,7 @@ class TaskCard extends StatelessWidget {
                   buildEditButton(),
                 ],
               ),
-              Divider(color: Colors.white24, thickness: 1, height: 24),
+              Divider(color: theme.dividerColor, thickness: 1, height: 24),
               const SizedBox(height: 12),
               Expanded(
                 child: SingleChildScrollView(
@@ -164,7 +162,7 @@ class TaskCard extends StatelessWidget {
                           Icon(
                             Icons.calendar_today,
                             size: 16,
-                            color: Colors.white70,
+                            color: theme.textTheme.bodySmall?.color,
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -178,7 +176,11 @@ class TaskCard extends StatelessWidget {
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          Icon(Icons.flag, size: 16, color: Colors.white70),
+                          Icon(
+                            Icons.flag,
+                            size: 16,
+                            color: theme.textTheme.bodySmall?.color,
+                          ),
                           const SizedBox(width: 8),
                           Text('Priority: ${task.priority}', style: textStyle),
                         ],
@@ -200,9 +202,7 @@ class TaskCard extends StatelessWidget {
           ),
         ),
       );
-    }
-    // button card
-    else if (cardType == CardType.button) {
+    } else if (cardType == CardType.button) {
       return SizedBox(
         width: 400,
         height: 200,
@@ -212,7 +212,7 @@ class TaskCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: cardBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white10),
+            border: Border.all(color: theme.dividerColor),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
@@ -254,15 +254,15 @@ class TaskCard extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF80CBC4,
-                                ).withOpacity(0.15),
+                                color: theme.colorScheme.primary.withOpacity(
+                                  0.15,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 task.type.toString(),
                                 style: TextStyle(
-                                  color: Color(0xFF80CBC4),
+                                  color: theme.colorScheme.primary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -275,7 +275,7 @@ class TaskCard extends StatelessWidget {
                       buildEditButton(),
                     ],
                   ),
-                  Divider(color: Colors.white24, thickness: 1, height: 24),
+                  Divider(color: theme.dividerColor, thickness: 1, height: 24),
                   const SizedBox(height: 12),
                   Expanded(
                     child: SingleChildScrollView(
@@ -288,7 +288,7 @@ class TaskCard extends StatelessWidget {
                               Icon(
                                 Icons.calendar_today,
                                 size: 16,
-                                color: Colors.white70,
+                                color: theme.textTheme.bodySmall?.color,
                               ),
                               const SizedBox(width: 8),
                               Text(
@@ -301,7 +301,11 @@ class TaskCard extends StatelessWidget {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              Icon(Icons.flag, size: 16, color: Colors.white70),
+                              Icon(
+                                Icons.flag,
+                                size: 16,
+                                color: theme.textTheme.bodySmall?.color,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'Priority: ${task.priority}',
@@ -328,9 +332,7 @@ class TaskCard extends StatelessWidget {
           ),
         ),
       );
-    }
-    //else
-    else {
+    } else {
       return Text("invalid card type");
     }
   }

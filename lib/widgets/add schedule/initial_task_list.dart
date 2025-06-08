@@ -37,17 +37,13 @@ class InitialTaskList extends StatelessWidget {
           return const Center(
             child: Text(
               'No tasks available',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Montserrat',
-                fontSize: 16,
-              ),
+              style: TextStyle(fontFamily: 'Montserrat', fontSize: 16),
             ),
           );
         }
 
         return SizedBox(
-          height: 300,
+          height: 550,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: state.tasks.length,

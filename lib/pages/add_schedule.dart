@@ -80,9 +80,7 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
@@ -176,13 +174,13 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                         }
 
                         if (!context.mounted) return;
-                        
+
                         await Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (_) => Navigation()),
                           (route) => false,
                         );
-                        
+
                         context.read<CalendarBloc>().add(ReloadRequest());
                       },
                       child: Text("Automatic Scheduling"),

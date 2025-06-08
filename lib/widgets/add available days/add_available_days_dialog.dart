@@ -44,31 +44,30 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
     };
   }
 
-  Widget buildDayInput(String label, TextEditingController controller) {
+  Widget buildDayInput(
+    String label,
+    TextEditingController controller,
+    ThemeData theme,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: TextFormField(
         controller: controller,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
           labelText: label,
           hintText: "Enter hours",
           prefixIcon: Icon(Icons.access_time),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              width: 0.5,
-              color: Colors.grey.shade600,
-            ), // lebih soft
+            borderSide: BorderSide(width: 0.5, color: theme.dividerColor),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(width: 0.5, color: Colors.grey),
+            borderSide: BorderSide(width: 0.5, color: theme.dividerColor),
           ),
-          hintStyle: TextStyle(color: Colors.white24),
-          labelStyle: TextStyle(color: Colors.white),
           filled: true,
-          fillColor: Colors.black38,
+          // Background input box
         ),
       ),
     );
@@ -76,6 +75,7 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AlertDialog(
       title: Text(
         "Set Weekly Work Hours",
@@ -85,13 +85,13 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildDayInput("Monday", mondayController),
-            buildDayInput("Tuesday", tuesdayController),
-            buildDayInput("Wednesday", wednesdayController),
-            buildDayInput("Thursday", thursdayController),
-            buildDayInput("Friday", fridayController),
-            buildDayInput("Saturday", saturdayController),
-            buildDayInput("Sunday", sundayController),
+            buildDayInput("Monday", mondayController, theme),
+            buildDayInput("Tuesday", tuesdayController, theme),
+            buildDayInput("Wednesday", wednesdayController, theme),
+            buildDayInput("Thursday", thursdayController, theme),
+            buildDayInput("Friday", fridayController, theme),
+            buildDayInput("Saturday", saturdayController, theme),
+            buildDayInput("Sunday", sundayController, theme),
           ],
         ),
       ),

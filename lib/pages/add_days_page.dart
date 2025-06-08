@@ -69,9 +69,7 @@ class _AddDaysPageState extends State<AddDaysPage> {
                 Expanded(
                   child: Text(
                     "Add your daily working hours",
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -90,9 +88,7 @@ class _AddDaysPageState extends State<AddDaysPage> {
                           const SizedBox(height: 40),
                           Text(
                             "Add specific excluded dates (optional)",
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 16),
                           TextField(

@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_event.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
+import 'package:taskora/bloc/available_days/available_days_bloc.dart';
+import 'package:taskora/bloc/calendar/calendar_bloc.dart';
+import 'package:taskora/bloc/navbar/navbar_bloc.dart';
+import 'package:taskora/bloc/theme/theme_bloc.dart';
 import 'package:taskora/pages/navigation.dart';
 
 class LoginPromptPage extends StatelessWidget {
@@ -13,13 +17,23 @@ class LoginPromptPage extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (authContext, authState) {
         if (authState is LoggedIn) {
-          Navigator.of(
-            context,
-          ).pushReplacement(MaterialPageRoute(builder: (_) => Navigation()));
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder:
+                  (_) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: context.read<NavbarBloc>()),
+                      BlocProvider.value(value: context.read<ThemeBloc>()),
+                      BlocProvider.value(value: context.read<CalendarBloc>()),
+                      BlocProvider.value(value: context.read<AvailableDaysBloc>())
+                    ],
+                    child: Navigation(),
+                  ),
+            ),
+          );
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -27,7 +41,6 @@ class LoginPromptPage extends StatelessWidget {
               const Text(
                 'Press login to proceed',
                 style: TextStyle(
-                  color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.w300, // Thinner font
                 ),
@@ -50,23 +63,10 @@ class LoginPromptPage extends StatelessWidget {
                     vertical: 6,
                   ), // slightly larger padding
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E1E1E),
                     borderRadius: BorderRadius.circular(
                       22,
                     ), // slightly larger radius
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.tealAccent.withOpacity(0.2),
-                        blurRadius: 18,
-                        spreadRadius: 2,
-                      ),
-                      BoxShadow(
-                        color: Colors.pinkAccent.withOpacity(0.12),
-                        blurRadius: 32,
-                        spreadRadius: 4,
-                      ),
-                    ],
-                    border: Border.all(color: Colors.white10, width: 1),
+                    border: Border.all(width: 1),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -74,10 +74,7 @@ class LoginPromptPage extends StatelessWidget {
                       Container(
                         width: 22, // slightly larger icon
                         height: 22,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF1E1E1E),
-                        ),
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
                         child: Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: Image(
@@ -90,7 +87,6 @@ class LoginPromptPage extends StatelessWidget {
                       const Text(
                         'Sign in with Google',
                         style: TextStyle(
-                          color: Colors.white,
                           fontWeight: FontWeight.w300,
                           fontSize: 13, // slightly larger font
                           letterSpacing: 0.2,

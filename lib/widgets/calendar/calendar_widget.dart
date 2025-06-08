@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:taskora/Assets/colors/app_colors.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_event.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
@@ -74,19 +76,62 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   DateTime.now().month,
                   0,
                 ),
-                headerStyle: HeaderStyle(
-                  titleCentered: true,
-                  formatButtonVisible: false,
-                ),
-                availableGestures: AvailableGestures.all,
                 selectedDayPredicate: (day) => isSameDay(day, selectedDay),
                 eventLoader: (day) => _getEventsForDay(day),
                 onDaySelected: _onDaySelected,
+                availableGestures: AvailableGestures.all,
+
+                // Header Style (bulan & tahun)
+                headerStyle: HeaderStyle(
+                  titleCentered: true,
+                  formatButtonVisible: false,
+                  titleTextStyle: TextStyle(
+                    color: AppColors.text,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  leftChevronIcon: Icon(
+                    Icons.chevron_left,
+                    color: AppColors.text,
+                  ),
+                  rightChevronIcon: Icon(
+                    Icons.chevron_right,
+                    color: AppColors.text,
+                  ),
+                ),
+
+                // Teks nama hari
+                daysOfWeekStyle: DaysOfWeekStyle(
+                  weekdayStyle: TextStyle(color: AppColors.text),
+                  weekendStyle: TextStyle(color: AppColors.accent),
+                ),
+
+                // Style angka tanggal
+                calendarStyle: CalendarStyle(
+                  defaultTextStyle: TextStyle(color: AppColors.text),
+                  weekendTextStyle: TextStyle(color: AppColors.accent),
+                  selectedDecoration: BoxDecoration(
+                    color: AppColors.accent,
+                    shape: BoxShape.circle,
+                  ),
+                  selectedTextStyle: const TextStyle(color: Colors.white),
+                  todayDecoration: BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  todayTextStyle: const TextStyle(color: Colors.white),
+                  outsideDaysVisible: false,
+                ),
+
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
-                    // Normalize date for event matching
-                    final normalizedDate = DateTime(date.year, date.month, date.day);
-                    final hasEvents = widget.events[normalizedDate]?.isNotEmpty ?? false;
+                    final normalizedDate = DateTime(
+                      date.year,
+                      date.month,
+                      date.day,
+                    );
+                    final hasEvents =
+                        widget.events[normalizedDate]?.isNotEmpty ?? false;
                     if (hasEvents) {
                       return Align(
                         alignment: Alignment.bottomCenter,
@@ -95,7 +140,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                           width: 6,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: Color(0xFFFFB74D), // orange
+                            color: AppColors.accent,
                             shape: BoxShape.circle,
                           ),
                         ),

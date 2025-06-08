@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/auth/auth_bloc.dart';
 import 'package:taskora/bloc/auth/auth_state.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
+import 'package:taskora/bloc/theme/theme_bloc.dart';
 import 'package:taskora/pages/personal_info_page.dart';
+import 'package:taskora/pages/setting_page.dart';
 
 class BurgerMenu extends StatelessWidget {
   const BurgerMenu({super.key});
@@ -28,7 +30,7 @@ class BurgerMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero, // biar header nempel ke atas
+        padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
             child: Column(
@@ -50,9 +52,25 @@ class BurgerMenu extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder:
-                      (_) => BlocProvider(
-                        create: (_) => AvailableDaysBloc(),
+                      (_) => BlocProvider.value(
+                        value: context.read<AvailableDaysBloc>(),
                         child: PersonalInfoPage(),
+                      ),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text("Settings"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder:
+                      (_) => BlocProvider.value(
+                        value: context.read<ThemeBloc>(),
+                        child: SettingPage(),
                       ),
                 ),
               );

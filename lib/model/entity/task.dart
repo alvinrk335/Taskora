@@ -63,6 +63,14 @@ class Task {
   factory Task.fromJson(Map<String, dynamic> json) {
     final Map<DateTime, DurationValue> workloadMap = {};
     final rawWorkload = json['workload'] ?? {};
+    final deadlineJson = json['deadline'];
+    DateTime? deadline;
+    if(deadlineJson != null){
+      deadline = DateTime.parse(deadlineJson);
+    }
+    else{
+      deadline = null;
+    }
 
     (rawWorkload as Map<String, dynamic>).forEach((key, value) {
       final date = DateTime.parse(key);
@@ -78,7 +86,7 @@ class Task {
       description: Description.fromString(json['description']),
       priority: json['priority'],
       type: TaskType.fromString(json['type']),
-      deadline: DateTime.parse(json['deadline']),
+      deadline: deadline,
       weight: json['weight'].toDouble(),
       createdAt: Timestamp.fromDate(
         DateTime.parse(json['createdAt'].toString()),
