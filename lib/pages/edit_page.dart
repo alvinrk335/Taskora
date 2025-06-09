@@ -88,7 +88,10 @@ class _EditPageState extends State<EditPage> {
                   horizontal: 20,
                 ),
               ),
-              style: TextStyle(fontSize: 14, color: Colors.white),
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
             ),
             const SizedBox(width: 8),
             Row(
@@ -119,10 +122,7 @@ class _EditPageState extends State<EditPage> {
           ),
           SizedBox(height: 20),
           Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.grey,
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Text(
@@ -130,8 +130,8 @@ class _EditPageState extends State<EditPage> {
                 style: TextStyle(
                   color:
                       promptState.prompt != ""
-                          ? Colors.blueGrey[400]
-                          : Colors.black,
+                          ? Theme.of(context).textTheme.bodyMedium?.color
+                          : Colors.grey,
                 ),
               ),
             ),
