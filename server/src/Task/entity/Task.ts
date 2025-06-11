@@ -14,7 +14,7 @@ export default class Task {
   private weight: number;
   private createdAt: Timestamp;
   private updatedAt: Timestamp;
-  private workload: Map<Date, Duration>;
+  private workload: Map<string, { interval: [string, string]; workload: number }[]>;
   private estimatedDuration?: Duration;
 
   constructor({
@@ -39,7 +39,7 @@ export default class Task {
     weight: number;
     createdAt: Timestamp;
     updatedAt: Timestamp;
-    workload: Map<Date, Duration>;
+    workload: Map<string, { interval: [string, string]; workload: number }[]>;
     estimatedDuration?: Duration;
   }) {
     this.taskId = taskId;
@@ -69,19 +69,19 @@ export default class Task {
   }
 
   static fromJSON(json: any): Task {
-    const workloadMap = new Map<Date, Duration>();
+    const workloadMap = new Map<string, { interval: [string, string]; workload: number }[]>();
     const rawWorkload = json.workload ?? {};
-
-    for (const [dateStr, durationVal] of Object.entries(rawWorkload)) {
-      const date = new Date(dateStr);
-      const duration = Duration.fromNumber(
-        typeof durationVal === "number"
-          ? durationVal
-          : (durationVal as any).minutes
-      );
-      workloadMap.set(date, duration);
+    for (const [dateStr, intervals] of Object.entries(rawWorkload)) {
+      if (Array.isArray(intervals)) {
+        workloadMap.set(
+          dateStr,
+          intervals.map((iw: any) => ({
+            interval: [iw.interval[0], iw.interval[1]],
+            workload: iw.workload,
+          }))
+        );
+      }
     }
-
     return new Task({
       taskId: json.taskId,
       taskName: Name.fromString(json.taskName),
@@ -98,9 +98,9 @@ export default class Task {
   }
 
   toJSON() {
-    const workloadObject: { [date: string]: number } = {};
+    const workloadObject: { [date: string]: { interval: [string, string]; workload: number }[] } = {};
     this.workload.forEach((value, key) => {
-      workloadObject[key.toISOString()] = value.toNumber();
+      workloadObject[key] = value;
     });
 
     let deadlineISO: string | null = null;
@@ -193,22 +193,24 @@ export default class Task {
     this.weight = weight;
   }
 
-  public getWorkload(): Map<Date, Duration> {
+  public getWorkload(): Map<string, { interval: [string, string]; workload: number }[]> {
     return this.workload;
   }
 
-  public setWorkload(workload: Map<Date, Duration>): void {
+  public setWorkload(workload: Map<string, { interval: [string, string]; workload: number }[]>): void {
     this.workload = workload;
   }
 
-  public addWorkload(date: Date, duration: Duration): void {
-    this.workload.set(date, duration);
+  public addWorkload(date: string, intervals: { interval: [string, string]; workload: number }[]): void {
+    this.workload.set(date, intervals);
   }
 
   public getTotalWorkload(): number {
     let total = 0;
-    this.workload.forEach((duration) => {
-      total += duration.toNumber();
+    this.workload.forEach((intervals) => {
+      for (const iw of intervals) {
+        total += iw.workload;
+      }
     });
     return total;
   }
@@ -224,14 +226,13 @@ export default class Task {
     const plainWorkload: { [date: string]: number } = {};
 
     if (rawWorkloadMap) {
-      for (const [date, duration] of rawWorkloadMap.entries()) {
-        const dateString = date instanceof Date ? date.toISOString().split("T")[0] : String(date);
-        plainWorkload[dateString] =
-          typeof duration === "object" && "getInHours" in duration
-            ? duration.getInHours()
-            : typeof duration === "number"
-            ? duration
-            : 0;
+      for (const [date, intervals] of rawWorkloadMap.entries()) {
+        // date is now a string (YYYY-MM-DD)
+        let total = 0;
+        for (const iw of intervals) {
+          total += iw.workload;
+        }
+        plainWorkload[date] = total;
       }
     }
 

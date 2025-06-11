@@ -12,7 +12,7 @@ workHoursRouter.get("/get/byUid", async (req, res)=>{
         return res.status(200).json(workHours.toJson());
     } catch (error) {
         console.error(error)
-        return res.status(500).json({"error": error})
+        return res.status(500).json({"error": (error as Error).message})
     }
 })
 
@@ -30,5 +30,19 @@ workHoursRouter.post("/add", async (req, res)=>{
         return res.status(500).json({"error": error})
     }
 })
+
+workHoursRouter.post("/update/interval", async (req, res) => {
+    try {
+        const { uid, dayName, intervals } = req.body;
+        if (!uid || !dayName || !intervals) {
+            return res.status(400).json({ error: "uid, dayName, and intervals are required" });
+        }
+        await repo.updateWorkHoursInterval(uid, dayName, intervals);
+        return res.status(200).json({ message: "success updating workhours interval" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: (error as Error).toString() });
+    }
+});
 
 export default workHoursRouter;

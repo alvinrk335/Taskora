@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DaysCard extends StatelessWidget {
-  final Map<String, double> workingHours;
-  const DaysCard({super.key, required this.workingHours});
+  final Map<String, List<Map<String, String>>> workingIntervals;
+  const DaysCard({super.key, required this.workingIntervals});
 
   String capitalize(String text) {
     if (text.isEmpty) return text;
@@ -30,12 +30,16 @@ class DaysCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Working Hours", style: TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            "Working Intervals",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 12),
-          ...workingHours.entries.map(
+          ...workingIntervals.entries.map(
             (entry) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -44,12 +48,28 @@ class DaysCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    "${entry.value} hrs",
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
+                  if (entry.value.isEmpty)
+                    Text(
+                      "-",
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  else
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children:
+                          entry.value
+                              .map(
+                                (interval) => Text(
+                                  "${interval['start']} - ${interval['end']}",
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+                              .toList(),
                     ),
-                  ),
                 ],
               ),
             ),

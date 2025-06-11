@@ -28,13 +28,19 @@ scheduleRouter.post("/optimize", async (req, res)=> {
       request,
       scheduleId,
       listOfTask,
-      weeklyWorkingHours,
+      weeklyWorkingIntervals, // Ganti ke interval
       excludedDates,
       daysToSchedule,
       workloadThreshold,
     } = req.body; // initialTask
 
-    if (!weeklyWorkingHours || !excludedDates || !daysToSchedule || !workloadThreshold || !listOfTask) {
+    console.log("weeklyWorkingIntervals", weeklyWorkingIntervals);
+    console.log("excludedDates", excludedDates);
+    console.log("daysToSchedule", daysToSchedule);
+    console.log("workloadThreshold", workloadThreshold);
+    console.log("listOfTask", listOfTask);
+
+    if (!weeklyWorkingIntervals || !excludedDates || !daysToSchedule || !workloadThreshold || !listOfTask) {
       return res.status(400).json({ error: "Missing required fields" });
     }
     const listInitialTask = listOfTask.map((task: any) => {
@@ -53,7 +59,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
 
     console.log("input to optimizer service:", JSON.stringify({
       tasks: translatedTasks,
-      weeklyWorkingHours,
+      weeklyWorkingIntervals, // Kirim interval ke optimizer
       excludedDates,
       daysToSchedule,
       workloadThreshold
@@ -61,7 +67,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
 
     const optimizeResponse = await axios.post("http://optimizer:8000/optimizeSchedule", {
       tasks: translatedTasks,
-      weeklyWorkingHours,
+      weeklyWorkingIntervals, // Kirim interval ke optimizer
       excludedDates,
       daysToSchedule,
       workloadThreshold
@@ -92,7 +98,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     );
     
     const optimizedTasksModel: optimizedTask[] = optimizedData.tasks.map((task: any) => 
-      optimizedTask.fromJSON(task)
+      optimizedTask.fromJSON(task) // Now supports interval-based workload
     );
 
     const tasks: Task[] = optimizedTasksModel.map((opt) => {
@@ -132,9 +138,6 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     }
 
     );
-
-    // const lastTask = tasks[tasks.length - 1];
-    // const scheduleEnd = lastTask.getDeadline();
     console.log(scheduleId)
     let schedule = new Schedule({
       scheduleId: scheduleId,
@@ -143,7 +146,7 @@ scheduleRouter.post("/optimize", async (req, res)=> {
     });
 
     if(request && request.trim() !== ""){
-      const updatedScheduleJson = await reOptimize(schedule, request, weeklyWorkingHours);
+      const updatedScheduleJson = await reOptimize(schedule, request, weeklyWorkingIntervals);
       schedule = Schedule.fromJSON(updatedScheduleJson);
     }
     //log scheduling time

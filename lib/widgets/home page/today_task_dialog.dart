@@ -24,21 +24,24 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
   }
 
   double get todayWorkload {
-    return task.workload.entries
-        .where(
-          (entry) =>
-              entry.key.year == today.year &&
-              entry.key.month == today.month &&
-              entry.key.day == today.day,
-        )
-        .fold<double>(0, (sum, entry) => sum + entry.value.toNumber());
+    final todayStr =
+        "${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+    final todayIntervals = task.workload[todayStr] ?? [];
+    return todayIntervals.fold<double>(
+      0,
+      (sum, interval) => sum + (interval['workload'] ?? 0),
+    );
   }
 
   double get totalWorkload {
-    return task.workload.values.fold<double>(
-      0,
-      (sum, val) => sum + val.toNumber(),
-    );
+    double total = 0;
+    task.workload.forEach((date, intervals) {
+      total += intervals.fold<double>(
+        0,
+        (sum, interval) => sum + (interval['workload'] ?? 0),
+      );
+    });
+    return total;
   }
 
   double get progress {
@@ -48,12 +51,9 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
 
   void markTodayDone() {
     setState(() {
-      task.workload.removeWhere(
-        (date, _) =>
-            date.year == today.year &&
-            date.month == today.month &&
-            date.day == today.day,
-      );
+      final todayStr =
+          "${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+      task.workload.remove(todayStr);
     });
     Navigator.of(context).pop();
   }
@@ -74,7 +74,6 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
           fontFamily: 'Montserrat',
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: Color(0xFF80CBC4),
         ),
       ),
       content: Column(
@@ -87,16 +86,11 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
           const SizedBox(height: 12),
           LinearProgressIndicator(
             value: progress,
-            backgroundColor: Colors.grey[700],
-            color: const Color(0xFF80CBC4),
             minHeight: 8,
             borderRadius: BorderRadius.circular(8),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Progress: \n${(progress * 100).toInt()}%',
-            style: const TextStyle(color: Colors.white),
-          ),
+          Text('Progress: \n${(progress * 100).toInt()}%'),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
@@ -116,7 +110,6 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
                           fontFamily: 'Montserrat',
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Color(0xFF80CBC4),
                         ),
                       ),
                       content: const Text(
@@ -124,7 +117,6 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
                         style: TextStyle(
                           fontFamily: 'Montserrat',
                           fontSize: 14,
-                          color: Colors.white70,
                         ),
                       ),
                       actions: [
@@ -134,10 +126,7 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
                               onPressed: () => Navigator.pop(context),
                               child: Text(
                                 "cancel",
-                                style: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  color: Colors.white70,
-                                ),
+                                style: TextStyle(fontFamily: 'Montserrat'),
                               ),
                             ),
                             ElevatedButton(
@@ -162,8 +151,6 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF80CBC4),
-                                foregroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -183,8 +170,6 @@ class _TodayTaskDialogState extends State<TodayTaskDialog> {
             icon: const Icon(Icons.check),
             label: const Text('Mark Today Done'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF80CBC4),
-              foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

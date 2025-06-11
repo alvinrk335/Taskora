@@ -58,7 +58,16 @@ class TaskList extends StatelessWidget {
             tasks =
                 tasks.where((task) {
                   return task.workload.keys.any(
-                    (date) => isSameDay(date, selectedDay),
+                    (date) {
+                      // Parse date string to DateTime
+                      final parts = date.split('-');
+                      final taskDate = DateTime(
+                        int.parse(parts[0]),
+                        int.parse(parts[1]),
+                        int.parse(parts[2]),
+                      );
+                      return isSameDay(taskDate, selectedDay);
+                    },
                   );
                 }).toList();
             if (tasks.isEmpty) {
@@ -124,8 +133,17 @@ class TaskList extends StatelessWidget {
               } else {
                 tasks =
                     tasks.where((task) {
-                      return task.workload.keys.any(
-                        (date) => isSameDay(date, selectedDay),
+                      return task.workload.keys.any(//inijuga untuk timeline
+                        (date) {
+                          // Parse date string to DateTime
+                          final parts = date.split('-');
+                          final taskDate = DateTime(
+                            int.parse(parts[0]),
+                            int.parse(parts[1]),
+                            int.parse(parts[2]),
+                          );
+                          return isSameDay(taskDate, selectedDay);
+                        },
                       );
                     }).toList();
                 return Wrap(

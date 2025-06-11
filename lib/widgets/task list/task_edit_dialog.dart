@@ -203,9 +203,18 @@ class _TaskEditDialogState extends State<TaskEditDialog> {
                               1.0,
                         ),
                         workload: {
-                          DateTime.now(): DurationValue.fromNumber(
-                            double.tryParse(workloadController.text) ?? 1.0,
-                          ),
+                          // Default: assign all workload to today, in a single interval (e.g. 08:00-17:00)
+                          "${DateTime.now().year.toString().padLeft(4, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}":
+                              [
+                                {
+                                  'interval': ['08:00', '17:00'],
+                                  'workload':
+                                      double.tryParse(
+                                        workloadController.text,
+                                      ) ??
+                                      1.0,
+                                },
+                              ],
                         },
                       );
                       context.read<TaskEditBloc>().add(

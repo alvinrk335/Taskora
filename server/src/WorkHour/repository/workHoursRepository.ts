@@ -12,7 +12,6 @@ export default class WorkHoursRepository{
             console.error(error)
             throw new Error("error adding work hours into db")
         }
-
     }
 
     async getWorkHoursByUid(uid: string): Promise<WorkHours>{
@@ -28,6 +27,19 @@ export default class WorkHoursRepository{
         } catch (error) {
             console.error(error)
             throw new Error("error getting work hours")
+        }
+    }
+
+    async updateWorkHoursInterval(uid: string, dayName: string, intervals: {start: string, end: string}[]): Promise<void> {
+        try {
+            const workHoursDoc = await this.workHourCollection.doc(uid).get();
+            if (!workHoursDoc.exists) throw new Error("work hours not found");
+            const workHours = WorkHours.fromJson(workHoursDoc.data());
+            const updated = workHours.update(dayName, intervals);
+            await this.workHourCollection.doc(uid).set(updated.toJson());
+        } catch (error) {
+            console.error(error);
+            throw new Error("error updating work hours interval");
         }
     }
 }

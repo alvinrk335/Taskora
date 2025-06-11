@@ -21,9 +21,19 @@ class CalendarLoaded extends CalendarState {
   loadEvent() {
     Map<DateTime, List<Task>> events = {};
     for (var task in schedule.getTasks) {
-      task.workload.forEach((date, duration) {
-        final day = DateTime(date.year, date.month, date.day);
-        events.putIfAbsent(day, () => []).add(task);
+      // Loop through each date in the workload map (interval-based)
+      task.workload.forEach((dateStr, intervals) {
+        // Parse dateStr (format: YYYY-MM-DD)
+        final parts = dateStr.split('-');
+        if (parts.length == 3) {
+          final year = int.tryParse(parts[0]);
+          final month = int.tryParse(parts[1]);
+          final day = int.tryParse(parts[2]);
+          if (year != null && month != null && day != null) {
+            final dayObj = DateTime(year, month, day);
+            events.putIfAbsent(dayObj, () => []).add(task);
+          }
+        }
       });
     }
     return events;

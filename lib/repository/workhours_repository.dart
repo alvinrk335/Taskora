@@ -28,7 +28,7 @@ class WorkHoursRepository {
     final response = await http.get(url, headers: header);
 
     if (response.statusCode != 200) {
-      throw Exception("error from $url");
+      throw Exception("error from $url: ${response.body}");
     }
 
     log("$logHelper reponse from $url: ${jsonDecode(response.body)}");

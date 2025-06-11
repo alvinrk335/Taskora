@@ -49,7 +49,7 @@ class _NavigationState extends State<Navigation> {
       if (!mounted) return;
 
       context.read<AvailableDaysBloc>().add(
-        SetWeeklyWorkHours(weeklyHours: workHours.toMap()),
+        SetWeeklyWorkIntervals(weeklyIntervals: workHours.weeklyWorkIntervals),
       );
 
       final calendarState = context.read<CalendarBloc>().state;
@@ -73,8 +73,9 @@ class _NavigationState extends State<Navigation> {
           drawer: BurgerMenu(),
           body: pages[navigationState.currentIndex],
           bottomNavigationBar: BottomNavigationBar(
-            onTap: (index) =>
-                navigationContext.read<NavbarBloc>().add(MoveTo(index)),
+            onTap:
+                (index) =>
+                    navigationContext.read<NavbarBloc>().add(MoveTo(index)),
             currentIndex: navigationState.currentIndex,
             items: const [
               BottomNavigationBarItem(

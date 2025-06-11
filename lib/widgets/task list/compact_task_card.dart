@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_bloc.dart';
 import 'package:taskora/bloc/calendar/calendar_state.dart';
 import 'package:taskora/model/entity/task.dart';
-import 'package:taskora/model/value%20object/duration.dart';
 
 class CompactTaskCard extends StatelessWidget {
   final Task task;
@@ -62,18 +61,17 @@ class CompactTaskCard extends StatelessWidget {
                       if (calendarState is CalendarLoaded) {
                         final selectedDay = calendarState.selectedDay;
                         if (selectedDay != null) {
-                          MapEntry<DateTime, DurationValue>? matchedEntry;
-                          try {
-                            matchedEntry = task.workload.entries.firstWhere(
-                              (entry) => isSameDay(entry.key, selectedDay),
-                            );
-                          } catch (e) {
-                            matchedEntry = null; // kalau ga ketemu, masuk sini
-                          }
-
-                          final currTaskWorkload = matchedEntry?.value;
+                          // Ambil workload total per hari (interval-based)
+                          final selectedStr =
+                              "${selectedDay.year.toString().padLeft(4, '0')}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
+                          final intervals = task.workload[selectedStr] ?? [];
+                          final currTaskWorkload = intervals.fold<double>(
+                            0,
+                            (sum, interval) =>
+                                sum + (interval['workload'] ?? 0),
+                          );
                           return Text(
-                            "workload: $currTaskWorkload",
+                            "workload: ${currTaskWorkload > 0 ? currTaskWorkload.toStringAsFixed(1) : '-'} hrs",
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.normal,
@@ -81,9 +79,17 @@ class CompactTaskCard extends StatelessWidget {
                             ),
                           );
                         } else {
-                          final currTaskWorkload = task.getTotalWorkload();
+                          // Total workload seluruh hari
+                          double total = 0;
+                          task.workload.forEach((date, intervals) {
+                            total += intervals.fold<double>(
+                              0,
+                              (sum, interval) =>
+                                  sum + (interval['workload'] ?? 0),
+                            );
+                          });
                           return Text(
-                            "total workload: $currTaskWorkload",
+                            "total workload: ${total > 0 ? total.toStringAsFixed(1) : '-'} hrs",
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.normal,

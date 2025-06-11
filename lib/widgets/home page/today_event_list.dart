@@ -30,14 +30,14 @@ class TodayEventList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final todayWorkload = task.workload.entries
-        .where(
-          (entry) =>
-              entry.key.year == now.year &&
-              entry.key.month == now.month &&
-              entry.key.day == now.day,
-        )
-        .fold<double>(0, (sum, entry) => sum + entry.value.toNumber());
+    final todayStr =
+        "${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    // Ambil workload hari ini (interval-based)
+    final todayIntervals = task.workload[todayStr] ?? [];
+    final todayWorkload = todayIntervals.fold<double>(
+      0,
+      (sum, interval) => sum + (interval['workload'] ?? 0),
+    );
 
     final deadlineStr =
         task.deadline != null
@@ -141,7 +141,7 @@ class TodayEventList extends StatelessWidget {
             Column(
               children: [
                 Text(
-                  'Workload\n${todayWorkload > 0 ? todayWorkload.toInt() : '-'} hrs',
+                  'Workload\n${todayWorkload > 0 ? todayWorkload.toStringAsFixed(1) : '-'} hrs',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: 'Montserrat',

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_bloc.dart';
@@ -12,65 +11,111 @@ class AddAvailableDaysDialog extends StatefulWidget {
 }
 
 class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
-  final mondayController = TextEditingController();
-  final tuesdayController = TextEditingController();
-  final wednesdayController = TextEditingController();
-  final thursdayController = TextEditingController();
-  final fridayController = TextEditingController();
-  final saturdayController = TextEditingController();
-  final sundayController = TextEditingController();
+  final Map<String, List<Map<String, String>>> intervals = {
+    'Monday': [],
+    'Tuesday': [],
+    'Wednesday': [],
+    'Thursday': [],
+    'Friday': [],
+    'Saturday': [],
+    'Sunday': [],
+  };
 
-  @override
-  void dispose() {
-    mondayController.dispose();
-    tuesdayController.dispose();
-    wednesdayController.dispose();
-    thursdayController.dispose();
-    fridayController.dispose();
-    saturdayController.dispose();
-    sundayController.dispose();
-    super.dispose();
-  }
-
-  Map<String, double> getWorkingHoursData() {
-    return {
-      "Monday": double.tryParse(mondayController.text) ?? 0,
-      "Tuesday": double.tryParse(tuesdayController.text) ?? 0,
-      "Wednesday": double.tryParse(wednesdayController.text) ?? 0,
-      "Thursday": double.tryParse(thursdayController.text) ?? 0,
-      "Friday": double.tryParse(fridayController.text) ?? 0,
-      "Saturday": double.tryParse(saturdayController.text) ?? 0,
-      "Sunday": double.tryParse(sundayController.text) ?? 0,
-    };
-  }
-
-  Widget buildDayInput(
-    String label,
-    TextEditingController controller,
-    ThemeData theme,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: "Enter hours",
-          prefixIcon: Icon(Icons.access_time),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(width: 0.5, color: theme.dividerColor),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(width: 0.5, color: theme.dividerColor),
-          ),
-          filled: true,
-          // Background input box
-        ),
-      ),
+  void _addInterval(String day) async {
+    DateTime now = DateTime.now();
+    TimeOfDay? start = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
     );
+    if (start == null) return;
+    TimeOfDay? end = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: start.hour + 1, minute: start.minute),
+    );
+    if (end == null) return;
+    final newStartMinutes = start.hour * 60 + start.minute;
+    final newEndMinutes = end.hour * 60 + end.minute;
+    if (newEndMinutes <= newStartMinutes) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('End time must be after start time.')),
+      );
+      return;
+    }
+    // Check for overlap with existing intervals
+    final overlaps = intervals[day]!.any((interval) {
+      final partsStart = interval['start']!.split(":");
+      final partsEnd = interval['end']!.split(":");
+      final s = TimeOfDay(
+        hour: int.parse(partsStart[0]),
+        minute: int.parse(partsStart[1]),
+      );
+      final e = TimeOfDay(
+        hour: int.parse(partsEnd[0]),
+        minute: int.parse(partsEnd[1]),
+      );
+      final sMin = s.hour * 60 + s.minute;
+      final eMin = e.hour * 60 + e.minute;
+      // Overlap if: (start < eMin && end > sMin)
+      return newStartMinutes < eMin && newEndMinutes > sMin;
+    });
+    if (overlaps) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Intervals cannot overlap.')),
+      );
+      return;
+    }
+    setState(() {
+      intervals[day]!.add({
+        'start': formatTimeOfDay(start),
+        'end': formatTimeOfDay(end),
+      });
+    });
+  }
+
+  void _removeInterval(String day, int idx) {
+    setState(() {
+      intervals[day]!.removeAt(idx);
+    });
+  }
+
+  Widget buildDayIntervalInput(String day, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(day, style: theme.textTheme.titleMedium),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () => _addInterval(day),
+              tooltip: 'Add interval',
+            ),
+          ],
+        ),
+        ...intervals[day]!.asMap().entries.map((entry) {
+          final idx = entry.key;
+          final interval = entry.value;
+          return Row(
+            children: [
+              Expanded(
+                child: Text('${interval['start']} - ${interval['end']}'),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.redAccent),
+                onPressed: () => _removeInterval(day, idx),
+                tooltip: 'Remove interval',
+              ),
+            ],
+          );
+        }),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  String formatTimeOfDay(TimeOfDay time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -78,20 +123,20 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
     final theme = Theme.of(context);
     return AlertDialog(
       title: Text(
-        "Set Weekly Work Hours",
+        "Set Weekly Work Intervals",
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildDayInput("Monday", mondayController, theme),
-            buildDayInput("Tuesday", tuesdayController, theme),
-            buildDayInput("Wednesday", wednesdayController, theme),
-            buildDayInput("Thursday", thursdayController, theme),
-            buildDayInput("Friday", fridayController, theme),
-            buildDayInput("Saturday", saturdayController, theme),
-            buildDayInput("Sunday", sundayController, theme),
+            buildDayIntervalInput('Monday', theme),
+            buildDayIntervalInput('Tuesday', theme),
+            buildDayIntervalInput('Wednesday', theme),
+            buildDayIntervalInput('Thursday', theme),
+            buildDayIntervalInput('Friday', theme),
+            buildDayIntervalInput('Saturday', theme),
+            buildDayIntervalInput('Sunday', theme),
           ],
         ),
       ),
@@ -102,9 +147,8 @@ class _AddAvailableDaysDialogState extends State<AddAvailableDaysDialog> {
         ),
         ElevatedButton.icon(
           onPressed: () {
-            log("confirm button pressed");
             context.read<AvailableDaysBloc>().add(
-              SetWeeklyWorkHours(weeklyHours: getWorkingHoursData()),
+              SetWeeklyWorkIntervals(weeklyIntervals: intervals),
             );
             Navigator.pop(context);
           },

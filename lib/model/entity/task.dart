@@ -15,7 +15,8 @@ class Task {
   double weight;
   Timestamp createdAt;
   Timestamp updatedAt;
-  Map<DateTime, DurationValue> workload;
+  Map<String, List<Map<String, dynamic>>>
+  workload; // date string -> list of {interval, workload}
   DurationValue? estimatedDuration;
 
   Task({
@@ -42,7 +43,7 @@ class Task {
     double? weight,
     Timestamp? createdAt,
     Timestamp? updatedAt,
-    Map<DateTime, DurationValue>? workload,
+    Map<String, List<Map<String, dynamic>>>? workload,
     DurationValue? estimatedDuration,
   }) {
     return Task(
@@ -56,30 +57,32 @@ class Task {
       updatedAt: updatedAt ?? this.updatedAt,
       weight: weight ?? this.weight,
       workload: workload ?? this.workload,
-      estimatedDuration: estimatedDuration ?? estimatedDuration,
+      estimatedDuration: estimatedDuration ?? this.estimatedDuration,
     );
   }
 
   factory Task.fromJson(Map<String, dynamic> json) {
-    final Map<DateTime, DurationValue> workloadMap = {};
     final rawWorkload = json['workload'] ?? {};
+    final Map<String, List<Map<String, dynamic>>> parsedWorkload = {};
+    rawWorkload.forEach((date, intervals) {
+      if (intervals is List) {
+        parsedWorkload[date] = List<Map<String, dynamic>>.from(
+          intervals.map(
+            (iw) => {
+              'interval': List<String>.from(iw['interval']),
+              'workload': iw['workload'],
+            },
+          ),
+        );
+      }
+    });
     final deadlineJson = json['deadline'];
     DateTime? deadline;
-    if(deadlineJson != null){
-      deadline = DateTime.parse(deadlineJson);
-    }
-    else{
+    if (deadlineJson != null && deadlineJson != "No deadline") {
+      deadline = DateTime.tryParse(deadlineJson);
+    } else {
       deadline = null;
     }
-
-    (rawWorkload as Map<String, dynamic>).forEach((key, value) {
-      final date = DateTime.parse(key);
-      final duration = DurationValue.fromNumber(
-        value is num ? value.toDouble() : (value['minutes'] as num).toDouble(),
-      );
-      workloadMap[date] = duration;
-    });
-
     return Task(
       taskId: json['taskId'],
       taskName: Name.fromString(json['taskName']),
@@ -87,14 +90,14 @@ class Task {
       priority: json['priority'],
       type: TaskType.fromString(json['type']),
       deadline: deadline,
-      weight: json['weight'].toDouble(),
+      weight: (json['weight'] as num).toDouble(),
       createdAt: Timestamp.fromDate(
         DateTime.parse(json['createdAt'].toString()),
       ),
       updatedAt: Timestamp.fromDate(
         DateTime.parse(json['updatedAt'].toString()),
       ),
-      workload: workloadMap,
+      workload: parsedWorkload,
       estimatedDuration: DurationValue.fromNumber(
         (json['estimatedDuration'] ?? 0).toDouble(),
       ),
@@ -103,10 +106,17 @@ class Task {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> workloadMap = {};
-    workload.forEach((key, value) {
-      workloadMap[key.toIso8601String()] = value.toNumber();
+    workload.forEach((date, intervals) {
+      workloadMap[date] =
+          intervals
+              .map(
+                (iw) => {
+                  'interval': iw['interval'],
+                  'workload': iw['workload'],
+                },
+              )
+              .toList();
     });
-
     return {
       'taskId': taskId,
       'taskName': taskName.toString(),
@@ -124,14 +134,16 @@ class Task {
 
   double getTotalWorkload() {
     double total = 0;
-    workload.forEach((_, duration) {
-      total += duration.toNumber();
+    workload.forEach((_, intervals) {
+      for (final iw in intervals) {
+        total += (iw['workload'] as num).toDouble();
+      }
     });
     return total;
   }
 
-  void addWorkload(DateTime date, DurationValue duration) {
-    workload[date] = duration;
+  void addWorkload(String date, List<Map<String, dynamic>> intervals) {
+    workload[date] = intervals;
   }
 
   String toShortSummaryStringS() {
@@ -167,8 +179,15 @@ class Task {
 
     final workloadStr = workload.entries
         .map((entry) {
-          final dateStr = DateFormat('yyyy-MM-dd').format(entry.key);
-          return '$dateStr: ${entry.value.toNumber()} hrs';
+          final dateStr = entry.key;
+          final intervals = entry.value;
+          final intervalsStr = intervals
+              .map(
+                (iw) =>
+                    '[${iw['interval'][0]}-${iw['interval'][1]}: ${iw['workload']} hrs]',
+              )
+              .join(', ');
+          return '$dateStr: $intervalsStr';
         })
         .join('\n');
 
@@ -183,9 +202,61 @@ Estimated Duration: $estDurationStr
 Weight: $weight
 Created At: ${createdAt.toDate().toIso8601String()}
 Updated At: ${updatedAt.toDate().toIso8601String()}
-Workload:
-$workloadStr
-Total Workload: ${getTotalWorkload()} hrs
+Workload:\n$workloadStr\nTotal Workload: ${getTotalWorkload()} hrs
 ''';
+  }
+
+  // Checks if a workload duration can fit within the provided intervals for a given date
+  static bool isWorkloadWithinIntervals(
+    DateTime date,
+    DurationValue duration,
+    List<Map<String, String>> intervals,
+  ) {
+    if (intervals.isEmpty) return false;
+    final totalAvailableMinutes = intervals.fold<int>(0, (sum, interval) {
+      final startParts = interval['start']!.split(":");
+      final endParts = interval['end']!.split(":");
+      final start = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        int.parse(startParts[0]),
+        int.parse(startParts[1]),
+      );
+      final end = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        int.parse(endParts[0]),
+        int.parse(endParts[1]),
+      );
+      return sum + end.difference(start).inMinutes;
+    });
+    return duration.toNumber() * 60 <= totalAvailableMinutes;
+  }
+
+  // Optionally, filter workload map to only include dates that fit intervals
+  static Map<DateTime, DurationValue> filterWorkloadByIntervals(
+    Map<DateTime, DurationValue> workload,
+    Map<String, List<Map<String, String>>> weeklyIntervals,
+  ) {
+    final filtered = <DateTime, DurationValue>{};
+    workload.forEach((date, duration) {
+      final weekday =
+          [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ][date.weekday - 1];
+      final intervals = weeklyIntervals[weekday] ?? [];
+      if (isWorkloadWithinIntervals(date, duration, intervals)) {
+        filtered[date] = duration;
+      }
+    });
+    return filtered;
   }
 }

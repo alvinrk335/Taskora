@@ -1,52 +1,60 @@
-type WeeklyWorkHours = {
-  [day: string]: number; // Contoh: { "Monday": 4, "Tuesday": 5 }
+type TimeInterval = { start: string; end: string };
+type WeeklyWorkIntervals = {
+  [day: string]: TimeInterval[]; // Contoh: { "Monday": [{start: "08:00", end: "12:00"}], ... }
 };
 
 export class WorkHours {
-  weeklyWorkHours: WeeklyWorkHours;
+  weeklyWorkIntervals: WeeklyWorkIntervals;
 
-  constructor(weeklyWorkHours: WeeklyWorkHours) {
-    this.weeklyWorkHours = weeklyWorkHours;
+  constructor(weeklyWorkIntervals: WeeklyWorkIntervals) {
+    this.weeklyWorkIntervals = weeklyWorkIntervals;
   }
 
   static fromJson(json: any): WorkHours {
-    const parsed: WeeklyWorkHours = {};
+    const parsed: WeeklyWorkIntervals = {};
     for (const key in json) {
-      parsed[key] = Number(json[key]); // pastikan value berupa number
+      parsed[key] = (json[key] as any[]).map(
+        (interval) => ({
+          start: interval.start,
+          end: interval.end,
+        })
+      );
     }
     return new WorkHours(parsed);
   }
 
-  toJson(): WeeklyWorkHours {
-    return { ...this.weeklyWorkHours };
+  toJson(): WeeklyWorkIntervals {
+    return { ...this.weeklyWorkIntervals };
   }
 
-  update(dayName: string, newHours: number): WorkHours {
+  update(dayName: string, newIntervals: TimeInterval[]): WorkHours {
     return new WorkHours({
-      ...this.weeklyWorkHours,
-      [dayName]: newHours,
+      ...this.weeklyWorkIntervals,
+      [dayName]: newIntervals,
     });
   }
 
-  getHours(dayName: string): number {
-    return this.weeklyWorkHours[dayName] ?? 0;
+  getIntervals(dayName: string): TimeInterval[] {
+    return this.weeklyWorkIntervals[dayName] ?? [];
   }
 
   toString(): string {
-    return Object.entries(this.weeklyWorkHours)
-      .map(([day, hours]) => `${day}: ${hours}h`)
-      .join(', ');
+    return Object.entries(this.weeklyWorkIntervals)
+      .map(([day, intervals]) =>
+        `${day}: ${intervals.map(i => `${i.start}-${i.end}`).join(', ')}`
+      )
+      .join('; ');
   }
 
   static empty(): WorkHours {
     return new WorkHours({
-      Monday: 0,
-      Tuesday: 0,
-      Wednesday: 0,
-      Thursday: 0,
-      Friday: 0,
-      Saturday: 0,
-      Sunday: 0,
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: [],
+      Saturday: [],
+      Sunday: [],
     });
   }
 }

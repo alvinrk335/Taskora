@@ -1,19 +1,18 @@
 class AvailableDaysState {
-  final List<DateTime>
-  dates; // tanggal yang dipilih user, misalnya hasil kalender
-  final Map<String, double> weeklyWorkHours; // Senin - Minggu
+  final List<DateTime> dates;
+  final Map<String, List<Map<String, String>>> weeklyWorkIntervals;
 
   const AvailableDaysState({
     required this.dates,
-    required this.weeklyWorkHours,
+    required this.weeklyWorkIntervals,
   });
 
-  Map<String, double> getAvailableTimePerDate() {
-    final Map<String, double> result = {};
+  Map<String, List<Map<String, String>>> getAvailableIntervalsPerDate() {
+    final Map<String, List<Map<String, String>>> result = {};
     for (final date in dates) {
-      final weekday = _weekdayName(date.weekday); // Senin, Selasa, dst
-      final hours = weeklyWorkHours[weekday] ?? 0;
-      result[date.toIso8601String().substring(0, 10)] = hours;
+      final weekday = _weekdayName(date.weekday);
+      final intervals = weeklyWorkIntervals[weekday] ?? [];
+      result[date.toIso8601String().substring(0, 10)] = intervals;
     }
     return result;
   }
@@ -23,10 +22,13 @@ class AvailableDaysState {
     final datesStr = dates
         .map((d) => d.toIso8601String().substring(0, 10))
         .join(", ");
-    final workHoursStr = weeklyWorkHours.entries
-        .map((e) => "${e.key}: ${e.value}h")
+    final intervalsStr = weeklyWorkIntervals.entries
+        .map(
+          (e) =>
+              "${e.key}: ${e.value.map((i) => '${i['start']}-${i['end']}').join(', ')}",
+        )
         .join(", ");
-    return "AvailableDaysState(\n  dates: [$datesStr],\n  weeklyWorkHours: {$workHoursStr}\n)";
+    return "AvailableDaysState(\n  dates: [$datesStr],\n  weeklyWorkIntervals: {$intervalsStr}\n)";
   }
 
   static String _weekdayName(int weekday) {
@@ -45,21 +47,25 @@ class AvailableDaysState {
   AvailableDaysState addDate(DateTime newDate) {
     return AvailableDaysState(
       dates: [...dates, newDate],
-      weeklyWorkHours: weeklyWorkHours,
+      weeklyWorkIntervals: weeklyWorkIntervals,
     );
   }
 
   AvailableDaysState removeDate(DateTime dateToRemove) {
     return AvailableDaysState(
       dates: dates.where((d) => !isSameDay(d, dateToRemove)).toList(),
-      weeklyWorkHours: weeklyWorkHours,
+      weeklyWorkIntervals: weeklyWorkIntervals,
     );
   }
 
-  AvailableDaysState updateWorkHours(String dayName, double newHours) {
-    final updatedHours = Map<String, double>.from(weeklyWorkHours)
-      ..[dayName] = newHours;
-    return AvailableDaysState(dates: dates, weeklyWorkHours: updatedHours);
+  AvailableDaysState updateWorkIntervals(
+    String dayName,
+    List<Map<String, String>> newIntervals,
+  ) {
+    final updated = Map<String, List<Map<String, String>>>.from(
+      weeklyWorkIntervals,
+    )..[dayName] = newIntervals;
+    return AvailableDaysState(dates: dates, weeklyWorkIntervals: updated);
   }
 
   bool isSameDay(DateTime a, DateTime b) {

@@ -77,14 +77,14 @@ class _AddDaysPageState extends State<AddDaysPage> {
             const SizedBox(height: 16),
             BlocBuilder<AvailableDaysBloc, AvailableDaysState>(
               builder: (daysContext, daysState) {
-                if (daysState.weeklyWorkHours.isNotEmpty) {
+                if (daysState.weeklyWorkIntervals.isNotEmpty) {
                   log("$daysState");
                   return Expanded(
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          DaysCard(workingHours: daysState.weeklyWorkHours),
+                          DaysCard(workingIntervals: daysState.weeklyWorkIntervals),
                           const SizedBox(height: 40),
                           Text(
                             "Add specific excluded dates (optional)",

@@ -1,61 +1,70 @@
 class WorkHours {
-  final Map<String, double> weeklyWorkHours;
+  final Map<String, List<Map<String, String>>> weeklyWorkIntervals;
 
-  const WorkHours({required this.weeklyWorkHours});
+  const WorkHours({required this.weeklyWorkIntervals});
 
-  /// Membuat instance kosong dengan semua hari = 0 jam
+  /// Membuat instance kosong dengan semua hari = []
   factory WorkHours.empty() {
     return WorkHours(
-      weeklyWorkHours: {
-        'Monday': 0,
-        'Tuesday': 0,
-        'Wednesday': 0,
-        'Thursday': 0,
-        'Friday': 0,
-        'Saturday': 0,
-        'Sunday': 0,
+      weeklyWorkIntervals: {
+        'Monday': [],
+        'Tuesday': [],
+        'Wednesday': [],
+        'Thursday': [],
+        'Friday': [],
+        'Saturday': [],
+        'Sunday': [],
       },
     );
   }
 
   /// Membuat instance dari JSON
   factory WorkHours.fromJson(Map<String, dynamic> json) {
-    final Map<String, double> parsed = {};
+    final Map<String, List<Map<String, String>>> parsed = {};
     for (final entry in json.entries) {
-      parsed[entry.key] = (entry.value as num).toDouble();
+      parsed[entry.key] =
+          (entry.value as List)
+              .map(
+                (interval) => {
+                  'start': interval['start'] as String,
+                  'end': interval['end'] as String,
+                },
+              )
+              .toList();
     }
-    return WorkHours(weeklyWorkHours: parsed);
+    return WorkHours(weeklyWorkIntervals: parsed);
   }
 
   /// Mengubah ke JSON
   Map<String, dynamic> toJson() {
-    return weeklyWorkHours;
+    return weeklyWorkIntervals;
   }
 
-  factory WorkHours.fromMap(Map<String, double> map) {
-    return WorkHours(weeklyWorkHours: Map<String, double>.from(map));
+  factory WorkHours.fromMap(Map<String, List<Map<String, String>>> map) {
+    return WorkHours(
+      weeklyWorkIntervals: Map<String, List<Map<String, String>>>.from(map),
+    );
   }
 
-  /// Update jam kerja untuk hari tertentu
-  WorkHours update(String dayName, double newHours) {
-    final updated = Map<String, double>.from(weeklyWorkHours)
-      ..[dayName] = newHours;
-    return WorkHours(weeklyWorkHours: updated);
+  /// Update interval untuk hari tertentu
+  WorkHours update(String dayName, List<Map<String, String>> newIntervals) {
+    final updated = Map<String, List<Map<String, String>>>.from(
+      weeklyWorkIntervals,
+    )..[dayName] = newIntervals;
+    return WorkHours(weeklyWorkIntervals: updated);
   }
 
-  Map<String, double> toMap() {
-    return Map<String, double>.from(weeklyWorkHours);
-  }
-
-  /// Mengambil jam kerja untuk hari tertentu
-  double getHours(String dayName) {
-    return weeklyWorkHours[dayName] ?? 0;
+  List<Map<String, String>> getIntervals(String dayName) {
+    return weeklyWorkIntervals[dayName] ?? [];
   }
 
   @override
   String toString() {
-    return weeklyWorkHours.entries
-        .map((e) => '${e.key}: ${e.value}h')
-        .join(', ');
+    return weeklyWorkIntervals.entries
+        .map(
+          (e) =>
+              '${e.key}: ${e.value.map((i) => '${i['start']}-${i['end']}').join(', ')}',
+        )
+        .join('; ');
   }
 }

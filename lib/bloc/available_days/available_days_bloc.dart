@@ -1,17 +1,15 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskora/bloc/available_days/available_days_event.dart';
 import 'package:taskora/bloc/available_days/available_days_state.dart';
 
 class AvailableDaysBloc extends Bloc<AvailableDaysEvent, AvailableDaysState> {
   AvailableDaysBloc()
-    : super(const AvailableDaysState(dates: [], weeklyWorkHours: {})) {
+    : super(const AvailableDaysState(dates: [], weeklyWorkIntervals: {})) {
     on<SetAvailableDates>((event, emit) {
       emit(
         AvailableDaysState(
           dates: event.dates,
-          weeklyWorkHours: state.weeklyWorkHours,
+          weeklyWorkIntervals: state.weeklyWorkIntervals,
         ),
       );
     });
@@ -24,7 +22,7 @@ class AvailableDaysBloc extends Bloc<AvailableDaysEvent, AvailableDaysState> {
       emit(
         AvailableDaysState(
           dates: updatedDates,
-          weeklyWorkHours: state.weeklyWorkHours,
+          weeklyWorkIntervals: state.weeklyWorkIntervals,
         ),
       );
     });
@@ -34,27 +32,27 @@ class AvailableDaysBloc extends Bloc<AvailableDaysEvent, AvailableDaysState> {
       emit(
         AvailableDaysState(
           dates: updatedDates,
-          weeklyWorkHours: state.weeklyWorkHours,
+          weeklyWorkIntervals: state.weeklyWorkIntervals,
         ),
       );
     });
 
-    on<SetWeeklyWorkHours>((event, emit) {
-      log("event set weekly hours diterima");
+    on<SetWeeklyWorkIntervals>((event, emit) {
       emit(
         AvailableDaysState(
           dates: state.dates,
-          weeklyWorkHours: event.weeklyHours,
+          weeklyWorkIntervals: event.weeklyIntervals,
         ),
       );
-      log("emitted state baru : ${state.dates}, ${state.weeklyWorkHours}");
     });
 
-    on<EditWeeklyWorkHour>((event, emit) {
-      final updatedHours = Map<String, double>.from(state.weeklyWorkHours);
-      updatedHours[event.day] = event.hours;
+    on<EditWeeklyWorkInterval>((event, emit) {
+      final updated = Map<String, List<Map<String, String>>>.from(
+        state.weeklyWorkIntervals,
+      );
+      updated[event.day] = event.intervals;
       emit(
-        AvailableDaysState(dates: state.dates, weeklyWorkHours: updatedHours),
+        AvailableDaysState(dates: state.dates, weeklyWorkIntervals: updated),
       );
     });
   }

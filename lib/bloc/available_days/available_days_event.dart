@@ -25,3 +25,14 @@ class EditWeeklyWorkHour extends AvailableDaysEvent {
   final double hours;
   EditWeeklyWorkHour({required this.day, required this.hours});
 }
+
+class SetWeeklyWorkIntervals extends AvailableDaysEvent {
+  final Map<String, List<Map<String, String>>> weeklyIntervals;
+  SetWeeklyWorkIntervals({required this.weeklyIntervals});
+}
+
+class EditWeeklyWorkInterval extends AvailableDaysEvent {
+  final String day;
+  final List<Map<String, String>> intervals;
+  EditWeeklyWorkInterval({required this.day, required this.intervals});
+}

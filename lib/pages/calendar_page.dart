@@ -11,6 +11,7 @@ import 'package:taskora/pages/task_page.dart';
 import 'package:taskora/repository/schedule_repository.dart';
 import 'package:taskora/widgets/calendar/calendar.dart';
 import 'package:taskora/widgets/calendar/calendar_layout_dialog.dart';
+import 'package:taskora/widgets/daily%20timeline/daily_timeline.dart';
 
 import 'package:taskora/widgets/task%20list/task_list.dart';
 
@@ -55,7 +56,6 @@ class CalendarPage extends StatelessWidget {
           child: Column(
             children: [
               Row(
-                //bikin ini lebih terlihat seperti navbar
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -68,13 +68,14 @@ class CalendarPage extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.calendar_view_month),
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => BlocProvider.value(
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return BlocProvider.value(
                             value: context.read<CalendarBloc>(),
                             child: CalendarLayoutDialog(),
-                          ),
-                        ),
+                          );
+                        },
                       );
                     },
                   ),
@@ -86,7 +87,18 @@ class CalendarPage extends StatelessWidget {
                   if (authState is NotLoggedIn) {
                     return SizedBox.shrink();
                   } else if (authState is LoggedIn) {
-                    return TaskList(cardType: CardType.regular, compact: true,);
+                    final calendarState = context.watch<CalendarBloc>().state;
+                    if (calendarState is CalendarLoaded) {
+                      final selectedDate = calendarState.selectedDay;
+                      if (selectedDate != null) {
+                        return TaskList(
+                          cardType: CardType.regular,
+                          compact: true,
+                        );
+                      } else {
+                        return DailyTimeline();
+                      }
+                    }
                   }
                   return Text("data");
                 },

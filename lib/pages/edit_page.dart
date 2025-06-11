@@ -178,11 +178,12 @@ class _EditPageState extends State<EditPage> {
       listOfTask.add(task);
     }
     final availableDaysState = context.read<AvailableDaysBloc>().state;
-    final Map<String, double> workingHours = availableDaysState.weeklyWorkHours;
+    final Map<String, List<Map<String, String>>> workingIntervals =
+        availableDaysState.weeklyWorkIntervals;
     final List<DateTime> excludedDates = availableDaysState.dates;
     final optimizer = Optimizer(
       tasks: listOfTask,
-      workingHours: workingHours,
+      workingIntervals: workingIntervals,
       excludedDates: excludedDates,
       request: requestPrompt,
       newSchedule: false,

@@ -50,14 +50,14 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
 
   Future<Schedule> optimizeTask(BuildContext context) async {
     final List<InitialTask> tasks = context.read<TaskAddBloc>().state.tasks;
-    final Map<String, double> workingHours =
-        context.read<AvailableDaysBloc>().state.weeklyWorkHours;
+    final Map<String, List<Map<String, String>>> workingIntervals =
+        context.read<AvailableDaysBloc>().state.weeklyWorkIntervals;
     final List<DateTime> excludedDates =
         context.read<AvailableDaysBloc>().state.dates;
     final optimizer = Optimizer(
       tasks: tasks,
       excludedDates: excludedDates,
-      workingHours: workingHours,
+      workingIntervals: workingIntervals,
     );
     Schedule schedule = await optimizer.optimize();
 
@@ -148,12 +148,12 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                         );
 
                         try {
-                          final Map<String, double> workingHours =
+                          final Map<String, List<Map<String, String>>>
+                          workingIntervals =
                               context
                                   .read<AvailableDaysBloc>()
                                   .state
-                                  .weeklyWorkHours;
-
+                                  .weeklyWorkIntervals;
                           final authState = context.read<AuthBloc>().state;
                           String uid = "";
                           if (authState is LoggedIn) {
@@ -161,7 +161,7 @@ class _AddScheduleBodyState extends State<AddScheduleBody> {
                           }
 
                           await workHoursRepo.addWorkHours(
-                            WorkHours.fromMap(workingHours),
+                            WorkHours(weeklyWorkIntervals: workingIntervals),
                             uid,
                           );
 

@@ -18,14 +18,15 @@ class HomePage extends StatelessWidget {
 
   List<Task> getTodaysTasks(List<Task> tasks) {
     final now = DateTime.now();
+    final todayStr = "YYYY-MM-DD"
+        .replaceRange(0, 4, now.year.toString().padLeft(4, '0'))
+        .replaceRange(5, 7, now.month.toString().padLeft(2, '0'))
+        .replaceRange(8, 10, now.day.toString().padLeft(2, '0'));
     return tasks.where((task) {
-      // Check if any workload is scheduled for today
-      final hasWorkloadToday = task.workload.keys.any(
-        (date) =>
-            date.year == now.year &&
-            date.month == now.month &&
-            date.day == now.day,
-      );
+      // Check if any workload is scheduled for today (interval-based)
+      final hasWorkloadToday =
+          task.workload.containsKey(todayStr) &&
+          (task.workload[todayStr]?.isNotEmpty ?? false);
       // Also include if deadline is today
       final isDeadlineToday =
           task.deadline != null &&

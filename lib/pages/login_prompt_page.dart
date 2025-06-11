@@ -25,7 +25,9 @@ class LoginPromptPage extends StatelessWidget {
                       BlocProvider.value(value: context.read<NavbarBloc>()),
                       BlocProvider.value(value: context.read<ThemeBloc>()),
                       BlocProvider.value(value: context.read<CalendarBloc>()),
-                      BlocProvider.value(value: context.read<AvailableDaysBloc>())
+                      BlocProvider.value(
+                        value: context.read<AvailableDaysBloc>(),
+                      ),
                     ],
                     child: Navigation(),
                   ),
@@ -80,6 +82,7 @@ class LoginPromptPage extends StatelessWidget {
                           child: Image(
                             image: AssetImage('lib/Assets/GoogleLogo.png'),
                             fit: BoxFit.contain,
+                            filterQuality: FilterQuality.none, // No blur
                           ),
                         ),
                       ),
